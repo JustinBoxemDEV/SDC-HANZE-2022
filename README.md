@@ -26,6 +26,8 @@ https://www.youtube.com/watch?v=2uQ2BSzDvXs
 
 https://www.youtube.com/watch?v=zOByx3Izf5U
 
+https://www.mstarlabs.com/apeng/techniques/pidsoftw.html
+
 ## Possibly usefull content
 https://www.youtube.com/playlist?list=PLW3FM5Kyc2_4PGkumkAHNXzWtgHhaYe1d
 
