@@ -20,3 +20,9 @@ https://www.youtube.com/watch?v=4Y7zG48uHRo
 https://github.com/avinashmnit30/SDC-PID
 
 https://www.youtube.com/watch?v=2uQ2BSzDvXs
+
+https://www.youtube.com/watch?v=zOByx3Izf5U
+
+## Possibly usefull content
+https://www.youtube.com/playlist?list=PLW3FM5Kyc2_4PGkumkAHNXzWtgHhaYe1d
+
