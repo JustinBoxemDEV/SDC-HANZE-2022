@@ -1,5 +1,10 @@
 # SDC-HANZE-2022
 
+# OpenCV installation help
+https://medium.com/@pokhrelsuruchi/setting-up-opencv-for-python-and-c-in-ubuntu-20-04-6b0331e37437
+
+https://docs.opencv.org/3.4/d7/d9f/tutorial_linux_install.html
+
 # Reference material
 
 ## Documentation
