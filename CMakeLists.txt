@@ -21,3 +21,4 @@ set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 target_link_libraries(SDC ${OpenCV_LIBS} )
+target_link_libraries(SDC libsocketcan.a)

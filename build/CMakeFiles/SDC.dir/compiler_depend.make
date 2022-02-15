@@ -326,7 +326,20 @@ CMakeFiles/SDC.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/c++/11.1.0/bits/quoted_string.h \
   /usr/include/c++/11.1.0/codecvt \
   /usr/include/c++/11.1.0/bits/fs_dir.h \
-  /usr/include/c++/11.1.0/bits/fs_ops.h
+  /usr/include/c++/11.1.0/bits/fs_ops.h \
+  /usr/local/include/libsocketcan.h \
+  /usr/local/include/can_netlink.h \
+  /usr/include/linux/types.h \
+  /usr/include/asm/types.h \
+  /usr/include/asm-generic/types.h \
+  /usr/include/asm-generic/int-ll64.h \
+  /usr/include/asm/bitsperlong.h \
+  /usr/include/asm-generic/bitsperlong.h \
+  /usr/include/linux/posix_types.h \
+  /usr/include/linux/stddef.h \
+  /usr/include/asm/posix_types.h \
+  /usr/include/asm/posix_types_64.h \
+  /usr/include/asm-generic/posix_types.h
 
 CMakeFiles/SDC.dir/src/sub/Test.cpp.o: ../src/sub/Test.cpp \
   /usr/include/stdc-predef.h \
@@ -509,9 +522,25 @@ CMakeFiles/SDC.dir/src/sub/Test.cpp.o: ../src/sub/Test.cpp \
   /usr/include/c++/11.1.0/bits/istream.tcc
 
 
+../src/sub/Test.cpp:
+
+/usr/include/asm-generic/posix_types.h:
+
 ../src/sub/Test.h:
 
-../src/sub/Test.cpp:
+/usr/include/asm/posix_types_64.h:
+
+/usr/include/linux/stddef.h:
+
+/usr/include/asm/bitsperlong.h:
+
+/usr/include/asm-generic/int-ll64.h:
+
+/usr/include/asm/types.h:
+
+/usr/local/include/can_netlink.h:
+
+/usr/local/include/libsocketcan.h:
 
 /usr/include/c++/11.1.0/bits/fs_ops.h:
 
@@ -827,6 +856,10 @@ CMakeFiles/SDC.dir/src/sub/Test.cpp.o: ../src/sub/Test.cpp \
 
 /usr/include/bits/uintn-identity.h:
 
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/asm-generic/types.h:
+
 /usr/include/c++/11.1.0/vector:
 
 /usr/include/c++/11.1.0/tr1/ell_integral.tcc:
@@ -995,6 +1028,8 @@ CMakeFiles/SDC.dir/src/sub/Test.cpp.o: ../src/sub/Test.cpp \
 
 /usr/include/wchar.h:
 
+/usr/include/linux/types.h:
+
 /usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/include/stdarg.h:
 
 /usr/include/assert.h:
@@ -1007,9 +1042,13 @@ CMakeFiles/SDC.dir/src/sub/Test.cpp.o: ../src/sub/Test.cpp \
 
 /usr/include/bits/types/__mbstate_t.h:
 
+/usr/include/asm/posix_types.h:
+
 /usr/include/bits/time.h:
 
 /usr/include/bits/stdio_lim.h:
+
+/usr/include/linux/posix_types.h:
 
 /usr/include/c++/11.1.0/bits/allocator.h:
 

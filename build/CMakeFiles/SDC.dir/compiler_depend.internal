@@ -328,6 +328,19 @@ CMakeFiles/SDC.dir/src/main.cpp.o
  /usr/include/c++/11.1.0/codecvt
  /usr/include/c++/11.1.0/bits/fs_dir.h
  /usr/include/c++/11.1.0/bits/fs_ops.h
+ /usr/local/include/libsocketcan.h
+ /usr/local/include/can_netlink.h
+ /usr/include/linux/types.h
+ /usr/include/asm/types.h
+ /usr/include/asm-generic/types.h
+ /usr/include/asm-generic/int-ll64.h
+ /usr/include/asm/bitsperlong.h
+ /usr/include/asm-generic/bitsperlong.h
+ /usr/include/linux/posix_types.h
+ /usr/include/linux/stddef.h
+ /usr/include/asm/posix_types.h
+ /usr/include/asm/posix_types_64.h
+ /usr/include/asm-generic/posix_types.h
 
 CMakeFiles/SDC.dir/src/sub/Test.cpp.o
  /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/sub/Test.cpp

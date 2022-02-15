@@ -26,6 +26,7 @@
 #include <iostream>
 #include <filesystem>
 #include <string>
+#include <libsocketcan.h>
 
 using namespace cv;
 using namespace std;
@@ -36,10 +37,18 @@ Mat src_gray;
 int thresh = 100;
 RNG rng(12345);
 void thresh_callback(int, void* );
+
+void testCAN(){
+    int * result;
+    cout << can_get_state("can0", result) << endl; 	
+}
+
 int main( int argc, char** argv )
 {
     samples::addSamplesDataSearchPath(fs::current_path().string() + "/images");
-  
+    
+    testCAN();
+
     Mat src = imread( samples::findFile( "megamind.jpg" ) );
     if( src.empty() )
     {
