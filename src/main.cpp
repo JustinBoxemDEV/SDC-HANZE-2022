@@ -38,7 +38,8 @@ RNG rng(12345);
 void thresh_callback(int, void* );
 int main( int argc, char** argv )
 {
-    samples::addSamplesDataSearchPath(fs::absolute("../images"));
+    samples::addSamplesDataSearchPath(fs::current_path().string() + "/images");
+  
     Mat src = imread( samples::findFile( "megamind.jpg" ) );
     if( src.empty() )
     {
