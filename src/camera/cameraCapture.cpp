@@ -6,7 +6,7 @@
 void CameraCapture::ProcessFeed(){
 
     cv::Mat frame;
-    cv::VideoCapture videoCapture(2);
+    cv::VideoCapture videoCapture(0);
 
     videoCapture.set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
     videoCapture.set(cv::CAP_PROP_FRAME_WIDTH, 1920);
