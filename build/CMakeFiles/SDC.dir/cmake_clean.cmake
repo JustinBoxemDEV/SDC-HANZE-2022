@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/SDC.dir/src/camera/cameraCapture.cpp.o"
+  "CMakeFiles/SDC.dir/src/camera/cameraCapture.cpp.o.d"
   "CMakeFiles/SDC.dir/src/main.cpp.o"
   "CMakeFiles/SDC.dir/src/main.cpp.o.d"
   "CMakeFiles/SDC.dir/src/sub/Test.cpp.o"

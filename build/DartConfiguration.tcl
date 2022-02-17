@@ -4,30 +4,31 @@
 
 
 # Configuration directories and files
-SourceDirectory: /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022
-BuildDirectory: /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build
+SourceDirectory: /home/justin/Desktop/SDC/SDC-HANZE-2022
+BuildDirectory: /home/justin/Desktop/SDC/SDC-HANZE-2022/build
 
 # Where to place the cost data store
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: Manjaro
+Site: Justin-Laptop
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-BuildName: Linux-c++
+BuildName: Linux-x86_64-linux-gnu-g++-9
 
 # Subprojects
 LabelsForSubprojects: 
 
 # Submission information
 SubmitURL: http://
+SubmitInactivityTimeout: 
 
 # Dashboard start time
 NightlyStartTime: 00:00:00 EDT
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "/usr/bin/cmake" "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022"
-MakeCommand: /usr/bin/cmake --build . --config "${CTEST_CONFIGURATION_TYPE}" -- -i
+ConfigureCommand: "/usr/local/bin/cmake" "/home/justin/Desktop/SDC/SDC-HANZE-2022"
+MakeCommand: /usr/local/bin/cmake --build . --config "${CTEST_CONFIGURATION_TYPE}" -- -i
 DefaultCTestConfigurationType: Release
 
 # version control
@@ -62,8 +63,8 @@ UpdateOptions:
 UpdateType: git
 
 # Compiler info
-Compiler: /usr/bin/c++
-CompilerVersion: 11.1.0
+Compiler: /bin/x86_64-linux-gnu-g++-9
+CompilerVersion: 9.3.0
 
 # Dynamic analysis (MemCheck)
 PurifyCommand: 

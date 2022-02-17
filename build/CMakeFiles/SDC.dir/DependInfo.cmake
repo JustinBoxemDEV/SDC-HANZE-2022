@@ -8,8 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/main.cpp" "CMakeFiles/SDC.dir/src/main.cpp.o" "gcc" "CMakeFiles/SDC.dir/src/main.cpp.o.d"
-  "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/sub/Test.cpp" "CMakeFiles/SDC.dir/src/sub/Test.cpp.o" "gcc" "CMakeFiles/SDC.dir/src/sub/Test.cpp.o.d"
+  "/home/justin/Desktop/SDC/SDC-HANZE-2022/src/camera/cameraCapture.cpp" "CMakeFiles/SDC.dir/src/camera/cameraCapture.cpp.o" "gcc" "CMakeFiles/SDC.dir/src/camera/cameraCapture.cpp.o.d"
+  "/home/justin/Desktop/SDC/SDC-HANZE-2022/src/main.cpp" "CMakeFiles/SDC.dir/src/main.cpp.o" "gcc" "CMakeFiles/SDC.dir/src/main.cpp.o.d"
+  "/home/justin/Desktop/SDC/SDC-HANZE-2022/src/sub/Test.cpp" "CMakeFiles/SDC.dir/src/sub/Test.cpp.o" "gcc" "CMakeFiles/SDC.dir/src/sub/Test.cpp.o.d"
   )
 
 # Targets to which this target links.

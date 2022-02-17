@@ -26,7 +26,8 @@
 #include <iostream>
 #include <filesystem>
 #include <string>
-#include <libsocketcan.h>
+#include "camera/cameraCapture.h"
+//#include <libsocketcan.h>
 
 using namespace cv;
 using namespace std;
@@ -40,11 +41,14 @@ void thresh_callback(int, void* );
 
 void testCAN(){
     int * result;
-    cout << can_get_state("can0", result) << endl; 	
+    //cout << can_get_state("can0", result) << endl; 	
 }
 
 int main( int argc, char** argv )
 {
+    CameraCapture cameraCapture;
+    cameraCapture.ProcessFeed();
+
     samples::addSamplesDataSearchPath(fs::current_path().string() + "/images");
     
     testCAN();
