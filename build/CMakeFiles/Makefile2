@@ -837,12 +837,12 @@ CMakeFiles/ContinuousSubmit.dir/clean:
 CMakeFiles/SDC.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDC.dir/build.make CMakeFiles/SDC.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDC.dir/build.make CMakeFiles/SDC.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=1,2,3 "Built target SDC"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=1,2,3,4 "Built target SDC"
 .PHONY : CMakeFiles/SDC.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/SDC.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/SDC.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles 0
 .PHONY : CMakeFiles/SDC.dir/rule

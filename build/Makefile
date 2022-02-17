@@ -523,6 +523,30 @@ SDC/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDC.dir/build.make CMakeFiles/SDC.dir/build
 .PHONY : SDC/fast
 
+src/ComputerVision/computervision.o: src/ComputerVision/computervision.cpp.o
+.PHONY : src/ComputerVision/computervision.o
+
+# target to build an object file
+src/ComputerVision/computervision.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDC.dir/build.make CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o
+.PHONY : src/ComputerVision/computervision.cpp.o
+
+src/ComputerVision/computervision.i: src/ComputerVision/computervision.cpp.i
+.PHONY : src/ComputerVision/computervision.i
+
+# target to preprocess a source file
+src/ComputerVision/computervision.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDC.dir/build.make CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.i
+.PHONY : src/ComputerVision/computervision.cpp.i
+
+src/ComputerVision/computervision.s: src/ComputerVision/computervision.cpp.s
+.PHONY : src/ComputerVision/computervision.s
+
+# target to generate assembly for a file
+src/ComputerVision/computervision.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SDC.dir/build.make CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.s
+.PHONY : src/ComputerVision/computervision.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -611,6 +635,9 @@ help:
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
 	@echo "... SDC"
+	@echo "... src/ComputerVision/computervision.o"
+	@echo "... src/ComputerVision/computervision.i"
+	@echo "... src/ComputerVision/computervision.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

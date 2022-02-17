@@ -69,10 +69,24 @@ include CMakeFiles/SDC.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/SDC.dir/flags.make
 
+CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o: CMakeFiles/SDC.dir/flags.make
+CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o: ../src/ComputerVision/computervision.cpp
+CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o: CMakeFiles/SDC.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o -MF CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o.d -o CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o -c /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.cpp
+
+CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.cpp > CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.i
+
+CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.cpp -o CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.s
+
 CMakeFiles/SDC.dir/src/main.cpp.o: CMakeFiles/SDC.dir/flags.make
 CMakeFiles/SDC.dir/src/main.cpp.o: ../src/main.cpp
 CMakeFiles/SDC.dir/src/main.cpp.o: CMakeFiles/SDC.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/SDC.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/SDC.dir/src/main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SDC.dir/src/main.cpp.o -MF CMakeFiles/SDC.dir/src/main.cpp.o.d -o CMakeFiles/SDC.dir/src/main.cpp.o -c /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/main.cpp
 
 CMakeFiles/SDC.dir/src/main.cpp.i: cmake_force
@@ -86,7 +100,7 @@ CMakeFiles/SDC.dir/src/main.cpp.s: cmake_force
 CMakeFiles/SDC.dir/src/sub/Test.cpp.o: CMakeFiles/SDC.dir/flags.make
 CMakeFiles/SDC.dir/src/sub/Test.cpp.o: ../src/sub/Test.cpp
 CMakeFiles/SDC.dir/src/sub/Test.cpp.o: CMakeFiles/SDC.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/SDC.dir/src/sub/Test.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/SDC.dir/src/sub/Test.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SDC.dir/src/sub/Test.cpp.o -MF CMakeFiles/SDC.dir/src/sub/Test.cpp.o.d -o CMakeFiles/SDC.dir/src/sub/Test.cpp.o -c /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/sub/Test.cpp
 
 CMakeFiles/SDC.dir/src/sub/Test.cpp.i: cmake_force
@@ -99,12 +113,14 @@ CMakeFiles/SDC.dir/src/sub/Test.cpp.s: cmake_force
 
 # Object files for target SDC
 SDC_OBJECTS = \
+"CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o" \
 "CMakeFiles/SDC.dir/src/main.cpp.o" \
 "CMakeFiles/SDC.dir/src/sub/Test.cpp.o"
 
 # External object files for target SDC
 SDC_EXTERNAL_OBJECTS =
 
+SDC: CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o
 SDC: CMakeFiles/SDC.dir/src/main.cpp.o
 SDC: CMakeFiles/SDC.dir/src/sub/Test.cpp.o
 SDC: CMakeFiles/SDC.dir/build.make
@@ -124,7 +140,7 @@ SDC: /usr/local/lib/libopencv_flann.so.4.5.5
 SDC: /usr/local/lib/libopencv_imgproc.so.4.5.5
 SDC: /usr/local/lib/libopencv_core.so.4.5.5
 SDC: CMakeFiles/SDC.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable SDC"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable SDC"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/SDC.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

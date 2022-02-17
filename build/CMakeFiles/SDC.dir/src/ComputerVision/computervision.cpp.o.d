@@ -1,13 +1,9 @@
-CMakeFiles/SDC.dir/src/main.cpp.o: \
- /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/main.cpp \
- /usr/include/stdc-predef.h /usr/local/include/libsocketcan.h \
- /usr/local/include/can_netlink.h /usr/include/linux/types.h \
- /usr/include/asm/types.h /usr/include/asm-generic/types.h \
- /usr/include/asm-generic/int-ll64.h /usr/include/asm/bitsperlong.h \
- /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/local/include/opencv4/opencv2/imgproc.hpp \
+CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o: \
+ /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.cpp \
+ /usr/include/stdc-predef.h \
+ /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.h \
+ /usr/local/include/opencv4/opencv2/opencv.hpp \
+ /usr/local/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/local/include/opencv4/opencv2/core.hpp \
  /usr/local/include/opencv4/opencv2/core/cvdef.h \
  /usr/local/include/opencv4/opencv2/core/version.hpp \
@@ -73,7 +69,6 @@ CMakeFiles/SDC.dir/src/main.cpp.o: \
  /usr/include/c++/11.1.0/bits/predefined_ops.h \
  /usr/include/c++/11.1.0/bits/range_access.h \
  /usr/local/include/opencv4/opencv2/core/base.hpp \
- /usr/local/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/include/c++/11.1.0/climits \
  /usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/include-fixed/limits.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/include-fixed/syslimits.h \
@@ -242,8 +237,6 @@ CMakeFiles/SDC.dir/src/main.cpp.o: \
  /usr/local/include/opencv4/opencv2/core/optim.hpp \
  /usr/local/include/opencv4/opencv2/core/ovx.hpp \
  /usr/local/include/opencv4/opencv2/core/cvdef.h \
- /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp \
- /usr/local/include/opencv4/opencv2/opencv.hpp \
  /usr/local/include/opencv4/opencv2/calib3d.hpp \
  /usr/local/include/opencv4/opencv2/features2d.hpp \
  /usr/local/include/opencv4/opencv2/flann/miniflann.hpp \
@@ -307,6 +300,8 @@ CMakeFiles/SDC.dir/src/main.cpp.o: \
  /usr/local/include/opencv4/opencv2/highgui.hpp \
  /usr/local/include/opencv4/opencv2/imgcodecs.hpp \
  /usr/local/include/opencv4/opencv2/videoio.hpp \
+ /usr/local/include/opencv4/opencv2/imgproc.hpp \
+ /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp \
  /usr/local/include/opencv4/opencv2/ml.hpp \
  /usr/local/include/opencv4/opencv2/ml/ml.inl.hpp \
  /usr/local/include/opencv4/opencv2/objdetect.hpp \
@@ -339,5 +334,4 @@ CMakeFiles/SDC.dir/src/main.cpp.o: \
  /usr/local/include/opencv4/opencv2/stitching/detail/camera.hpp \
  /usr/local/include/opencv4/opencv2/video.hpp \
  /usr/local/include/opencv4/opencv2/video/tracking.hpp \
- /usr/local/include/opencv4/opencv2/video/background_segm.hpp \
- /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.h
+ /usr/local/include/opencv4/opencv2/video/background_segm.hpp

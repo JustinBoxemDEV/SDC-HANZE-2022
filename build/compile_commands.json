@@ -1,6 +1,11 @@
 [
 {
   "directory": "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build",
+  "command": "/usr/bin/c++  -isystem /usr/local/include/opencv4 -g -std=gnu++17 -o CMakeFiles/SDC.dir/src/ComputerVision/computervision.cpp.o -c /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.cpp",
+  "file": "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/ComputerVision/computervision.cpp"
+},
+{
+  "directory": "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build",
   "command": "/usr/bin/c++  -isystem /usr/local/include/opencv4 -g -std=gnu++17 -o CMakeFiles/SDC.dir/src/main.cpp.o -c /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/main.cpp",
   "file": "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/src/main.cpp"
 },
