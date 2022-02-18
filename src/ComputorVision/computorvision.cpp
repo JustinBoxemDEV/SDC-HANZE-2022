@@ -16,21 +16,23 @@ cv::Mat ComputorVision::DetectEdges(cv::Mat src){
 cv::Mat ComputorVision::MaskImage(cv::Mat src){
     cv::Mat result;
     cv::Mat mask = cv::Mat::zeros(src.size(), src.type());
-    cv::Point pts[4] = {
+    cv::Point pts[6] = {
         cv::Point(0, 720),
-        cv::Point(420, 580),
-        cv::Point(1060, 580),
+        cv::Point(0, 720-128),
+        cv::Point(1280-768, 350),
+        cv::Point(1280-512, 350),
+        cv::Point(1280, 720-128),
         cv::Point(1280, 720)
     };
 
-    cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0, 0));
-    cv::bitwise_and(src, mask, result);
+    cv::fillConvexPoly(mask, pts, 6, cv::Scalar(255, 0,0));
+    cv::bitwise_and(mask, src , result);
     return result;
 }
 
 std::vector<cv::Vec4i> ComputorVision::HoughLines(cv::Mat src){
     std::vector<cv::Vec4i> lines;
-    cv::HoughLinesP(src, lines, 2, CV_PI/180, 100, 20, 5 );
+    cv::HoughLinesP(src, lines, 2, CV_PI/180, 100, 50, 10);
     return lines;
 }
 
@@ -45,7 +47,7 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
 
         double slope = (static_cast<double>(end.y) - static_cast<double>(start.y))/ (static_cast<double>(end.x) - static_cast<double>(start.x) + 0.00001);
         double yIntercept = static_cast<double>(start.y) - (slope * static_cast<double>(start.x));
-
+        
         if(slope < 0){
           left.push_back(cv::Vec2f(slope, yIntercept));
         }else{
@@ -57,7 +59,6 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
     cv::Vec2f leftAverage = averageVec2Vector(left);
     cv::Vec4i leftLine = GeneratePoints(src, leftAverage);
     cv::Vec4i rightLine = GeneratePoints(src, rightAverage);
-
 
     std::vector<cv::Vec4i> result(2);
     result[0] = leftLine; 
@@ -88,13 +89,11 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
 }
 
 cv::Mat ComputorVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines){
-  cv::Mat linesImage = cv::Mat::zeros(src.size(), src.type());
-
   for(auto line : lines){
     cv::Point start = cv::Point(line[0], line[1]);
     cv::Point end = cv::Point(line[2], line[3]);
 
-    cv::line(linesImage, start, end, (255, 0, 0), 10);
+    cv::line(src, start, end, cv::Scalar(0,0,255), 3, cv::LINE_AA);
   }
-  return linesImage;
+  return src;
 }
