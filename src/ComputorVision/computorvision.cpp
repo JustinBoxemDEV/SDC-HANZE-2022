@@ -9,23 +9,21 @@ cv::Mat ComputorVision::BlurImage(cv::Mat src){
 
 cv::Mat ComputorVision::DetectEdges(cv::Mat src){
     cv::Mat result;
-    cv::Canny(src, result, 250, 3*3, 3 );
+    cv::Canny(src, result, 100, 3*3, 3 );
     return result;
 }
 
 cv::Mat ComputorVision::MaskImage(cv::Mat src){
     cv::Mat result;
     cv::Mat mask = cv::Mat::zeros(src.size(), src.type());
-    cv::Point pts[6] = {
-        cv::Point(0, 720),
-        cv::Point(0, 720-128),
-        cv::Point(1280-768, 350),
-        cv::Point(1280-512, 350),
-        cv::Point(1280, 720-128),
-        cv::Point(1280, 720)
+    cv::Point pts[4] = {
+        cv::Point(300, 400),
+        cv::Point(1280-768, 720-350),
+        cv::Point(1280-300, 720-350),
+        cv::Point(1280-300, 400),
     };
 
-    cv::fillConvexPoly(mask, pts, 6, cv::Scalar(255, 0,0));
+    cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
     cv::bitwise_and(mask, src , result);
     return result;
 }
@@ -82,7 +80,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * (3/5)); //this defines height in image (inversed)
+    int y2 = int(y1 * (float(2)/5)); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);

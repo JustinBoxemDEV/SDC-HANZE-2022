@@ -9,37 +9,47 @@ namespace fs = std::filesystem;
 int main( int argc, char** argv )
 {
     cv::samples::addSamplesDataSearchPath("E:\\Development\\Stage\\SDC-HANZE-2022\\images");
-    cv::Mat src = cv::imread( cv::samples::findFile( "highway.jpg" ) );
-    if( src.empty() )
-    {
-        std::cout << "Could not open or find the image!\n" << std::endl;
-        std::cout << "Usage: " << argv[0] << " <Input image>" << std::endl;
-        return -1;
-    }
+
+    cv::Mat src;
+    cv::VideoCapture cap(cv::samples::findFile( "testvid.mp4" ));
 
     ComputorVision cVision;
-    cv::Mat grayScaleImage;
-    cv::cvtColor(src, grayScaleImage, cv::COLOR_RGB2GRAY);
 
-    cv::Mat denoisedImage = cVision.BlurImage(grayScaleImage);
-    cv::Mat edgeMapImage = cVision.DetectEdges(denoisedImage);
+    if (!cap.isOpened()) {
+        return -1;
+    }
+    for (;;)
+    {
+        cap.read(src);
+        if (src.empty()) {
+            break;
+        }
 
-    cv::namedWindow("Edge Map");
-    imshow("Edge Map", edgeMapImage);
-   
-    cv::Mat maskedImage = cVision.MaskImage(edgeMapImage);
+        cv::Mat grayScaleImage;
+        cv::cvtColor(src, grayScaleImage, cv::COLOR_RGB2GRAY);
 
-    cv::namedWindow("Mask");
-    imshow("Mask", maskedImage);
+        cv::Mat denoisedImage = cVision.BlurImage(grayScaleImage);
+        cv::Mat edgeMapImage = cVision.DetectEdges(denoisedImage);
 
-    std::vector<cv::Vec4i> houghLines = cVision.HoughLines(maskedImage);
-    std::vector<cv::Vec4i> averagedLines = cVision.AverageLines(src, houghLines);
+        cv::namedWindow("Edge Map");
+        imshow("Edge Map", edgeMapImage);
+    
+        cv::Mat maskedImage = cVision.MaskImage(edgeMapImage);
 
-    cv::Mat linesImage = cVision.PlotLaneLines(src, averagedLines);
+        cv::namedWindow("Mask");
+        imshow("Mask", maskedImage);
 
-    cv::namedWindow("Lanes");
-    imshow("Lanes", linesImage);
-   
-    cv::waitKey(0);
+        std::vector<cv::Vec4i> houghLines = cVision.HoughLines(maskedImage);
+        std::vector<cv::Vec4i> averagedLines = cVision.AverageLines(src, houghLines);
+
+        cv::Mat linesImage = cVision.PlotLaneLines(src, averagedLines);
+
+        cv::namedWindow("Lanes");
+        imshow("Lanes", linesImage);
+    
+
+        if (cv::waitKey(1000/60) >= 0)
+            break;
+    }
     return 0;
 }
