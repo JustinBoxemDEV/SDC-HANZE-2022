@@ -116,7 +116,7 @@ for e in tqdm(range(n_episodes)):
     if total_steps >= agent.batch_size:
         agent.train()
 
-# Watch the agent play (wrapper import doesn't work for me?)
+# Watch the agent play
 def make_video():
     env_to_wrap = gym.make('CartPole-v1')
     env = wrappers.Monitor(env_to_wrap, 'videos', force = True)
