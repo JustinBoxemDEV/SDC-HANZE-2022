@@ -8,27 +8,20 @@
 namespace fs = std::filesystem;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename){
-   cv::VideoCapture* capture;
+    cv::VideoCapture* capture;
 
-    if(cameraID!=0)
-    {
+    if(cameraID!=0){
         capture = new cv::VideoCapture(cameraID);
         capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
-     
-       capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
-    }
-    else if(filename!="")
-    {
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+    }else if(filename!=""){
         std::cout << filename << std::endl;
         capture = new cv::VideoCapture(filename);
-    }
-    else
-    {
+    }else{
         capture = new cv::VideoCapture(0);
 
         // Camera detection check
-        if(!capture->isOpened())
-        {
+        if(!capture->isOpened()){
             std::cout << "NO CAMERA DETECTED!" << std::endl;
             return;
         }
@@ -39,15 +32,12 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename){
 
     // Define total frames and start of a counter for FPS calculation
     int totalFrames = 0;
-     
-    time_t start, end;
 
+    time_t start, end;
     time(&start);
 
     // Camera feed
-    while (capture->read(frame))
-    {
-        //call 2 robin's function
+    while (capture->read(frame)){
         totalFrames++;
 
         ProcessImage(frame);
