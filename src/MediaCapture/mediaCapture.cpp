@@ -3,11 +3,9 @@
 #include "mediaCapture.h"
 #include <time.h>
 #include <string>
-
 #include <filesystem>
 
 namespace fs = std::filesystem;
-
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename){
    cv::VideoCapture* capture;
@@ -68,21 +66,18 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename){
 
     // Estimate the FPS based on frames / elapsed time in seconds
     int fps  = totalFrames / seconds;
-    std::cout << "Estimated frames per second : " << fps << std::endl;
-    
+    std::cout << "Estimated frames per second : " << fps << std::endl; 
 }
 
 cv::Mat MediaCapture::LoadImage(std::string filepath){
     std::string path = fs::current_path().string() + "/assets/images/" + std::string(filepath);
     cv::Mat img = imread(path, cv::IMREAD_COLOR);
-    if(!fs::exists(path))
-    {
+    if(!fs::exists(path)){
         std::cout << "The requested file cannot be found in /assets/images/!" << std::endl;
         return img;
     }
 
-    if(img.empty())
-    {
+    if(img.empty()){
         std::cout << "Could not read the image: " << path << std::endl;
         return img;
     }
