@@ -21,6 +21,10 @@ jobs:
     - name: Update the system
       # Use the apt package manager to ensure all default packages are up-to-date
       run: sudo apt update
+   
+    - name: Upgrade the system
+      # With all packages updated, some packages might need upgrading to newer versions
+      run: sudo apt upgrade
       
     - name: Install OpenCV
       # Grab the latest versions of OpenCV from the libopencv-dev and python3-opencv repositories
