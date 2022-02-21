@@ -30,7 +30,7 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
 
 std::vector<cv::Vec4i> ComputorVision::HoughLines(cv::Mat src){
     std::vector<cv::Vec4i> lines;
-    cv::HoughLinesP(src, lines, 2, CV_PI/180, 100, 50, 10);
+    cv::HoughLinesP(src, lines, 2, CV_PI/180, 100, 50, 5);
     return lines;
 }
 
@@ -42,6 +42,10 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
     {
         cv::Point start = cv::Point(line[0], line[1]);
         cv::Point end = cv::Point(line[2], line[3]);
+
+        if(start.x == end.x){
+            continue;
+        }
 
         double slope = (static_cast<double>(end.y) - static_cast<double>(start.y))/ (static_cast<double>(end.x) - static_cast<double>(start.x) + 0.00001);
         double yIntercept = static_cast<double>(start.y) - (slope * static_cast<double>(start.x));

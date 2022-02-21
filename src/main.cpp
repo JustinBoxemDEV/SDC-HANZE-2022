@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 
 int main( int argc, char** argv )
 {
-    cv::samples::addSamplesDataSearchPath("E:\\Development\\Stage\\SDC-HANZE-2022\\images");
+    cv::samples::addSamplesDataSearchPath("/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/images");
 
     cv::Mat src;
     cv::VideoCapture cap(cv::samples::findFile( "testvid.mp4" ));
