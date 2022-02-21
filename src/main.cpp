@@ -49,11 +49,11 @@ int main( int argc, char** argv )
     CameraCapture cameraCapture;
     cameraCapture.ProcessFeed();
 
-    samples::addSamplesDataSearchPath(fs::current_path().string() + "/images");
+   // samples::addSamplesDataSearchPath(fs::current_path().string() + "/images");
     
     testCAN();
 
-    Mat src = imread( samples::findFile( "megamind.jpg" ) );
+    Mat src = imread("C:/Users/ShandorPC/Documents/GitHub/SDC/images/megamind.jpg");
     if( src.empty() )
     {
       cout << "Could not open or find the image!\n" << endl;
@@ -70,6 +70,8 @@ int main( int argc, char** argv )
     thresh_callback( 0, 0 );
     waitKey();
     return 0;
+    
+
 }
 void thresh_callback(int, void* )
 {
