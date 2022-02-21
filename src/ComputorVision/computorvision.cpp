@@ -84,18 +84,29 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * (float(2)/5)); //this defines height in image (inversed)
+    int y2 = int(y1 * (float(4)/7)); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
 }
 
 cv::Mat ComputorVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines){
-  for(auto line : lines){
-    cv::Point start = cv::Point(line[0], line[1]);
-    cv::Point end = cv::Point(line[2], line[3]);
+    for(auto line : lines){
+        cv::Point start = cv::Point(line[0], line[1]);
+        cv::Point end = cv::Point(line[2], line[3]);
 
-    cv::line(src, start, end, cv::Scalar(0,0,255), 3, cv::LINE_AA);
-  }
-  return src;
+        cv::line(src, start, end, cv::Scalar(0,0,255), 3, cv::LINE_AA);
+    }
+
+    cv::Point startL1 = cv::Point(lines[0][0], lines[0][1]);
+    cv::Point endL1 = cv::Point( lines[0][2],  lines[0][3]);
+
+    cv::Point startL2 = cv::Point(lines[1][0], lines[1][1]);
+    cv::Point endL2 = cv::Point( lines[1][2],  lines[1][3]);
+    
+    cv::Point centerLineStart = (startL1 + startL2) / 2;
+    cv::Point centerLineEnd = (endL1 + endL2) / 2;
+
+    cv::line(src, centerLineStart, centerLineEnd, cv::Scalar(255,0,0) , 3, cv::LINE_AA);
+    return src;
 }

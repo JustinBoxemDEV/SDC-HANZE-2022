@@ -15,6 +15,9 @@ class ComputorVision{
         std::vector<cv::Vec4i> HoughLines(cv::Mat src);
         std::vector<cv::Vec4i> AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines);
         cv::Mat PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines);
+
+        
+
 };
 
 #endif

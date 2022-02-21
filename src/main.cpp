@@ -41,7 +41,6 @@ int main( int argc, char** argv )
 
         std::vector<cv::Vec4i> houghLines = cVision.HoughLines(maskedImage);
         std::vector<cv::Vec4i> averagedLines = cVision.AverageLines(src, houghLines);
-
         cv::Mat linesImage = cVision.PlotLaneLines(src, averagedLines);
 
         cv::namedWindow("Lanes");
