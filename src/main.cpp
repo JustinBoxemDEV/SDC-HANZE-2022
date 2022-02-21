@@ -26,7 +26,7 @@
 #include <iostream>
 #include <filesystem>
 #include <string>
-#include "camera/cameraCapture.h"
+#include "mediaCapture/mediaCapture.h"
 //#include <libsocketcan.h>
 
 using namespace cv;
@@ -46,31 +46,113 @@ void testCAN(){
 
 int main( int argc, char** argv )
 {
-    CameraCapture cameraCapture;
-    cameraCapture.ProcessFeed();
-
-    samples::addSamplesDataSearchPath(fs::current_path().string() + "/images");
-    
-    testCAN();
-
-    Mat src = imread( samples::findFile( "megamind.jpg" ) );
-    if( src.empty() )
+    // --help Output, describing basic usage to the user
+    if(argc==1)
     {
-      cout << "Could not open or find the image!\n" << endl;
-      cout << "Usage: " << argv[0] << " <Input image>" << endl;
-      return -1;
+        MediaCapture mediaCapture;
+        mediaCapture.ProcessFeed(0,"");
+        return 0;
     }
-    cvtColor( src, src_gray, COLOR_BGR2GRAY );
-    blur( src_gray, src_gray, Size(3,3) );
-    const char* source_window = "Source";
-    namedWindow( source_window );
-    imshow( source_window, src );
-    const int max_thresh = 255;
-    createTrackbar( "Canny thresh:", source_window, &thresh, max_thresh, thresh_callback );
-    thresh_callback( 0, 0 );
-    waitKey();
-    return 0;
+    if(string(argv[1])=="-help" or string(argv[1])=="-h")
+    {
+        cout << "Usage: SPECIFY RESOURCE TO USE" << endl;
+        cout << "-video -camera [CAMERA_ID]" << endl;
+        cout << "-video -filename [FILE]" << endl;
+        cout << "-image [FILE]" << endl;
+        return -1;
+    }
+    else
+    {
+        // The user has told us he wants to use media feed
+        if(string(argv[1])=="-video")
+        {
+            if(argc==2)
+            {
+                cout << "Usage:" << endl; 
+                cout << "-video -camera [CAMERA_ID]" << endl;
+                cout << "-video -filename [FILE]" << endl;
+                return -1;
+            }
+            if(argc==3)
+            {
+                cout << "Usage:" << endl;
+                if(string(argv[2])=="-camera")
+                {
+                    cout << "-video -camera [CAMERA_ID]" << endl;
+                    return -1;
+                }
+                if(string(argv[2])=="-filename")
+                {
+                    // No video file was provided to look for, so we are going to present a list of names
+                    cout << "Available videos to load using -filename [FILE]" << endl;
+                    string path = fs::current_path().string() + "/assets/videos/";
+                    for (const auto & file : fs::directory_iterator(path))
+                        //cout << file << endl;
+                        cout << fs::path(file).filename().string() << endl;
+                    return -1;
+                }
+            }
+            if(argc==4)
+            {   
+                if(string(argv[2])=="-filename")
+                {
+                    string path = fs::current_path().string() + "/assets/videos/" + string(argv[3]);
+                    if(!fs::exists(path))
+                    {
+                        cout << "The requested file cannot be found in /assets/videos!" << endl;
+                        return -1;
+                    }
+                    MediaCapture mediaCapture;
+                    mediaCapture.ProcessFeed(0,argv[3]);
+                    return 0;
+                }
+                if(string(argv[2])=="-camera")
+                {
+                    MediaCapture mediaCapture;
+                    mediaCapture.ProcessFeed(stoi(argv[3]),"");
+                    return 0;
+                }
+                else
+                {
+                    MediaCapture mediaCapture;
+                    mediaCapture.ProcessFeed(0,argv[3]);
+                    return 0;
+                }
+            }
+        }
+        if(string(argv[1])=="-image")
+        {
+            // An image was provided to look for
+            if(argc==3)
+            {
+                samples::addSamplesDataSearchPath(fs::current_path().string() + "/assets/images/");
+                Mat src = imread( samples::findFile(string(argv[2])));
+                if( src.empty() )
+                {
+                    cout << "Could not open or find the image!\n" << endl;
+                    cout << "Check the provided image name (include extension)" << endl;
+                    return -1;
+                }
+               
+                return 0;
+            }
+            // No image was provided to look for, so we are going to present a list of names
+            cout << "Available images to load using -image [NAME]" << endl;
+            string path = fs::current_path().string() + "/assets/images/";
+            for (const auto & file : fs::directory_iterator(path))
+                //cout << file << endl;
+                cout << fs::path(file).filename().string() << endl;
+            return -1;
+        }
+        // The parameter that the user provided is not compatible with our program | Provide error + help message
+        else
+        {
+            cout << "ERROR: " << string(argv[1]) << " is not recognised. Use -help for information" << endl;
+            return -1;
+        }
+    }
 }
+
 void thresh_callback(int, void* )
 {
     Mat canny_output;
