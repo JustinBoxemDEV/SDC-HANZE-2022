@@ -8,7 +8,7 @@
 #include "opencv2/imgproc.hpp"
 #include <filesystem>
 #include <string>
-#include "mediaCapture/mediaCapture.h"
+#include "MediaCapture/mediaCapture.h"
 
 namespace fs = std::filesystem;
 
