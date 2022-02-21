@@ -1,13 +1,14 @@
 import numpy as np
 import gym
 import tensorflow as tf
+from tqdm import tqdm
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Activation
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.metrics import mean_squared_error
 from matplotlib import pyplot as plt
-from gym import Wrapper
+from gym import wrappers
 
 class DQNAgent:
     def __init__(self, state_size, action_size):
@@ -51,7 +52,7 @@ class DQNAgent:
     # espilon greedy algorithm
     def update_exploration_probability(self):
         self.exploration_proba = self.exploration_proba * np.exp(-self.exploration_proba_decay)
-        print(self.exploration_proba)
+        # print(self.exploration_proba)
     
     # At each time step, we store the corresponding experience
     def store_episode(self,current_state, action, reward, next_state, done):
@@ -96,7 +97,7 @@ max_iteration_ep = 50
 agent = DQNAgent(state_size=state_size,action_size=action_size)
 total_steps = 0
 
-for e in range(n_episodes):
+for e in tqdm(range(n_episodes)):
     current_state = env.reset()
     current_state = np.array([current_state])
     for step in range(max_iteration_ep):
@@ -118,7 +119,7 @@ for e in range(n_episodes):
 # Watch the agent play (wrapper import doesn't work for me?)
 def make_video():
     env_to_wrap = gym.make('CartPole-v1')
-    env = Wrapper.Monitor(env_to_wrap, 'videos', force = True)
+    env = wrappers.Monitor(env_to_wrap, 'videos', force = True)
     rewards = 0
     steps = 0
     done = False
