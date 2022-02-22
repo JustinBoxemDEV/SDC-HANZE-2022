@@ -4,6 +4,6 @@
 
 TEST(InitializationTests, VideoCaptureObjectTest)
 {
-    cv::VideoCapture* vidcap = nullptr;
+    cv::VideoCapture* vidcap = new cv::VideoCapture();
     ASSERT_NE(vidcap, nullptr);
 }
