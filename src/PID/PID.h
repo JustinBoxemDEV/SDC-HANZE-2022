@@ -1,4 +1,4 @@
-#ifdef PID_H
+#ifndef PID_H
 #define PID_H
 
 typedef struct PIDController {
@@ -8,8 +8,8 @@ typedef struct PIDController {
 	double gd;
 	//waardes moeten nog gevonden worden
 	double lowPassFitler;
-	double minOutputLimit = -1;
-	double maxOutputLimit = 1;
+	double minOutputLimit;//-1
+	double maxOutputLimit;//1
 	double minLimitI;
 	double maxLimitI;
 	// tijd is seconden
@@ -26,6 +26,6 @@ typedef struct PIDController {
 };
 
 void PIDController_Init(PIDController pid);
-double PIDController_update(PIDController pid, double setpoint, double mesurment)
+double PIDController_update(PIDController pid, double setpoint, double mesurment);
 
 #endif 
