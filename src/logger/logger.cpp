@@ -81,7 +81,6 @@ bool Logger::existsFile(std::string fileName) {
 void Logger::createFile(std::string fileName) {
     std::string directoryPath = getCurrentPath();
     Logger::Level currentLevel = Logger::level;
-    std::cout << currentLevel << std::endl;
 
     if(!std::filesystem::is_directory(directoryPath)) {
         std::filesystem::create_directory(directoryPath);
@@ -96,11 +95,8 @@ void Logger::createFile(std::string fileName) {
         const char *path = const_cast<char*>(filePath.c_str());
         std::ofstream file(path);
         Logger::setLevel(SUCCESS);
-        std::cout << Logger::level << std::endl;
         Logger::log("File \033[1;37m"+fileName+"\033[0m successfully created!");
         Logger::setLevel(currentLevel);
-        std::cout << Logger::level << std::endl;
-        std::cout << currentLevel << std::endl;
         Logger::activeFile = fileName;
     };
 };

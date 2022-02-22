@@ -3,7 +3,20 @@
 
 int main() {
     Logger logger;
-    logger.log("Hello bitch");
-    logger.error("ERROR");
+
+    logger.debug("Debug log");
+    logger.error("Error log");
+    logger.info("Info log");
+    logger.success("Success log");
+    logger.log("Default log");
+
     logger.createFile();
+    logger.debug("Debug log");
+    logger.error("Error log");
+    logger.info("Info log");
+    logger.success("Success log");
+    logger.log("Default log");
+    
+    logger.createFile("Laurens");
+    logger.log("125 kilo");
 }
