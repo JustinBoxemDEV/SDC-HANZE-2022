@@ -17,10 +17,10 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     cv::Mat result;
     cv::Mat mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
-        cv::Point(300, 400),
-        cv::Point(1280-768, 720-350),
-        cv::Point(1280-300, 720-350),
-        cv::Point(1280-300, 400),
+        cv::Point(0, src.rows),
+        cv::Point(0, src.rows * 0.45),
+        cv::Point(src.cols, src.rows * 0.45),
+        cv::Point(src.cols, src.rows),
     };
 
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -84,7 +84,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * (float(4)/7)); //this defines height in image (inversed)
+    int y2 = int(y1 * (float(2)/5)); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
