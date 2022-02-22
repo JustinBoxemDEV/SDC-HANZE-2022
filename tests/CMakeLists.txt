@@ -9,12 +9,14 @@ set(Sources
 add_executable(${This} ${Sources})
 
 find_package(OpenCV REQUIRED)
+find_package(GTest REQUIRED)
 
 Include_directories(${OpenCV_INCLUDE_DIRS})
+Include_directories(${GTest_INCLUDE_DIRS})
 
 target_link_libraries(${This} PUBLIC
-    gtest_main
     Main
+    ${GTest_LIBS}
     ${OpenCV_LIBS}
 )
 
