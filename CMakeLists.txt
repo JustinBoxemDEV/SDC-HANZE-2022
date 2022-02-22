@@ -20,7 +20,6 @@ file(GLOB_RECURSE CPP_SOURCES ${MAIN_SOURCE_DIR}/*.cpp)
 add_library(${This} STATIC ${CPP_HEADERS} ${CPP_SOURCES})
 add_executable(SDC ${CPP_HEADERS} ${CPP_SOURCES})
 
-add_subdirectory(googletest)
 add_subdirectory(tests)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
