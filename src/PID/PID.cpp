@@ -1,47 +1,59 @@
 #include "PID.h";
+#include <iostream>
 
-void PIDController_Init(PIDController pid) {
-
-	pid.integrator = 0;
-	pid.prevError = 0;
-	pid.differentiator = 0;
-	pid.prevMesurement = 0;
-	pid.output = 0;
+void PIDController::PIDController_Init(PIDController) {
+	gp = 0.2;
+	gi = 0.05;
+	gd = 0.025;
+	
+	lowPassFitler = 0.02;
+	minOutputLimit = -1;
+	maxOutputLimit = 1;
+	minLimitI = -0.5;
+	maxLimitI = 0.5;
+	time = 0.5;
+	integrator = 0;
+	prevError = 0;
+	differentiator = 0;
+	prevMesurement = 0;
+	output = 0;
 }
 
-double PIDController_Update(PIDController pid, double setpoint, double mesurment) {
 
-	double error = setpoint - mesurment;
+double PIDController::PIDController_update(PIDController, double setpoint, double mesurement) {
 
-	pid.proportional = pid.gp * error;
-
+	double error = setpoint - mesurement;
+	
+	proportional = gp * error;
+	std::cout << "prop " << proportional << std::endl;// voor debugging
 
 	//calculate I and clamp
-	pid.integrator = pid.integrator + 0.5 * pid.gi * pid.time * (error + pid.prevError);
-	if (pid.integrator > pid.maxLimitI) {
+	integrator = integrator + 0.5 * gi * time * (error + prevError);
+	if (integrator > maxLimitI) {
 
-		pid.integrator = pid.maxLimitI;
+		integrator = maxLimitI;
 	}
-	else if (pid.integrator < pid.minLimitI) {
+	else if (integrator < minLimitI) {
 
-		pid.integrator = pid.maxLimitI;
+		integrator = maxLimitI;
 	}
-
+	std::cout << "inte " << integrator << std::endl;// voor debugging
 	
-	pid.differentiator = -(2.0 * pid.gd * (mesurment - pid.prevMesurement) + (2.0 * pid.lowPassFitler - pid.time) * pid.differentiator) / (2.0 * pid.lowPassFitler + pid.time);
-
+	differentiator = -(2.0 * gd * (mesurement - prevMesurement) + (2.0 * lowPassFitler - time) * differentiator) / (2.0 * lowPassFitler + time);
+	std::cout << "diff " << differentiator << std::endl;//voor debugging
 	//calculate output and clamp
-	pid.output = pid.proportional + pid.integrator + pid.differentiator;
-	if (pid.output > pid.maxOutputLimit) {
-		pid.output = pid.maxOutputLimit;
+	output = proportional + integrator + differentiator;
+	if (output > maxOutputLimit) {
+		output = maxOutputLimit;
 	}
-	else if (pid.output < pid.minOutputLimit) {
-		pid.output = pid.minOutputLimit;
+	else if (output < minOutputLimit) {
+		output = minOutputLimit;
 	}
 
 
-	pid.prevError = error;
-	pid.prevMesurement = mesurment;
+	prevError = error;
+	prevMesurement = mesurement;
 
-	return pid.output;
+	return output;
 }
+

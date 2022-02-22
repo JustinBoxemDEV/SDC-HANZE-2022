@@ -1,7 +1,7 @@
 #ifndef PID_H
 #define PID_H
 
-typedef struct PIDController {
+class PIDController {
 	//Gains (waardes moeten nog worden ingesteld)
 	double gp;
 	double gi;
@@ -14,7 +14,7 @@ typedef struct PIDController {
 	double maxLimitI;
 	// tijd is seconden
 	double time;
-	
+
 	double proportional;
 	double integrator;
 	double differentiator;
@@ -23,9 +23,9 @@ typedef struct PIDController {
 
 	double output;
 
+
+public:
+	void PIDController_Init(PIDController);
+	double PIDController_update(PIDController pid, double setpoint, double mesurment);
 };
-
-void PIDController_Init(PIDController pid);
-double PIDController_update(PIDController pid, double setpoint, double mesurment);
-
 #endif 

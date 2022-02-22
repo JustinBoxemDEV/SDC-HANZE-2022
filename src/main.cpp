@@ -27,6 +27,7 @@
 #include <filesystem>
 #include <string>
 #include "camera/cameraCapture.h"
+#include "PID/PID.h"
 //#include <libsocketcan.h>
 
 using namespace cv;
@@ -46,6 +47,23 @@ void testCAN(){
 
 int main( int argc, char** argv )
 {
+    int x = 0;
+    float y = -5;//verander dit
+    float out = 0;
+    PIDController pid{};
+    while ( x < 20) {
+        
+        pid.PIDController_Init(pid);
+        out = pid.PIDController_update(pid, 1, y);
+        y = y + out;
+        
+        
+        cout << out << endl;
+        x++;
+    }
+    //breakpoint om de waardes te kunnen zien 
+
+
     CameraCapture cameraCapture;
     cameraCapture.ProcessFeed();
 
