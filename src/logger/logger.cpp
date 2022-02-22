@@ -5,7 +5,7 @@
 
 Logger::Logger() {
     Logger::level = DEFAULT;
-}
+};
 
 void Logger::log(std::string message) {
     std::string messageLevel = "";
@@ -43,7 +43,7 @@ void Logger::log(std::string message) {
     if(!Logger::activeFile.empty()) {
         //std::cout << "Writing data to file "+activeFile << std::endl;
         writeToFile(messageLevel + message, activeFile);
-    }
+    };
 };
 
 void Logger::setLevel(Logger::Level level) {
@@ -70,13 +70,13 @@ void Logger::setLevel(Logger::Level level) {
 
 std::string Logger::getCurrentPath() {
     return (std::string) get_current_dir_name()+"/../logs/";
-}
+};
 
 bool Logger::existsFile(std::string fileName) {
     std::ifstream ifile;
     ifile.open(getCurrentPath()+fileName);
     return ifile ? true : false;
-}
+};
 
 void Logger::createFile(std::string fileName) {
     std::string directoryPath = getCurrentPath();
@@ -112,31 +112,31 @@ void Logger::warning(std::string message) {
     Logger::level = WARNING;
     Logger::log(message);
     Logger::level = DEFAULT;
-}
+};
 
 void Logger::error(std::string message) {
     Logger::level = ERROR;
     Logger::log(message);
     Logger::level = DEFAULT;
-}
+};
 
 void Logger::info(std::string message) {
     Logger::level = INFO;
     Logger::log(message);
     Logger::level = DEFAULT;
-}
+};
 
 void Logger::debug(std::string message) {
     Logger::level = DEBUG;
     Logger::log(message);
     Logger::level = DEFAULT;
-}
+};
 
 void Logger::success(std::string message) {
     Logger::level = SUCCESS;
     Logger::log(message);
     Logger::level = DEFAULT;
-}
+};
 
 void Logger::setActiveFile(std::string fileName) {
     Logger::Level currentLevel = Logger::level;
@@ -154,4 +154,4 @@ void Logger::setActiveFile(std::string fileName) {
 
 void Logger::resetActiveFile() {
     Logger::activeFile.clear();
-}
+};
