@@ -28,7 +28,8 @@ jobs:
       run: sudo apt install libopencv-dev python3-opencv
 
     - name: Install GoogleTest
-      # =
+      # Install the latest version of the GoogleTest apt package
+      # https://packages.ubuntu.com/bionic/libgtest-dev
       run: sudo apt install libgtest-dev
 
     - name: Configure CMake
