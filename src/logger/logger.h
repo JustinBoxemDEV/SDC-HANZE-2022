@@ -7,20 +7,18 @@ class Logger {
     public:
         Logger();
         enum Level { DEBUG, INFO, WARNING, ERROR, SUCCESS, DEFAULT };
-        void setLevel(enum Level);
-        void log(std::string message);
-        void createFile(std::string fileName = Time::currentDateTime());
-        void writeToFile(std::string data, std::string fileName);
-        void setActiveFile(std::string fileName);
-        void resetActiveFile();
-        void warning(std::string message);
-        void error(std::string message);
-        void success(std::string message);
-        void info(std::string message);
-        void debug(std::string message);
+        static void setLevel(enum Level);
+        static void log(std::string message);
+        static void createFile(std::string fileName = Time::currentDateTime());
+        static void writeToFile(std::string data, std::string fileName);
+        static void setActiveFile(std::string fileName);
+        static void resetActiveFile();
+        static void warning(std::string message);
+        static void error(std::string message);
+        static void success(std::string message);
+        static void info(std::string message);
+        static void debug(std::string message);
     private:
-        Level level;
-        std::string activeFile;
-        std::string getCurrentPath();
-        bool existsFile(std::string fileName);
+        static std::string getCurrentPath();
+        static bool existsFile(std::string fileName);
 };

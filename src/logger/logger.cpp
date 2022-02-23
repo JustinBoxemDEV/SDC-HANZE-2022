@@ -3,13 +3,16 @@
 #include <filesystem>
 #include <unistd.h>
 
+Logger::Level level;
+std::string activeFile;
+
 Logger::Logger() {
-    Logger::level = DEFAULT;
+    level = DEFAULT;
 };
 
 void Logger::log(std::string message) {
     std::string messageLevel = "";
-    switch(Logger::level) {
+    switch(level) {
         case DEBUG: {
             std::cout << "\033[1;37m[DEBUG]\t\t\033[0m " << Time::currentDateTime() << "\t " + message << std::endl;
             messageLevel = "[DEBUG]\t\t "+Time::currentDateTime()+": ";
@@ -40,7 +43,7 @@ void Logger::log(std::string message) {
             break; 
         };
     };
-    if(!Logger::activeFile.empty()) {
+    if(!activeFile.empty()) {
         //std::cout << "Writing data to file "+activeFile << std::endl;
         writeToFile(messageLevel + message, activeFile);
     };
@@ -49,22 +52,22 @@ void Logger::log(std::string message) {
 void Logger::setLevel(Logger::Level level) {
     switch(level) {
         case DEBUG:
-            Logger::level = DEBUG;
+            level = DEBUG;
             break;
         case INFO:
-            Logger::level = INFO;
+            level = INFO;
             break;
         case WARNING:
-            Logger::level = WARNING;
+            level = WARNING;
             break;
         case ERROR:
-            Logger::level = ERROR;
+            level = ERROR;
             break;
         case SUCCESS:
-            Logger::level = SUCCESS;
+            level = SUCCESS;
             break;
         case DEFAULT:
-            Logger::level = DEFAULT;
+            level = DEFAULT;
     };
 };
 
@@ -80,7 +83,7 @@ bool Logger::existsFile(std::string fileName) {
 
 void Logger::createFile(std::string fileName) {
     std::string directoryPath = getCurrentPath();
-    Logger::Level currentLevel = Logger::level;
+    Logger::Level currentLevel = level;
 
     if(!std::filesystem::is_directory(directoryPath)) {
         std::filesystem::create_directory(directoryPath);
@@ -97,7 +100,7 @@ void Logger::createFile(std::string fileName) {
         Logger::setLevel(SUCCESS);
         Logger::log("File \033[1;37m"+fileName+"\033[0m successfully created!");
         Logger::setLevel(currentLevel);
-        Logger::activeFile = fileName;
+        activeFile = fileName;
     };
 };
 
@@ -109,42 +112,42 @@ void Logger::writeToFile(std::string data, std::string fileName) {
 };
 
 void Logger::warning(std::string message) {
-    Logger::level = WARNING;
+    level = WARNING;
     Logger::log(message);
-    Logger::level = DEFAULT;
+    level = DEFAULT;
 };
 
 void Logger::error(std::string message) {
-    Logger::level = ERROR;
+    level = ERROR;
     Logger::log(message);
-    Logger::level = DEFAULT;
+    level = DEFAULT;
 };
 
 void Logger::info(std::string message) {
-    Logger::level = INFO;
+    level = INFO;
     Logger::log(message);
-    Logger::level = DEFAULT;
+    level = DEFAULT;
 };
 
 void Logger::debug(std::string message) {
-    Logger::level = DEBUG;
+    level = DEBUG;
     Logger::log(message);
-    Logger::level = DEFAULT;
+    level = DEFAULT;
 };
 
 void Logger::success(std::string message) {
-    Logger::level = SUCCESS;
+    level = SUCCESS;
     Logger::log(message);
-    Logger::level = DEFAULT;
+    level = DEFAULT;
 };
 
 void Logger::setActiveFile(std::string fileName) {
-    Logger::Level currentLevel = Logger::level;
+    Logger::Level currentLevel = level;
     if(existsFile(fileName)) {
         Logger::setLevel(SUCCESS);
         Logger::log("File \033[1;37m"+fileName+"\033[0m is active!");
         Logger::setLevel(currentLevel);
-        Logger::activeFile = fileName;
+        activeFile = fileName;
     } else {
         Logger::setLevel(ERROR);
         Logger::log("File \033[1;37m"+fileName+"\033[0m does not exist!");
@@ -153,5 +156,5 @@ void Logger::setActiveFile(std::string fileName) {
 };
 
 void Logger::resetActiveFile() {
-    Logger::activeFile.clear();
+    activeFile.clear();
 };
