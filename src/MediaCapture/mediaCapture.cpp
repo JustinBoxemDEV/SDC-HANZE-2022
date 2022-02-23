@@ -4,7 +4,8 @@
 #include <time.h>
 #include <string>
 #include <filesystem>
-
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 namespace fs = std::filesystem;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename){
@@ -76,23 +77,58 @@ cv::Mat MediaCapture::LoadImage(std::string filepath){
 
 void MediaCapture::ProcessImage(cv::Mat src){
     cv::Mat grayScaleImage;
-    cv::cvtColor(src, grayScaleImage, cv::COLOR_RGB2GRAY);
+    cv::Mat wipImage;
+    src.copyTo(wipImage);
+    cv::Mat denoisedImage = cVision.BlurImage(wipImage);
 
-    cv::Mat denoisedImage = cVision.BlurImage(grayScaleImage);
-    cv::Mat edgeMapImage = cVision.DetectEdges(denoisedImage);
+    cv::Mat hsv;
+    cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
+    
+    cv::Mat hsvFilter;
+    cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); //cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
+    
+    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)) );
+    cv::dilate( hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE,  cv::Size(12, 12)) ); 
 
-    cv::namedWindow("Edge Map");
-    imshow("Edge Map", edgeMapImage);
+    cv::dilate( hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)) ); 
+    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE,  cv::Size(12, 12)) );
 
+    cv::Mat edgeMapImage = cVision.DetectEdges(hsvFilter);
     cv::Mat maskedImage = cVision.MaskImage(edgeMapImage);
 
-    cv::namedWindow("Mask");
-    imshow("Mask", maskedImage);
+    // cv::Mat hsvMask;
+    // cv::bitwise_and(maskedImage, maskedImage, hsvMask, hsvFilter);
+
+    // imshow("Thresholded Image", hsvFilter); 
+    // imshow("mask", hsvMask); 
+    // imshow("maskiamge", maskedImage); 
 
     std::vector<cv::Vec4i> houghLines = cVision.HoughLines(maskedImage);
-    std::vector<cv::Vec4i> averagedLines = cVision.AverageLines(src, houghLines);
+    std::vector<cv::Vec4i> averagedLines = cVision.AverageLines(wipImage, houghLines);
 
-    cv::Mat linesImage = cVision.PlotLaneLines(src, averagedLines);
+    cv::Mat linesImage = cVision.PlotLaneLines(wipImage, averagedLines);
+
+    cv::Mat warped; 
+
+    cv::Point2f srcP[4] = {
+        cv::Point2f(averagedLines[0][2] , averagedLines[0][3]),       
+        cv::Point2f(averagedLines[1][2], averagedLines[1][3]),
+        cv::Point2f(averagedLines[1][0], averagedLines[1][1]),
+        cv::Point2f(averagedLines[0][0], averagedLines[0][1]),
+    };
+
+    cv::Point2f dstP[4] = {
+        cv::Point2f(src.cols * 0.2, 0),
+        cv::Point2f(src.cols * 0.8, 0), 
+        cv::Point2f(src.cols * 0.8, src.rows), 
+        cv::Point2f(src.cols * 0.2, src.rows),
+    };
+
+    cv::Mat homography = cv::getPerspectiveTransform(srcP, dstP);
+    cv::warpPerspective(maskedImage, warped, homography, cv::Size(src.cols,src.rows));
+    
+    cv::namedWindow("Warped");
+    imshow("Warped", warped);
 
     cv::namedWindow("Lanes");
     imshow("Lanes", linesImage);
