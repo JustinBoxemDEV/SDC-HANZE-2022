@@ -1,3 +1,9 @@
+"""
+Basic Q-learning example using keras. The gym library is used to create an environment to play taxi-v3.
+Taxi is a command line game. Source https://gym.openai.com/envs/Taxi-v3/
+
+Ignore any tensorflow warnings you get when running the code.
+"""
 import gym
 import gym.spaces
 import numpy as np

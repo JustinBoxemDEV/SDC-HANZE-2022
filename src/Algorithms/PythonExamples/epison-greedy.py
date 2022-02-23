@@ -1,3 +1,9 @@
+"""
+Basic implementation of the epison greedy algorithm.
+
+Resources:
+https://medium.com/analytics-vidhya/the-epsilon-greedy-algorithm-for-reinforcement-learning-5fe6f96dc870
+"""
 import numpy as np
 import matplotlib.pyplot as plt
   

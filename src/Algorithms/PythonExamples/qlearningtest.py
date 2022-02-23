@@ -1,3 +1,7 @@
+"""
+This was a random first test. Introduction to basic q-learning.
+The gym library is used to create an environment to play FrozenLake-v1.  Source: https://gym.openai.com/envs/FrozenLake8x8-v0/
+"""
 import numpy as np
 import gym
 
