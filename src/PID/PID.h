@@ -26,6 +26,6 @@ class PIDController {
 
 public:
 	void PIDController_Init(PIDController);
-	double PIDController_update(PIDController pid, double setpoint, double mesurment);
+	double PIDController_update(PIDController pid, double error);
 };
 #endif 

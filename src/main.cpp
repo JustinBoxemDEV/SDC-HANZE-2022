@@ -48,16 +48,16 @@ void testCAN(){
 int main( int argc, char** argv )
 {
     int x = 0;
-    float y = -5;//verander dit
-    float out = 0;
+    double y = 10;//verander dit
+    double out = 0;
     PIDController pid{};
-    while ( x < 20) {
+    while ( x < 40) {
         
         pid.PIDController_Init(pid);
-        out = pid.PIDController_update(pid, 1, y);
+        out = pid.PIDController_update(pid, y);
         y = y + out;
         
-        
+        cout << y << endl;
         cout << out << endl;
         x++;
     }

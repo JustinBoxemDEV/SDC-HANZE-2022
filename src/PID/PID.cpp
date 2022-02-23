@@ -9,26 +9,28 @@ void PIDController::PIDController_Init(PIDController) {
 	lowPassFitler = 0.02;
 	minOutputLimit = -1;
 	maxOutputLimit = 1;
-	minLimitI = -0.5;
-	maxLimitI = 0.5;
-	time = 0.5;
+	minLimitI = -1;
+	maxLimitI = 1;
+	time = 0.03333333333; // bereken met 1/fps
 	integrator = 0;
 	prevError = 0;
 	differentiator = 0;
-	prevMesurement = 0;
 	output = 0;
 }
 
 
-double PIDController::PIDController_update(PIDController, double setpoint, double mesurement) {
+double PIDController::PIDController_update(PIDController, double error) {
 
-	double error = setpoint - mesurement;
 	
 	proportional = gp * error;
 	std::cout << "prop " << proportional << std::endl;// voor debugging
 
+	if ((error < 0 && prevError > 0) || (error > 0 && prevError < 0) || error == 0) {
+		time = 0.03333333333;// time = 1/fps
+	}
 	//calculate I and clamp
 	integrator = integrator + 0.5 * gi * time * (error + prevError);
+
 	if (integrator > maxLimitI) {
 
 		integrator = maxLimitI;
@@ -39,7 +41,7 @@ double PIDController::PIDController_update(PIDController, double setpoint, doubl
 	}
 	std::cout << "inte " << integrator << std::endl;// voor debugging
 	
-	differentiator = -(2.0 * gd * (mesurement - prevMesurement) + (2.0 * lowPassFitler - time) * differentiator) / (2.0 * lowPassFitler + time);
+	differentiator = -(2.0 * gd * (error - prevError) + (2.0 * lowPassFitler - time) * differentiator) / (2.0 * lowPassFitler + time);//<== verander
 	std::cout << "diff " << differentiator << std::endl;//voor debugging
 	//calculate output and clamp
 	output = proportional + integrator + differentiator;
@@ -49,10 +51,9 @@ double PIDController::PIDController_update(PIDController, double setpoint, doubl
 	else if (output < minOutputLimit) {
 		output = minOutputLimit;
 	}
-
+	time = time + 0.03333333333; // time + 1/fps
 
 	prevError = error;
-	prevMesurement = mesurement;
 
 	return output;
 }
