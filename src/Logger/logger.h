@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../time/time.h"
+#include "Time/time.h"
 #include <iostream>
 #include <sstream>
 
