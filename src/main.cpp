@@ -61,9 +61,9 @@ int main( int argc, char** argv )
         cout << out << endl;
         x++;
     }
-    //breakpoint om de waardes te kunnen zien 
+  
 
-
+/*
     CameraCapture cameraCapture;
     cameraCapture.ProcessFeed();
 
@@ -88,7 +88,7 @@ int main( int argc, char** argv )
     thresh_callback( 0, 0 );
     waitKey();
     return 0;
-    
+    */
 
 }
 void thresh_callback(int, void* )

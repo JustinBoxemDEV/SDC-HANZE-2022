@@ -6,7 +6,7 @@ void PIDController::PIDController_Init(PIDController) {
 	gi = 0.05;
 	gd = 0.025;
 	
-	lowPassFitler = 0.02;
+	lowPassFilter = 0.02;
 	minOutputLimit = -1;
 	maxOutputLimit = 1;
 	minLimitI = -1;
@@ -41,7 +41,7 @@ double PIDController::PIDController_update(PIDController, double error) {
 	}
 	std::cout << "inte " << integrator << std::endl;// voor debugging
 	
-	differentiator = -(2.0 * gd * (error - prevError) + (2.0 * lowPassFitler - time) * differentiator) / (2.0 * lowPassFitler + time);//<== verander
+	differentiator = -(2.0 * gd * (error - prevError) + (2.0 * lowPassFilter - time) * differentiator) / (2.0 * lowPassFilter + time);//<== verander
 	std::cout << "diff " << differentiator << std::endl;//voor debugging
 	//calculate output and clamp
 	output = proportional + integrator + differentiator;
