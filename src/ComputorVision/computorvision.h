@@ -7,7 +7,6 @@ class ComputorVision{
     private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
-
     public:
         cv::Mat BlurImage(cv::Mat src);
         cv::Mat DetectEdges(cv::Mat src);
