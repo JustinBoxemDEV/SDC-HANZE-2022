@@ -14,6 +14,8 @@ class ComputorVision{
         std::vector<cv::Vec4i> HoughLines(cv::Mat src);
         std::vector<cv::Vec4i> AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines);
         cv::Mat PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines);
+        std::vector<cv::Point2f> SlidingWindow(cv::Mat image, cv::Rect window);
+        std::vector<int> Histogram(cv::Mat src);
 };
 
 #endif

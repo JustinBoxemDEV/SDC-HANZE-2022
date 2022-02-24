@@ -109,3 +109,43 @@ cv::Mat ComputorVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines)
     cv::line(src, centerLineStart, centerLineEnd, cv::Scalar(255,0,0) , 3, cv::LINE_AA);
     return src;
 }
+
+std::vector<int> ComputorVision::Histogram(cv::Mat src){
+    std::vector<int> points;
+    for(int i = 0; i < src.cols; i++){
+        points.push_back(cv::countNonZero(src.col(i)));
+    }
+    return points;
+}
+
+std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect window){
+    std::vector<cv::Point2f> points;
+    const cv::Size imgSize = image.size();
+    
+    while (window.y >= 0){
+        float currentX = window.x + window.width * 0.5f;
+        cv::Mat roi = image(window);         
+        std::vector<cv::Point2f> locations;
+        
+        findNonZero(roi, locations);      
+        float avgX = 0.0f;
+        
+        for (int i = 0; i < locations.size(); ++i) {
+            float x = locations[i].x;
+            avgX += window.x + x;
+        }
+        
+        avgX = locations.empty() ? currentX : avgX / locations.size();
+        cv::Point point(avgX, window.y + window.height * 0.5f);
+        points.push_back(point);
+
+        window.y -= window.height;
+        window.x += (point.x - currentX);
+        
+        if (window.x < 0)
+            window.x = 0;
+        if (window.x + window.width >= imgSize.width)
+            window.x = imgSize.width - window.width - 1;
+    }
+    return points;
+}
