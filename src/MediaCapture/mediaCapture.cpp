@@ -6,6 +6,8 @@
 #include <filesystem>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "../Math/Polynomial.h"
+
 namespace fs = std::filesystem;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
@@ -155,6 +157,10 @@ void MediaCapture::ProcessImage(cv::Mat src)
 
     std::vector<cv::Point2f> rightLinePixels = cVision.SlidingWindow(warped, cv::Rect(dstP[2].x - rectwidth, rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = cVision.SlidingWindow(warped, cv::Rect(dstP[3].x - rectwidth, rectY, rectHeight, rectwidth));
+
+    Polynomial::Polyfit(rightLinePixels, 2); //fit
+
+    // double curveRadius = (pow(1 + pow((2 * fit[0] * y_eval + fit[1]), 2), 1.5) / abs(2 * fit[0]);
 
     std::vector<cv::Point2f> outPts;
     std::vector<cv::Point> allPts;

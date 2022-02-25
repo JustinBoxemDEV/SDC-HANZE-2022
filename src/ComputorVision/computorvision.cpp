@@ -133,11 +133,12 @@ std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect w
         for (int i = 0; i < locations.size(); ++i) {
             float x = locations[i].x;
             avgX += window.x + x;
+            cv::Point point(window.x + locations[i].x, window.y + locations[i].y);
+            points.push_back(point);
         }
         
         avgX = locations.empty() ? currentX : avgX / locations.size();
         cv::Point point(avgX, window.y + window.height * 0.5f);
-        points.push_back(point);
 
         window.y -= window.height;
         window.x += (point.x - currentX);
