@@ -51,14 +51,16 @@ int main( int argc, char** argv )
     double y = 10;//verander dit
     double out = 0;
     PIDController pid{};
+    // dit is een test loop
     while ( x < 40) {
         
         pid.PIDController_Init(pid);
         out = pid.PIDController_update(pid, y);
         y = y + out;
         
-        cout << y << endl;
-        cout << out << endl;
+        cout <<"offset " << y << endl;
+        cout <<"output " << out << endl;
+        cout << "  " << endl;
         x++;
     }
   
