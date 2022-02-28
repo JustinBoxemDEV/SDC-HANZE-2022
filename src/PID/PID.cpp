@@ -2,8 +2,8 @@
 #include <iostream>
 
 void PIDController::PIDController_Init(PIDController) {
-	gp = 0.2;
-	gi = 0.05;
+	gp = 0.3;
+	gi = 0.03;
 	gd = 0.025;
 	
 	lowPassFilter = 0.02;
@@ -24,9 +24,10 @@ double PIDController::PIDController_update(PIDController, double error) {
 	
 	proportional = gp * error;
 	std::cout << "prop " << proportional << std::endl;// voor debugging
-
-	if ((error < 0 && prevError > 0) || (error > 0 && prevError < 0) || error == 0) {
+	
+	if ((error < 0.0 && prevError > 0.0) || (error > 0.0 && prevError < 0.0) || (error == 0.0)) {
 		time = 0.03333333333;// time = 1/fps
+		std::cout << "reset time " << std::endl;
 	}
 	//calculate I and clamp
 	integrator = integrator + 0.5 * gi * time * (error + prevError);
@@ -52,9 +53,8 @@ double PIDController::PIDController_update(PIDController, double error) {
 		output = minOutputLimit;
 	}
 	time = time + 0.03333333333; // time + 1/fps
-
 	prevError = error;
-
+	std::cout << "time " << time << std::endl;
 	return output;
 }
 

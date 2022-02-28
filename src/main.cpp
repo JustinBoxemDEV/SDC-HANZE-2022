@@ -47,23 +47,34 @@ void testCAN(){
 
 int main( int argc, char** argv )
 {
+    // dit is test spul
     int x = 0;
-    double y = 10;//verander dit
+    int prefX = x;
+    double y = -0.5;//verander dit
+    double prefY = y;
     double out = 0;
     PIDController pid{};
-    // dit is een test loop
-    while ( x < 40) {
-        
-        pid.PIDController_Init(pid);
+    pid.PIDController_Init(pid);
+    Mat drawing;
+    drawing = Mat::zeros(Size(160, 160), CV_8UC1);
+    line(drawing, Point(0,80), Point(160,80), Scalar(150), 2, 2, 0);
+    
+    while ( x < 150) {
+        line(drawing, Point(prefX, prefY*80+80), Point(x, y*80+80), Scalar(255), 2, 2, 0);
+        imshow("image", drawing);
+        waitKey(1000);
+
         out = pid.PIDController_update(pid, y);
-        y = y + out;
-        
-        cout <<"offset " << y << endl;
+        prefY = y;
+        prefX = x;
+        y = y - out;
+        cout << "offset " << y << endl;
         cout <<"output " << out << endl;
         cout << "  " << endl;
         x++;
     }
-  
+    waitKey(10000);
+    // eind test spul
 
 /*
     CameraCapture cameraCapture;
