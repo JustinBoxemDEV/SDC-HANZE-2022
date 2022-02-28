@@ -1,0 +1,6 @@
+videos/
+build/
+.vscode/
+build/compile_commands.json
+build/SDC
+CMakeLIsts.txt

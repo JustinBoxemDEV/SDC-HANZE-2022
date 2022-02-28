@@ -1,4 +1,4 @@
-# Install script for directory: /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022
+# Install script for directory: /home/sab/Documents/Projects/SDC-HANZE-2022
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+  set(CMAKE_OBJDUMP "/bin/objdump")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/sab/Documents/Projects/SDC-HANZE-2022/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

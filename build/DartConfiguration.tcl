@@ -4,14 +4,14 @@
 
 
 # Configuration directories and files
-SourceDirectory: /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022
-BuildDirectory: /home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/build
+SourceDirectory: /home/sab/Documents/Projects/SDC-HANZE-2022
+BuildDirectory: /home/sab/Documents/Projects/SDC-HANZE-2022/build
 
 # Where to place the cost data store
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: Manjaro
+Site: fedora
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Linux-c++
@@ -26,7 +26,7 @@ SubmitURL: http://
 NightlyStartTime: 00:00:00 EDT
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "/usr/bin/cmake" "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022"
+ConfigureCommand: "/usr/bin/cmake" "/home/sab/Documents/Projects/SDC-HANZE-2022"
 MakeCommand: /usr/bin/cmake --build . --config "${CTEST_CONFIGURATION_TYPE}" -- -i
 DefaultCTestConfigurationType: Release
 
@@ -62,8 +62,8 @@ UpdateOptions:
 UpdateType: git
 
 # Compiler info
-Compiler: /usr/bin/c++
-CompilerVersion: 11.1.0
+Compiler: /bin/c++
+CompilerVersion: 11.2.1
 
 # Dynamic analysis (MemCheck)
 PurifyCommand: 
