@@ -7,7 +7,7 @@ class Polynomial
     private:
         static void gaussEliminationLS(int m, int n,  double ** a, double *x);
     public:
-        static void Polyfit(std::vector<cv::Point2f> pts, int degree);
+        static std::vector<double> Polyfit(std::vector<cv::Point2f> pts, int degree);
 
 };
 

@@ -7,6 +7,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "../Math/Polynomial.h"
+#include <string>
 
 namespace fs = std::filesystem;
 
@@ -120,6 +121,14 @@ void MediaCapture::ProcessImage(cv::Mat src)
 
     std::vector<cv::Vec4i> houghLines = cVision.HoughLines(maskedImage);
     std::vector<cv::Vec4i> averagedLines = cVision.AverageLines(wipImage, houghLines);
+
+    int imageCenter = src.cols / 2.0f;
+    int laneCenterX = (averagedLines[0][0] + averagedLines[1][0]) / 2;
+    int centerDelta = imageCenter - laneCenterX;
+    float normalisedDelta = 2 * (float(centerDelta - averagedLines[0][0]) / float(averagedLines[1][0] - averagedLines[0][0])) - 1;
+    cv::putText(src, "Center deviation: " + std::to_string(centerDelta), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(src, "Center deviation (N): " + std::to_string(normalisedDelta), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
+
     cv::Mat linesImage = cVision.PlotLaneLines(wipImage, averagedLines);
 
     cv::Mat warped;
@@ -143,11 +152,11 @@ void MediaCapture::ProcessImage(cv::Mat src)
 
     cv::warpPerspective(maskedImage, warped, homography, cv::Size(src.cols, src.rows));
 
-    cv::namedWindow("Warped");
-    imshow("Warped", warped);
+    // cv::namedWindow("Warped");
+    // imshow("Warped", warped);
 
-    cv::namedWindow("Lanes");
-    imshow("Lanes", linesImage);
+    // cv::namedWindow("Lanes");
+    // imshow("Lanes", linesImage);
 
     std::vector<int> hist = cVision.Histogram(warped);
 
@@ -158,14 +167,31 @@ void MediaCapture::ProcessImage(cv::Mat src)
     std::vector<cv::Point2f> rightLinePixels = cVision.SlidingWindow(warped, cv::Rect(dstP[2].x - rectwidth, rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = cVision.SlidingWindow(warped, cv::Rect(dstP[3].x - rectwidth, rectY, rectHeight, rectwidth));
 
-    Polynomial::Polyfit(rightLinePixels, 2); //fit
+    std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
+    std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
 
-    // double curveRadius = (pow(1 + pow((2 * fit[0] * y_eval + fit[1]), 2), 1.5) / abs(2 * fit[0]);
+    std::vector<cv::Point2f> rightLanePoints;
+
+    for (auto pts : rightLinePixels)
+    {
+        cv::Point2f position;
+        position.x = pts.x;
+        position.y = (fitR[2] * pow(pts.x, 2) + (fitR[1] * pts.x) + fitR[0]);
+        rightLanePoints.push_back(position);
+    }
+
+    double curveRadiusR = pow(1 + pow((2 * fitR[2] * averagedLines[0][1] + fitR[2]), 2), 1.5) / abs(2 * fitR[1]);
+    double curveRadiusL = pow(1 + pow((2 * fitL[2] * averagedLines[0][1] + fitL[2]), 2), 1.5) / abs(2 * fitL[1]);
+
+    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 
     std::vector<cv::Point2f> outPts;
     std::vector<cv::Point> allPts;
 
     cv::perspectiveTransform(rightLinePixels, outPts, invertedPerspectiveMatrix);
+    cv::line(src, cv::Point(averagedLines[1][0], averagedLines[1][1]), outPts[0], cv::Scalar(0, 255, 0), 3);
+    allPts.push_back(cv::Point(averagedLines[1][0], averagedLines[1][1]));
 
     for (int i = 0; i < outPts.size() - 1; ++i)
     {
@@ -184,6 +210,8 @@ void MediaCapture::ProcessImage(cv::Mat src)
     }
 
     allPts.push_back(cv::Point(outPts[0].x - (outPts.size() - 1), outPts[0].y));
+    cv::line(src, cv::Point(averagedLines[0][0], averagedLines[0][1]), outPts[outPts.size() -1], cv::Scalar(0, 255, 0), 3);
+    allPts.push_back(cv::Point(averagedLines[0][0], averagedLines[0][1]));
 
     std::vector<std::vector<cv::Point>> arr;
     arr.push_back(allPts);

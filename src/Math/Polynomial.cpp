@@ -1,5 +1,6 @@
 #include "Polynomial.h"
-#include<math.h>
+#include <iterator>
+#include <math.h>
 
 //https://www.bragitoff.com/2018/06/polynomial-fitting-c-program/
 
@@ -46,7 +47,7 @@ void Polynomial::gaussEliminationLS(int m, int n, double **a, double *x){
              
 }
 
-void Polynomial::Polyfit(std::vector<cv::Point2f> pts, int degree){
+std::vector<double> Polynomial::Polyfit(std::vector<cv::Point2f> pts, int degree){
     int N = pts.size();  
     int n = degree;  
     double X[2*n+1];  
@@ -85,9 +86,11 @@ void Polynomial::Polyfit(std::vector<cv::Point2f> pts, int degree){
     }
 
     double A[n+1];
+    std::vector<double> result;
     gaussEliminationLS(n+1,n+2,B,A);
     for(int i=0;i<=n;i++){
-        std::cout << A[i] << std::endl;
+        result.push_back(A[i]);
     }
 
+    return result;
 }
