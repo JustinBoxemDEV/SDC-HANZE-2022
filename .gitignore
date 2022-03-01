@@ -1,6 +1,5 @@
 videos/
-build/
 .vscode/
 build/compile_commands.json
-build/SDC
+build/
 CMakeLIsts.txt
