@@ -10,7 +10,6 @@
 
 class CANController {
     public:
-        CANController();
         static int cansocket;
         static void create();
         static void closeCANController();
@@ -19,4 +18,5 @@ class CANController {
         static void throttle(short speed, std::byte direction);
         static void brake();
         static void steer();
+        static void setup();
 };

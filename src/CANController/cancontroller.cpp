@@ -2,12 +2,40 @@
 
 int CANController::cansocket;
 
-// CANController::CANController() {
-//     system("sudo ip link set can0 type can bitrate 500000");
-//     system("sudo ip link set can0 up");
-// };
+void CANController::setup() {
+     //system("sudo ip link set can0 type can bitrate 500000");
+    system("sudo ip link add dev vcan0 type vcan");
+     //system("sudo ip link set can0 up");
+    system("sudo ifconfig vcan0 up");
+    
+    // Creating a CAN frame (basic structure)
+    struct can_frame {
+        canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+        __u8        can_dlc; /* frame payload length in byte (0 .. 8) */
+        __u8        __pad;   /* padding */
+        __u8        __res0;  /* reserved / padding */
+        __u8        __res1;  /* reserved / padding */
+        std::byte       speed; // speed 0-100
+        std::byte       space;
+        std::byte       direction; // 0 = neutral, 1 = gas, 2 = reverse
+        std::byte       trailer1;
+        __u_short       trailer2;
+        __u_short       trailer3;
+    };
 
-// Speed int between 0-80 (first 2 bytes)
+    // Homing (correct wheel)
+    // Message: can0 0x0000006F1 00 00 00 00 00 00 00 00
+    // can last between 1-20 seconds
+
+    // wait 15 seconds after kart is turned on
+    // Send can0 0x0000006120 50 00 01 00 00 00 00 00
+
+    // Make sure the brake wont activate while accelerating
+    // can0 0x0000006126 00 00 00 00 00 00 00 00
+
+};
+
+// Speed int between 0-100? (first byte)
 // Third byte indicates direction: 0 = neutral, 1 = gas, 2 = reverse
 // Last 5 bytes are most likely unused
 // Send in intervals of 40ms
@@ -20,21 +48,27 @@ void CANController::throttle(short speed, std::byte direction) {
         __u8        __pad;   /* padding */
         __u8        __res0;  /* reserved / padding */
         __u8        __res1;  /* reserved / padding */
-        __u_short       speed;
-        std::byte   direction;
-        __u_int         trailer;
-        std::byte   trailerByte;
+        std::byte       speed; // speed 0-100
+        std::byte       space;
+        std::byte       direction; // 0 = neutral, 1 = gas, 2 = reverse
+        std::byte       trailer1;
+        std::byte       trailer2;
+        std::byte       trailer3;
+        __u_short       trailer4;
     };
-
+    
     struct can_frame frame;
     
-    frame.can_id = __builtin_bswap32(0x00000125);
+    frame.can_id = 0x125;
     frame.can_dlc = 8;
 
-    frame.speed = __builtin_bswap32(speed);
-    frame.direction = direction;
-    frame.trailer = __builtin_bswap32(0x00);
-    frame.trailerByte = (std::byte) 0x00;
+    frame.speed     =   (std::byte) speed;
+    frame.space     =   (std::byte) 0x00;
+    frame.direction =   (std::byte) direction;
+    frame.trailer1  =   (std::byte) 0x00;
+    frame.trailer2  =   (std::byte) 0x00;
+    frame.trailer3  =   (std::byte) 0x00;
+    frame.trailer4  =   __builtin_bswap16(0x0000);
 
     if (write(CANController::cansocket, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
         perror("Write");
@@ -54,7 +88,28 @@ void CANController::brake() {
 // Last 5 bytes are most likely unused
 // Message example: Arb ID: 0x000006F1	Data: 00 00 00 00 00 00 00 00 
 void CANController::steer() {
+    // Creating a CAN frame (basic structure)
+    struct can_frame {
+        canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+        __u8        can_dlc; /* frame payload length in byte (0 .. 8) */
+        __u8        __pad;   /* padding */
+        __u8        __res0;  /* reserved / padding */
+        __u8        __res1;  /* reserved / padding */
+        float           steering;
+        std::byte       trailer2;
+        std::byte       trailer3;
+        __u_short       trailer4;
+    };
 
+    struct can_frame frame;
+    
+    frame.can_id = 0x125;
+    frame.can_dlc = 8;
+
+    frame.steering = __builtin_bswap32((float)-3.63693e+31f);
+    frame.trailer2 = (std::byte) 0x00;
+    frame.trailer3 = (std::byte) 0x00;
+    frame.trailer4 = 0x0000;
 };
 
 void CANController::create() {
@@ -118,10 +173,10 @@ void CANController::sendFrame() {
     frame.can_id = __builtin_bswap32(0x00000125);
     frame.can_dlc = 8;
 
-    frame.trailer = __builtin_bswap32(0xFFABCDEF);
-    frame.trailer1 = (std::byte) 0x00;
+    //frame.trailer = __builtin_bswap32(0xFFABCDEF);
+    //frame.trailer1 = (std::byte) 0x00;
     frame.direction = (std::byte) 0x00;
-    //frame.value = -200;
+    frame.value = -200;
 
     // frame.data = (const unsigned char*)&value;
     // sprintf((char*)frame.data, 0, (const char *)&value);
