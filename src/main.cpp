@@ -55,9 +55,10 @@ void recursive() {
     if (strcmp(test, "exit") == 0) {
         CANController::closeCANController();
         std::cout << "Bye!" << std::endl;
+    } else {
+        memset(test, 0, 25);
+        recursive();
     };
-    memset(test, 0, 25);
-    recursive();
 };
 
 int main( int argc, char** argv ) {
