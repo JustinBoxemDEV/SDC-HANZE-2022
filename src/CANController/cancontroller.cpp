@@ -33,12 +33,12 @@ struct steeringFrame {
     This method sets up a link for canName with canType. After this, set up the bind with the cansocket.
     Before the kart starts driving, apply homing to the steering wheel, set the kart to drive (forward) and release the brakes.
 */
-void CANController::init(std::string canName="can0", std::string canType="can") {
+void CANController::init(std::string canName, std::string canType) {
     // First delete (existing) CAN
     system(("sudo ip link del dev "+canName+" type "+canType).c_str());
     
     // Add CAN
-    system(("sudo ip link add dev "+canName+" type "+canType).c_str());
+    system(("sudo ip link add dev "+canName+" type "+canType+" bitrate 50000").c_str());
     //system(("sudo ip link set "+canName+" type "+canType+" bitrate 500000").c_str());
     
     // Setup the CAN network
@@ -156,7 +156,7 @@ void CANController::steer(float amount) {
     Close the existing CANBus socket.
 */
 void CANController::closeCANController() {
-    system("sudo ip link del dev vcan0 type vcan");
+    system("sudo ip link del dev can0 type can");
 
     if (close(CANController::cansocket) < 0) {
         perror("Close");

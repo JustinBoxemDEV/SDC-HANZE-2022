@@ -69,7 +69,7 @@ int main( int argc, char** argv ) {
     if (strcmp(input, "initbus") == 0) {
         std::cout << "Executing: " << input << std::endl;
 
-        CANController::init("vcan0", "vcan");
+        CANController::init();
         std::cout << "Init bus succesful" << std::endl;
 
         recursive();

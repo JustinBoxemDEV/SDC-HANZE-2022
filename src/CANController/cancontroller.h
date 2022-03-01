@@ -16,5 +16,5 @@ class CANController {
         static void throttle(int speed, int direction);
         static void brake(int brakePercentage);
         static void steer(float amount);
-        static void init(std::string canName, std::string canType);
+        static void init(std::string canName="can0", std::string canType="can");
 };
