@@ -13,10 +13,8 @@ class CANController {
         static int cansocket;
         static void create();
         static void closeCANController();
-        static void readFrame();
-        static void sendFrame();
-        static void throttle(short speed, std::byte direction);
-        static void brake();
-        static void steer();
-        static void setup();
+        static void throttle(int speed, int direction);
+        static void brake(int brakePercentage);
+        static void steer(float amount);
+        static void init(std::string canName, std::string canType);
 };

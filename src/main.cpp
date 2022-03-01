@@ -1,92 +1,76 @@
-// #include <libsocketcan.h>
-#include "opencv2/opencv.hpp"
-#include <opencv2/imgproc.hpp>
+#include <libsocketcan.h>
 #include <iostream>
-#include "ComputorVision/computorvision.h"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
-#include <filesystem>
-#include <string>
-#include "MediaCapture/mediaCapture.h"
+#include "CANController/cancontroller.h"
+#include <stdio.h>
 
-namespace fs = std::filesystem;
+void recursive() {
+    std::cout << "What do you want to do? Type throttle, brake or steer" << std::endl;
 
-int main( int argc, char** argv ){
-    // --help Output, describing basic usage to the user
-    if(argc==1){
-        MediaCapture mediaCapture;
-        mediaCapture.ProcessFeed(0,"");
-        return 0;
-    }
-    if(std::string(argv[1])=="-help" or std::string(argv[1])=="-h"){
-        std::cout << "Usage: SPECIFY RESOURCE TO USE" << std::endl;
-        std::cout << "-video -camera [CAMERA_ID]" << std::endl;
-        std::cout << "-video -filename [FILE]" << std::endl;
-        std::cout << "-image [FILE]" << std::endl;
-        return -1;
-    }else{
-        // The user has told us he wants to use media feed
-        if(std::string(argv[1])=="-video"){
-            if(argc==2){
-                std::cout << "Usage:" << std::endl; 
-                std::cout << "-video -camera [CAMERA_ID]" << std::endl;
-                std::cout << "-video -filename [FILE]" << std::endl;
-                return -1;
-            }if(argc==3){
-                std::cout << "Usage:" << std::endl;
-                if(std::string(argv[2])=="-camera"){
-                    std::cout << "-video -camera [CAMERA_ID]" << std::endl;
-                    return -1;
-                }else if(std::string(argv[2])=="-filename"){
-                    // No video file was provided to look for, so we are going to present a list of names
-                    std::cout << "Available videos to load using -filename [FILE]" << std::endl;
-                    std::string path = fs::current_path().string() + "/assets/videos/";
-                    for (const auto & file : fs::directory_iterator(path))
-                        std::cout << fs::path(file).filename().string() << std::endl;
-                    return -1;
-                }
-            }if(argc==4){   
-                if(std::string(argv[2])=="-filename"){
-                    std::string path = fs::current_path().string() + "/assets/videos/" + std::string(argv[3]);
-                    if(!fs::exists(path)){
-                        std::cout << "The requested file cannot be found in /assets/videos/!" << std::endl;
-                        return -1;
-                    }
-                    MediaCapture mediaCapture;
-                    mediaCapture.ProcessFeed(0,path);
-                    return 0;
-                }else if(std::string(argv[2])=="-camera"){
-                    MediaCapture mediaCapture;
-                    mediaCapture.ProcessFeed(std::stoi(argv[3]),"");
-                    return 0;
-                }else{
-                    MediaCapture mediaCapture;
-                    mediaCapture.ProcessFeed(0,"");
-                    return 0;
-                }
-            }
-        }else if(std::string(argv[1])=="-image"){
-            // An image was provided to look for
-            if(argc==3){
-                MediaCapture mediaCapture;
-                cv::Mat img = mediaCapture.LoadImage(std::string(argv[2]));
-                mediaCapture.ProcessImage(img);
-                cv::waitKey(0);
-                return 0;
-            }
+    char test[25];
+    std::cin.get(test, 25);
+    std::cin.ignore(256, '\n');
 
-            // No image was provided to look for, so we are going to present a list of names
-            std::cout << "Available images to load using -image [NAME]" << std::endl;
-            std::string path = fs::current_path().string() + "/assets/images/";
-            for (const auto & file : fs::directory_iterator(path))
-                std::cout << fs::path(file).filename().string() << std::endl;
-            return -1;
-        }
-        // The parameter that the user provided is not compatible with our program | Provide error + help message
-        else{
-            std::cout << "ERROR: " << std::string(argv[1]) << " is not recognised. Use -help for information" << std::endl;
-            return -1;
-        }
-    }
-}
+    if (strcmp(test, "throttle") == 0) {
+        std::cout << "Executing: " << test << std::endl;
+
+        std::cout << "GIVE SPEED (BETWEEN 0-100) >" << std::endl;
+        char speed[25];
+        std::cin.get(speed, 25);
+        std::cin.ignore(256, '\n');
+        std::cout << "Speed is: " << speed << std::endl;
+
+        std::cout << "GIVE DRIVING DIRECTION (0=NEUTRAL, 1=FORWARDS, 2=BACKWARDS) >" << std::endl;
+        char direction[25];
+        std::cin.get(direction, 25);
+        std::cin.ignore(256, '\n');
+        std::cout << "Direction is: " << direction << std::endl;
+
+        CANController::throttle(std::stoi(speed), std::stoi(direction));
+    };
+
+    if (strcmp(test, "brake")==0) {
+        std::cout << "Executing: " << test << std::endl;
+
+        std::cout << "GIVE BRAKE PERCENTAGE (BETWEEN 0-100) >" << std::endl;
+        char brakePercentage[25];
+        std::cin.get(brakePercentage, 25);
+        std::cin.ignore(256, '\n');
+        std::cout << "Brake percentage is: " << brakePercentage << std::endl;
+        
+        CANController::brake(std::stoi(brakePercentage));
+    };
+
+    if (strcmp(test, "steer") == 0) {
+        std::cout << "Executing: " << test << std::endl;
+
+        std::cout << "GIVE STEERING AMOUNT (BETWEEN -1.0 AND 1.0) >" << std::endl;
+        char steeringamount[25];
+        std::cin.get(steeringamount, 25);  
+        std::cin.ignore(256, '\n');
+        std::cout << "Steering amount is: " << steeringamount << std::endl;
+        
+        CANController::steer(std::stof(steeringamount));
+    };
+
+    if (strcmp(test, "exit") == 0) {
+        CANController::closeCANController();
+        std::cout << "Bye!" << std::endl;
+    };
+    memset(test, 0, 25);
+    recursive();
+};
+
+int main( int argc, char** argv ) {
+    std::cout << "Hi there! ;) Type initbus to start initializing the bus >" << std::endl;
+    char input[25];
+    std::cin.get(input, 25);
+    std::cin.ignore(256, '\n');
+    if (strcmp(input, "initbus") == 0) {
+        std::cout << "Executing: " << input << std::endl;
+
+        CANController::init("vcan0", "vcan");
+        std::cout << "Init bus succesful" << std::endl;
+
+        recursive();
+    };
+};
