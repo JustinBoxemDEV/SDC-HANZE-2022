@@ -155,8 +155,8 @@ void CANController::steer(float amount) {
 /**
     Close the existing CANBus socket.
 */
-void CANController::closeCANController() {
-    system("sudo ip link del dev can0 type can");
+void CANController::closeCANController(std::string canName, std::string canType) {
+    system(("sudo ip link del dev "+canName+" type "+canType).c_str());
 
     if (close(CANController::cansocket) < 0) {
         perror("Close");

@@ -6,12 +6,12 @@
 void recursive() {
     std::cout << "What do you want to do? Type throttle, brake or steer" << std::endl;
 
-    char test[25];
-    std::cin.get(test, 25);
+    char input[25];
+    std::cin.get(input, 25);
     std::cin.ignore(256, '\n');
 
-    if (strcmp(test, "throttle") == 0) {
-        std::cout << "Executing: " << test << std::endl;
+    if (strcmp(input, "throttle") == 0) {
+        std::cout << "Executing: " << input << std::endl;
 
         std::cout << "GIVE SPEED (BETWEEN 0-100) >" << std::endl;
         char speed[25];
@@ -28,8 +28,8 @@ void recursive() {
         CANController::throttle(std::stoi(speed), std::stoi(direction));
     };
 
-    if (strcmp(test, "brake")==0) {
-        std::cout << "Executing: " << test << std::endl;
+    if (strcmp(input, "brake")==0) {
+        std::cout << "Executing: " << input << std::endl;
 
         std::cout << "GIVE BRAKE PERCENTAGE (BETWEEN 0-100) >" << std::endl;
         char brakePercentage[25];
@@ -40,8 +40,8 @@ void recursive() {
         CANController::brake(std::stoi(brakePercentage));
     };
 
-    if (strcmp(test, "steer") == 0) {
-        std::cout << "Executing: " << test << std::endl;
+    if (strcmp(input, "steer") == 0) {
+        std::cout << "Executing: " << input << std::endl;
 
         std::cout << "GIVE STEERING AMOUNT (BETWEEN -1.0 AND 1.0) >" << std::endl;
         char steeringamount[25];
@@ -52,11 +52,11 @@ void recursive() {
         CANController::steer(std::stof(steeringamount));
     };
 
-    if (strcmp(test, "exit") == 0) {
+    if (strcmp(input, "exit") == 0) {
         CANController::closeCANController();
         std::cout << "Bye!" << std::endl;
     } else {
-        memset(test, 0, 25);
+        memset(input, 0, 25);
         recursive();
     };
 };
