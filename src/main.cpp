@@ -47,7 +47,7 @@ void testCAN(){
 
 int main( int argc, char** argv )
 {
-    // dit is test spul
+    /* dit is test spul
     int x = 0;
     int prefX = x;
     double y = 0.5;//verander dit
@@ -74,9 +74,9 @@ int main( int argc, char** argv )
         x++;
     }
     waitKey(10000);
-    // eind test spul
+   eind test spul*/
 
-/*
+
     CameraCapture cameraCapture;
     cameraCapture.ProcessFeed();
 
@@ -101,7 +101,7 @@ int main( int argc, char** argv )
     thresh_callback( 0, 0 );
     waitKey();
     return 0;
-    */
+   
 
 }
 void thresh_callback(int, void* )
