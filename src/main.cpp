@@ -50,19 +50,19 @@ int main( int argc, char** argv )
     // dit is test spul
     int x = 0;
     int prefX = x;
-    double y = -0.5;//verander dit
+    double y = 0.5;//verander dit
     double prefY = y;
     double out = 0;
     PIDController pid{};
     pid.PIDController_Init(pid);
     Mat drawing;
-    drawing = Mat::zeros(Size(160, 160), CV_8UC1);
-    line(drawing, Point(0,80), Point(160,80), Scalar(150), 2, 2, 0);
+    drawing = Mat::zeros(Size(512, 512), CV_8UC1);
+    line(drawing, Point(0,256), Point(512,256), Scalar(150), 2, 2, 0);
     
     while ( x < 150) {
-        line(drawing, Point(prefX, prefY*80+80), Point(x, y*80+80), Scalar(255), 2, 2, 0);
+        line(drawing, Point(prefX, prefY*256+256), Point(x, y*256+256), Scalar(255), 2, 2, 0);
         imshow("image", drawing);
-        waitKey(1000);
+        //waitKey(1000);
 
         out = pid.PIDController_update(pid, y);
         prefY = y;

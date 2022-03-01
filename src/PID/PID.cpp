@@ -2,7 +2,7 @@
 #include <iostream>
 
 void PIDController::PIDController_Init(PIDController) {
-	gp = 0.3;
+	gp = 0.15;
 	gi = 0.03;
 	gd = 0.025;
 	
