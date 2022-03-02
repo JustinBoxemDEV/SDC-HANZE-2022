@@ -10,9 +10,11 @@ void recursive() {
     std::cin.get(input, 25);
     std::cin.ignore(256, '\n');
 
+    bool sending = true;
+
     if (strcmp(input, "throttle") == 0) {
         std::cout << "Executing: " << input << std::endl;
-
+        sending = true;
         std::cout << "GIVE SPEED (BETWEEN 0-100) >" << std::endl;
         char speed[25];
         std::cin.get(speed, 25);
@@ -25,7 +27,10 @@ void recursive() {
         std::cin.ignore(256, '\n');
         std::cout << "Direction is: " << direction << std::endl;
 
-        CANController::throttle(std::stoi(speed), std::stoi(direction));
+        while (sending){
+            std::cout << "Throttling with direction: " << direction << " and speed " << speed << std::endl;
+            CANController::throttle(std::stoi(speed), std::stoi(direction));
+        }
     };
 
     if (strcmp(input, "brake")==0) {
@@ -36,8 +41,11 @@ void recursive() {
         std::cin.get(brakePercentage, 25);
         std::cin.ignore(256, '\n');
         std::cout << "Brake percentage is: " << brakePercentage << std::endl;
-        
-        CANController::brake(std::stoi(brakePercentage));
+
+        while (sending){
+            std::cout << "Braking with percentage: " << brakePercentage << std::endl;
+            CANController::brake(std::stoi(brakePercentage));
+        }
     };
 
     if (strcmp(input, "steer") == 0) {
@@ -49,7 +57,10 @@ void recursive() {
         std::cin.ignore(256, '\n');
         std::cout << "Steering amount is: " << steeringamount << std::endl;
         
-        CANController::steer(std::stof(steeringamount));
+        while (sending){
+            std::cout << "Steering with amount: " << steeringamount << std::endl;
+            CANController::steer(std::stof(steeringamount));
+        }
     };
 
     if (strcmp(input, "exit") == 0) {
@@ -72,6 +83,8 @@ int main( int argc, char** argv ) {
         CANController::init();
         std::cout << "Init bus succesful" << std::endl;
 
+        recursive();
+    } else {
         recursive();
     };
 };

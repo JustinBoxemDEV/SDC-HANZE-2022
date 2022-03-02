@@ -35,14 +35,16 @@ struct steeringFrame {
 */
 void CANController::init(std::string canName, std::string canType) {
     // First delete (existing) CAN
-    system(("sudo ip link del dev "+canName+" type "+canType).c_str());
+    //system(("echo Kart123! |sudo -S sudo ip link del dev "+canName+" type "+canType).c_str());
     
     // Add CAN
-    system(("sudo ip link add dev "+canName+" type "+canType+" bitrate 50000").c_str());
+    //system(("sudo ip link add dev "+canName+" type "+canType+" bitrate 50000").c_str());
     //system(("sudo ip link set "+canName+" type "+canType+" bitrate 500000").c_str());
     
+    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
+    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
     // Setup the CAN network
-    system(("sudo ifconfig "+canName+" up").c_str());
+    // system(("sudo ip link set "+canName+" up").c_str());
     
     if ((CANController::cansocket = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
         perror("Socket");
@@ -66,14 +68,14 @@ void CANController::init(std::string canName, std::string canType) {
     };
     
     // When starting the kart
-    // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
-    CANController::steer(0.00);
 
     // Wait 15 seconds after kart is turned on, set the kart to drive (forwards) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
-    sleep(15);
-    CANController::throttle(5, 1);
+    CANController::throttle(0, 1);
+    sleep(0.1);
     // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
     CANController::brake(0);
+    // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
+    CANController::steer(0.00);
 };
 
 /**
@@ -156,7 +158,7 @@ void CANController::steer(float amount) {
     Close the existing CANBus socket.
 */
 void CANController::closeCANController(std::string canName, std::string canType) {
-    system(("sudo ip link del dev "+canName+" type "+canType).c_str());
+    //system(("sudo ip link del dev "+canName+" type "+canType).c_str());
 
     if (close(CANController::cansocket) < 0) {
         perror("Close");
