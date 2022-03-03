@@ -11,9 +11,9 @@ class CANController {
     public:
         static int cansocket;
         static void create();
-        static void closeCANController(std::string canName="can0", std::string canType="can");
+        static void closeCANController(std::string canType="can");
         static void throttle(int speed, int direction);
         static void brake(int brakePercentage);
         static void steer(float amount);
-        static void init(std::string canName="can0", std::string canType="can");
+        static void init(std::string canType="can");
 };
