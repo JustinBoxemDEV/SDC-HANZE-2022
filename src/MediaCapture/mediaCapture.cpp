@@ -186,8 +186,8 @@ void MediaCapture::ProcessImage(cv::Mat src)
     cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 
-    double vertexRX = -fitR[1] / 2 * fitR[2];
-    double vertexLX = -fitL[1] / 2 * fitL[2];
+    double vertexRX = (-fitR[1]) / 2 * fitR[2];
+    double vertexLX = (-fitL[1]) / 2 * fitL[2];
 
     std::string roadType = "";
     int turnThreshold = 200;
@@ -199,7 +199,7 @@ void MediaCapture::ProcessImage(cv::Mat src)
     }else{
         roadType = "Straight";
     }
-    
+
     cv::putText(src, roadType, cv::Point(src.cols/2 - 100, 175), 1, 1.5, cv::Scalar(255, 128, 255));
 
     std::vector<cv::Point2f> outPts;
