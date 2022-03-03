@@ -1,4 +1,4 @@
-#include <libsocketcan/.h>
+// #include <libsocketcan.h>
 #include <iostream>
 #include "CANController/cancontroller.h"
 #include <stdio.h>
@@ -11,7 +11,7 @@ void recursive() {
     std::cin.get(input, 25);
     std::cin.ignore(256, '\n');
 
-    bool sending = false; 
+    bool sending = false;
 
     if (strcmp(input, "throttle") == 0) {
         std::cout << "Executing: " << input << std::endl;
@@ -29,7 +29,7 @@ void recursive() {
         std::cout << "Direction is: " << direction << std::endl;
 
         sending = true;
-        char stopinput[25];
+        char loopinput[25];
         while (sending){ // && strcmp(loopinput, "stop")
             std::cout << "Throttling with direction " << direction << " and speed " << speed << std::endl;
             CANController::throttle(std::stoi(speed), std::stoi(direction));
@@ -85,6 +85,7 @@ int main( int argc, char** argv ) {
     char initInput[25];
     std::cin.get(initInput, 25);
     std::cin.ignore(256, '\n');
+    
     if (strcmp(initInput, "initbus") == 0) {
         std::cout << "Executing: " << initInput << std::endl;
 
@@ -92,7 +93,7 @@ int main( int argc, char** argv ) {
         std::cout << "Init bus done" << std::endl;
 
         recursive();
-    } if (strcmp(initInput, "skip") == 0){
+    } else if (strcmp(initInput, "skip") == 0){
         recursive();
     } else{
         std::cout << "Please enter a valid command: initbus skip" << std::endl;
