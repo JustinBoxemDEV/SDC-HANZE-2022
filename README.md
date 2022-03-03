@@ -21,6 +21,8 @@ https://github.com/commaai/openpilot
 ## Lane detection/Turn prediction
 https://medium.com/lifeandtech/lane-detection-with-turn-prediction-1773c4819541
 
+https://towardsdatascience.com/deeppicar-part-4-lane-following-via-opencv-737dd9e47c96
+
 https://medium.com/@yogeshojha/self-driving-cars-beginners-guide-to-computer-vision-finding-simple-lane-lines-using-python-a4977015e232
 
 https://www.youtube.com/watch?v=VyLihutdsPk
@@ -46,3 +48,13 @@ https://github.com/lalten/libsocketcan
 ## Possibly usefull content
 https://www.youtube.com/playlist?list=PLW3FM5Kyc2_4PGkumkAHNXzWtgHhaYe1d
 
+### Polyfit using Eigen
+https://towardsdatascience.com/least-square-polynomial-fitting-using-c-eigen-package-c0673728bd01
+
+### Starting Linux services after network connection is set up
+https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget/
+
+### SSH remote tunneling by SSH Communications Security Corporation
+https://www.ssh.com/academy/ssh/tunneling
+
+https://www.ssh.com/academy/ssh/tunneling/example#remote-forwarding

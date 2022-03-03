@@ -1,121 +1,92 @@
-// #include <stdio.h>
-// #include <opencv2/opencv.hpp>
-// #include <opencv2/imgcodecs.hpp>
-// #include <opencv2/core/utility.hpp>
-// using namespace cv;
-
-// int main(int argc, char** argv )
-// {
-//     Mat image;
-//     samples::addSamplesDataSearchPath("/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/images");
-//     image = imread( samples::findFile( "megamind.jpg" ), 1 );
-//     if ( !image.data )
-//     {
-//         printf("No image data \n");
-//         return -1;
-//     }
-//     namedWindow("Display Image", WINDOW_AUTOSIZE );
-//     imshow("Display Image", image);
-//     waitKey(0);
-//     return 0;
-// }
-
+// #include <libsocketcan.h>
+#include "opencv2/opencv.hpp"
+#include <opencv2/imgproc.hpp>
+#include <iostream>
+#include "ComputorVision/computorvision.h"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
-#include <iostream>
 #include <filesystem>
 #include <string>
-#include "camera/cameraCapture.h"
-#include "PID/PID.h"
-//#include <libsocketcan.h>
-
-using namespace cv;
-using namespace std;
+#include "MediaCapture/mediaCapture.h"
 
 namespace fs = std::filesystem;
 
-Mat src_gray;
-int thresh = 100;
-RNG rng(12345);
-void thresh_callback(int, void* );
-
-void testCAN(){
-    int * result;
-    //cout << can_get_state("can0", result) << endl; 	
-}
-
-int main( int argc, char** argv )
-{
-    /* dit is test spul
-    int x = 0;
-    int prefX = x;
-    double y = 0.5;//verander dit
-    double prefY = y;
-    double out = 0;
-    PIDController pid{};
-    pid.PIDController_Init(pid);
-    Mat drawing;
-    drawing = Mat::zeros(Size(512, 512), CV_8UC1);
-    line(drawing, Point(0,256), Point(512,256), Scalar(150), 2, 2, 0);
-    
-    while ( x < 150) {
-        line(drawing, Point(prefX, prefY*256+256), Point(x, y*256+256), Scalar(255), 2, 2, 0);
-        imshow("image", drawing);
-        //waitKey(1000);
-
-        out = pid.PIDController_update(pid, y);
-        prefY = y;
-        prefX = x;
-        y = y - out;
-        cout << "offset " << y << endl;
-        cout <<"output " << out << endl;
-        cout << "  " << endl;
-        x++;
+int main( int argc, char** argv ){
+    // --help Output, describing basic usage to the user
+    if(argc==1){
+        MediaCapture mediaCapture;
+        mediaCapture.ProcessFeed(0,"");
+        return 0;
     }
-    waitKey(10000);
-   eind test spul*/
+    if(std::string(argv[1])=="-help" or std::string(argv[1])=="-h"){
+        std::cout << "Usage: SPECIFY RESOURCE TO USE" << std::endl;
+        std::cout << "-video -camera [CAMERA_ID]" << std::endl;
+        std::cout << "-video -filename [FILE]" << std::endl;
+        std::cout << "-image [FILE]" << std::endl;
+        return -1;
+    }else{
+        // The user has told us he wants to use media feed
+        if(std::string(argv[1])=="-video"){
+            if(argc==2){
+                std::cout << "Usage:" << std::endl; 
+                std::cout << "-video -camera [CAMERA_ID]" << std::endl;
+                std::cout << "-video -filename [FILE]" << std::endl;
+                return -1;
+            }if(argc==3){
+                std::cout << "Usage:" << std::endl;
+                if(std::string(argv[2])=="-camera"){
+                    std::cout << "-video -camera [CAMERA_ID]" << std::endl;
+                    return -1;
+                }else if(std::string(argv[2])=="-filename"){
+                    // No video file was provided to look for, so we are going to present a list of names
+                    std::cout << "Available videos to load using -filename [FILE]" << std::endl;
+                    std::string path = fs::current_path().string() + "/assets/videos/";
+                    for (const auto & file : fs::directory_iterator(path))
+                        std::cout << fs::path(file).filename().string() << std::endl;
+                    return -1;
+                }
+            }if(argc==4){   
+                if(std::string(argv[2])=="-filename"){
+                    std::string path = fs::current_path().string() + "/assets/videos/" + std::string(argv[3]);
+                    if(!fs::exists(path)){
+                        std::cout << "The requested file cannot be found in /assets/videos/!" << std::endl;
+                        return -1;
+                    }
+                    MediaCapture mediaCapture;
+                    mediaCapture.ProcessFeed(0,path);
+                    return 0;
+                }else if(std::string(argv[2])=="-camera"){
+                    MediaCapture mediaCapture;
+                    mediaCapture.ProcessFeed(std::stoi(argv[3]),"");
+                    return 0;
+                }else{
+                    MediaCapture mediaCapture;
+                    mediaCapture.ProcessFeed(0,"");
+                    return 0;
+                }
+            }
+        }else if(std::string(argv[1])=="-image"){
+            // An image was provided to look for
+            if(argc==3){
+                MediaCapture mediaCapture;
+                cv::Mat img = mediaCapture.LoadImage(std::string(argv[2]));
+                mediaCapture.ProcessImage(img);
+                cv::waitKey(0);
+                return 0;
+            }
 
-
-    CameraCapture cameraCapture;
-    cameraCapture.ProcessFeed();
-
-   // samples::addSamplesDataSearchPath(fs::current_path().string() + "/images");
-    
-    testCAN();
-
-    Mat src = imread("C:/Users/ShandorPC/Documents/GitHub/SDC/images/megamind.jpg");
-    if( src.empty() )
-    {
-      cout << "Could not open or find the image!\n" << endl;
-      cout << "Usage: " << argv[0] << " <Input image>" << endl;
-      return -1;
+            // No image was provided to look for, so we are going to present a list of names
+            std::cout << "Available images to load using -image [NAME]" << std::endl;
+            std::string path = fs::current_path().string() + "/assets/images/";
+            for (const auto & file : fs::directory_iterator(path))
+                std::cout << fs::path(file).filename().string() << std::endl;
+            return -1;
+        }
+        // The parameter that the user provided is not compatible with our program | Provide error + help message
+        else{
+            std::cout << "ERROR: " << std::string(argv[1]) << " is not recognised. Use -help for information" << std::endl;
+            return -1;
+        }
     }
-    cvtColor( src, src_gray, COLOR_BGR2GRAY );
-    blur( src_gray, src_gray, Size(3,3) );
-    const char* source_window = "Source";
-    namedWindow( source_window );
-    imshow( source_window, src );
-    const int max_thresh = 255;
-    createTrackbar( "Canny thresh:", source_window, &thresh, max_thresh, thresh_callback );
-    thresh_callback( 0, 0 );
-    waitKey();
-    return 0;
-   
-
-}
-void thresh_callback(int, void* )
-{
-    Mat canny_output;
-    Canny( src_gray, canny_output, thresh, thresh*2 );
-    vector<vector<Point> > contours;
-    vector<Vec4i> hierarchy;
-    findContours( canny_output, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE );
-    Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
-    for( size_t i = 0; i< contours.size(); i++ )
-    {
-        Scalar color = Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
-        drawContours( drawing, contours, (int)i, color, 2, LINE_8, hierarchy, 0 );
-    }
-    imshow( "Contours", drawing );
 }
