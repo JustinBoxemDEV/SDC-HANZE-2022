@@ -58,12 +58,6 @@ void recursive() {
         while (sending){ // && strcmp(loopinput, "stop")
             std::cout << "Throttling with direction " << direction << " and speed " << speed << std::endl;
             CANController::throttle(std::stoi(speed), std::stoi(direction));
-
-            // TODO: Look at this
-            // char ch = getch();
-            // if (strcmp(cc, "stop")==0){
-            //     sending = false;
-            // }
         }
     } else if (strcmp(input, "brake")==0) {
         std::cout << "Executing: " << input << std::endl;
