@@ -3,6 +3,31 @@
 #include "CANController/cancontroller.h"
 #include <stdio.h>
 // #include <conio.h>
+#include "CANController/TaskScheduler.h"
+
+void hsetest(){
+    CANController::throttle(20,1);
+}
+
+// TODO: Not functional yet, throttle function not called
+// int main( int argc, char** argv ) {
+//     CANController::init("vcan");
+//     sleep(10);
+
+//     TaskScheduler taskScheduler;
+//     // void task = CANController::throttle(10,1);
+//     taskScheduler.SCH_Add_Task(hsetest, 0, 0);
+//     // taskScheduler.SCH_Add_Task([](){CANController::throttle(20,1);}, 0, 0);
+//     // taskScheduler.SCH_Add_Task([](){CANController::throttle(30,1);}, 0, 0);
+//     // taskScheduler.SCH_Add_Task([](){CANController::throttle(40,1);}, 0, 0);
+//     // taskScheduler.SCH_Add_Task([](){CANController::throttle(50,1);}, 0, 0);
+//     std::cout << "Added tasks" << std::endl;
+//     taskScheduler.SCH_Init();
+//     std::cout << "Did the init " << std::endl;
+//     taskScheduler.SCH_Dispatch_Tasks();
+//     std::cout << "Dispatched tasks " << std::endl;
+//     taskScheduler.SCH_Dispatch_Tasks();
+// }
 
 void recursive() {
     std::cout << "What do you want to do? Type throttle, brake, steer or exit" << std::endl;
@@ -16,7 +41,7 @@ void recursive() {
     if (strcmp(input, "throttle") == 0) {
         std::cout << "Executing: " << input << std::endl;
 
-        std::cout << "GIVE SPEED (BETWEEN 0-100) >" << std::endl;
+        std::cout << "GIVE SPEED (PERCENTAGE BETWEEN 0-100) >" << std::endl;
         char speed[25];
         std::cin.get(speed, 25);
         std::cin.ignore(256, '\n');
