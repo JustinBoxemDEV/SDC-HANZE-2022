@@ -1,51 +1,43 @@
 #include "TaskScheduler.h"
 #include <iostream>
 
-TaskScheduler::sTask SCH_tasks_G[SCH_MAX_TASKS];
-
 void TaskScheduler::SCH_Dispatch_Tasks()
 {
    unsigned char Index = 0;
 
-   auto currentTime = std::chrono::steady_clock::now();
+   auto currentTime = clock.now();
 
-   float deletatime = std::chrono::duration_cast<std::chrono::duration<float,std::milli>>(lastTime - currentTime).count();
+   double deltatime = std::chrono::duration_cast<std::chrono::duration<double>>(currentTime - lastTime).count();
+
+   //Set last frame naar current frame
+   lastTime = currentTime;
 
    // Dispatches (runs) the next task (if one is ready)
    for(Index = 0; Index < SCH_MAX_TASKS; Index++)
    {
-      // std::cout << "for loop" << std::endl;
-      if((SCH_tasks_G[Index].Delay <= 0)) 
-      {
-         std::cout << SCH_tasks_G[Index].Period << std::endl;
-         if((SCH_tasks_G[Index].pTask != 0)){
-            std::cout << "ifje function" << std::endl;
+      if((SCH_tasks_G[Index].pTask != 0)){
+         if((SCH_tasks_G[Index].Delay < 0)) 
+         {
+
             (*SCH_tasks_G[Index].pTask)();  // Run the task
 
-            if(SCH_tasks_G[Index].Period)
+            if(SCH_tasks_G[Index].Period != 0)
             {
                // Schedule periodic tasks to run again
                SCH_tasks_G[Index].Delay = SCH_tasks_G[Index].Period;
-               SCH_tasks_G[Index].Delay -= deletatime; 
-            }
+               SCH_tasks_G[Index].Delay -= deltatime; 
 
-            // Periodic tasks will automatically run again
-            // - if this is a 'one shot' task, remove it from the array
-            if(SCH_tasks_G[Index].Period == 0)
-            {
+            }else{
                SCH_Delete_Task(Index);
             }
          }
-      }
-      else
-      {
-         // Not yet ready to run: just decrement the delay
-         SCH_tasks_G[Index].Delay -= deletatime; 
+         else
+         {
+            // Not yet ready to run: just decrement the delay
+            SCH_tasks_G[Index].Delay -= deltatime; 
+         }
       }
    }
-
-   //Set last frame naar current frame
-   lastTime = currentTime;
 }
 
 unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float DELAY, const float PERIOD)
@@ -58,7 +50,6 @@ unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float D
    {
       Index++;
    }
-
    // Have we reached the end of the list?   
    if(Index == SCH_MAX_TASKS)
    {
@@ -71,7 +62,6 @@ unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float D
    SCH_tasks_G[Index].pTask = pFunction;
    SCH_tasks_G[Index].Delay = DELAY;
    SCH_tasks_G[Index].Period = PERIOD;
-   // std::cout << SCH_tasks_G[Index].pTask << std::endl;
    // return position of task (to allow later deletion)
    return Index;
 }
@@ -97,7 +87,10 @@ void TaskScheduler::SCH_Init()
    {
       SCH_Delete_Task(i);
    }
+}
 
+void TaskScheduler::SCH_Start()
+{
    // take timestamp of start (first lasttime)
-   lastTime = std::chrono::steady_clock::now();
+   lastTime = clock.now();
 }

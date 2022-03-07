@@ -16,18 +16,21 @@ int main( int argc, char** argv ) {
 
     TaskScheduler taskScheduler;
     // void task = CANController::throttle(10,1);
+    std::cout << "Initializing Scheduler" << std::endl;
+    taskScheduler.SCH_Init();
+    std::cout << "Adding Tasks" << std::endl;
     int index = taskScheduler.SCH_Add_Task(hsetest, 0, 5);
-    // std::cout << taskScheduler.SCH_Delete_Task(index) << std::endl;
     // taskScheduler.SCH_Add_Task([](){CANController::throttle(20,1);}, 0, 0);
     // taskScheduler.SCH_Add_Task([](){CANController::throttle(30,1);}, 0, 0);
     // taskScheduler.SCH_Add_Task([](){CANController::throttle(40,1);}, 0, 0);
     // taskScheduler.SCH_Add_Task([](){CANController::throttle(50,1);}, 0, 0);
-    std::cout << "Added tasks" << std::endl;
-    taskScheduler.SCH_Init();
-    std::cout << "Did the init " << std::endl;
-    taskScheduler.SCH_Dispatch_Tasks();
-    std::cout << "Dispatched tasks " << std::endl;
-    taskScheduler.SCH_Dispatch_Tasks();
+    std::cout << "Starting Scheduling" << std::endl;
+    taskScheduler.SCH_Start();
+
+    std::cout << "Dispatching" << std::endl;
+    while(true){
+        taskScheduler.SCH_Dispatch_Tasks();
+    }
 }
 
 // void recursive() {
