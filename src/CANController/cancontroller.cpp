@@ -27,7 +27,6 @@ struct steeringFrame {
 
 /**
     Initialize the bus.
-    @param canName The name of the can
     @param canType The type of can that is used: vcan or can
 
     This method sets up a link for a cantype (vcan or can). After this, set up the bind with the cansocket.
@@ -46,9 +45,9 @@ void CANController::init(std::string canType) {
         system("sudo ip link add dev vcan0 type vcan");
         system("sudo ip link set vcan0 type vcan");
         system("sudo ip link set vcan0 up");
-    }else{
+    } else {
         std::cout << "Could not find inserted CAN type. Please try again"  << std::endl;
-    }
+    };
     
     if ((CANController::cansocket = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
         perror("Socket");
@@ -84,7 +83,7 @@ void CANController::init(std::string canType) {
 
 /**
     Send a throttle message to the canbus. Throttle corresponds to id 0x125.
-    @param speed The speed as integer between 0 and 100.
+    @param speed The speed percentage as integer between 0 and 100.
     @param direction The driving direction as integer: 0 = neutral, 1 = gas, 2 = reverse.
 
     Additional info:
@@ -166,10 +165,21 @@ void CANController::closeCANController(std::string canType) {
     if(strcmp(canType.c_str(), "vcan") == 0) {
         system("sudo ip link del dev vcan0 type vcan");
         std::cout << "Deleted vcan" << std::endl;
-    }
-
-    if (close(CANController::cansocket) < 0) {
-        perror("Close");
-        std::cout << "Disconnected from can succesfully. See you!" << std::endl;
     };
+    perror("Close");
+    std::cout << "Disconnected from can succesfully. See you!" << std::endl;
+};
+
+void CANController::readCANMessages() {
+    int nbytes;
+    struct can_frame frame;
+    nbytes = read(CANController::cansocket, &frame, sizeof(struct can_frame));
+    if (nbytes < 0) {
+    perror("Read");
+        
+    };
+    printf("0x%03X [%d] ",frame.can_id, frame.can_dlc);
+    for (int i = 0; i < frame.can_dlc; i++)
+        printf("%02X ",frame.data[i]);
+        printf("\r\n");
 };
