@@ -16,4 +16,5 @@ class CANController {
         static void brake(int brakePercentage);
         static void steer(float amount);
         static void init(std::string canType="can");
+        static void readCANMessages();
 };

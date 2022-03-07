@@ -27,3 +27,17 @@ set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 target_link_libraries(SDC ${OpenCV_LIBS} )
+
+include_directories(/usr/include/X11)
+
+link_directories(/usr/lib/x84_64-linux-gnu/)
+
+target_link_libraries(SDC libX11.so)
+
+cmake_minimum_required(VERSION 2.8)
+list(APPEND CMAKE_CXX_FLAGS "-pthread -std=c++11 ${CMAKE_CXX_FLAGS}")
+
+find_package(X11 REQUIRED)
+link_directories(/usr/lib/x84_64-linux-gnu/)
+target_link_libraries(SDC libX11.so)
+target_link_libraries(SDC libXtst.so)
