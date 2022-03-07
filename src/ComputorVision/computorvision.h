@@ -16,6 +16,11 @@ class ComputorVision{
         cv::Mat PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines);
         std::vector<cv::Point2f> SlidingWindow(cv::Mat image, cv::Rect window);
         std::vector<int> Histogram(cv::Mat src);
+
+        cv::Mat CreateBinaryImage(cv::Mat src);
+        std::vector<cv::Vec4i> GenerateLines(cv::Mat src);
+        std::vector<std::vector<cv::Point>> PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines);
+
 };
 
 #endif
