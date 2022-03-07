@@ -1,9 +1,11 @@
 #include "TaskScheduler.h"
 #include <iostream>
 
+TaskScheduler::sTask SCH_tasks_G[SCH_MAX_TASKS];
+
 void TaskScheduler::SCH_Dispatch_Tasks()
 {
-   unsigned char Index;
+   unsigned char Index = 0;
 
    auto currentTime = std::chrono::steady_clock::now();
 
@@ -13,11 +15,11 @@ void TaskScheduler::SCH_Dispatch_Tasks()
    for(Index = 0; Index < SCH_MAX_TASKS; Index++)
    {
       // std::cout << "for loop" << std::endl;
-      if((SCH_tasks_G[Index].Delay == 0)) 
+      if((SCH_tasks_G[Index].Delay <= 0)) 
       {
-         // std::cout << "ifje delay" << std::endl;
+         std::cout << SCH_tasks_G[Index].Period << std::endl;
          if((SCH_tasks_G[Index].pTask != 0)){
-            // std::cout << "ifje function" << std::endl;
+            std::cout << "ifje function" << std::endl;
             (*SCH_tasks_G[Index].pTask)();  // Run the task
 
             if(SCH_tasks_G[Index].Period)
@@ -69,7 +71,7 @@ unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float D
    SCH_tasks_G[Index].pTask = pFunction;
    SCH_tasks_G[Index].Delay = DELAY;
    SCH_tasks_G[Index].Period = PERIOD;
-   std::cout << Index << std::endl;
+   // std::cout << SCH_tasks_G[Index].pTask << std::endl;
    // return position of task (to allow later deletion)
    return Index;
 }
