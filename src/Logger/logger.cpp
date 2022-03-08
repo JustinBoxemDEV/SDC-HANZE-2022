@@ -6,7 +6,7 @@
 std::string Logger::activeFile;
 
 std::string Logger::getCurrentPath() {
-    return (std::string) get_current_dir_name()+"/../logs/";
+    return "";//(std::string) get_current_dir_name()+"/../logs/";
 };
 
 bool Logger::existsFile(std::string fileName) {

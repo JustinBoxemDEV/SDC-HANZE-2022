@@ -59,7 +59,7 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
             break;
         }
     }
-
+  
     // End the time counter
     time(&end);
 
@@ -92,6 +92,13 @@ cv::Mat MediaCapture::LoadImage(std::string filepath)
 
 void MediaCapture::ProcessImage(cv::Mat src)
 {
+    int cpus = cv::getNumberOfCPUs();
+    int threads = cv::getNumThreads();
+
+    std::cout<< "cpus: " << cpus << std::endl;
+    std::cout<< "threads: " << threads << std::endl;
+
+    cVision.SetFrame(src);
     cv::Mat wipImage;
     src.copyTo(wipImage);
 
@@ -99,13 +106,5 @@ void MediaCapture::ProcessImage(cv::Mat src)
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
     std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
-    std::vector<std::vector<cv::Point>> arr = cVision.PredictTurn(maskedImage, averagedLines);
-
-
-    cv::Mat overlay = cv::Mat::zeros(src.size(), src.type());
-    cv::fillPoly(overlay, arr, cv::Scalar(0, 255, 100));
-    cv::addWeighted(src, 1, overlay, 0.5, 0, src);
-
-    cv::namedWindow("Turn");
-    imshow("Turn", src);
+    cVision.PredictTurn(maskedImage, averagedLines);
 }

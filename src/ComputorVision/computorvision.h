@@ -5,9 +5,15 @@
 
 class ComputorVision{
     private:
+        cv::Mat frame;
+        cv::Point2f dstP[4];
+
+    private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
     public:
+        void SetFrame(cv::Mat src);
+
         cv::Mat BlurImage(cv::Mat src);
         cv::Mat DetectEdges(cv::Mat src);
         cv::Mat MaskImage(cv::Mat src);
@@ -19,8 +25,7 @@ class ComputorVision{
 
         cv::Mat CreateBinaryImage(cv::Mat src);
         std::vector<cv::Vec4i> GenerateLines(cv::Mat src);
-        std::vector<std::vector<cv::Point>> PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines);
-
+        void PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines);
 };
 
 #endif
