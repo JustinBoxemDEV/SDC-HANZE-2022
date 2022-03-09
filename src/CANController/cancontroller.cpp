@@ -92,7 +92,7 @@ void CANController::init(std::string canType) {
     Send in intervals of 40ms
 */
 void CANController::throttle(int speed, int direction) {
-    // std::cout << "VROOM VROOM" << std::endl;
+    std::cout << "VROOM VROOM" << std::endl;
     struct defaultFrame frame;
     
     frame.can_id = 0x000125;
@@ -167,11 +167,8 @@ void CANController::closeCANController(std::string canType) {
         system("sudo ip link del dev vcan0 type vcan");
         std::cout << "Deleted vcan" << std::endl;
     };
-
-    if (close(CANController::cansocket) < 0) {
-        perror("Close");
-        std::cout << "Disconnected from can succesfully. See you!" << std::endl;
-    };
+    perror("Close");
+    std::cout << "Disconnected from can succesfully. See you!" << std::endl;
 };
 
 void CANController::readCANMessages() {

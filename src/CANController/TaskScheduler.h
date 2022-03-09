@@ -6,22 +6,23 @@
 class TaskScheduler
 {
     private:
+        std::chrono::high_resolution_clock clock;
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;
+    public:
         struct sTask{
             void (* pTask)(void);
-            float Delay;
-            float Period;
+            double Delay;
+            double Period;
         };
-        sTask SCH_tasks_G[SCH_MAX_TASKS];
-        std::chrono::time_point<std::chrono::steady_clock> lastTime;
-    public:
         // Data structure for storing task data
         void SCH_Init();
-        // void SCH_Start();
+        void SCH_Start();
 
         // Core scheduler functions
         void SCH_Dispatch_Tasks();
         unsigned char SCH_Add_Task(void (*)(void), const float, const float);
         unsigned char SCH_Delete_Task(const unsigned char);
+        sTask SCH_tasks_G[SCH_MAX_TASKS] = {0};
 };
 
 
