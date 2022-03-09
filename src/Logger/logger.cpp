@@ -34,7 +34,6 @@ void Logger::createFile(std::string fileName) {
         const char *path = const_cast<char*>(filePath.c_str());
         std::cout << path << std::endl;
         std::ofstream file(path);
-        file.is_open()? std::cout << "filed is opened" << std::endl : std::cout << "file is closed" << std::endl;
         file.flush();
         file.close();
         Logger::success("File \033[1;37m"+fileName+"\033[0m successfully created!");
