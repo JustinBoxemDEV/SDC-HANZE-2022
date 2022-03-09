@@ -59,12 +59,13 @@ void CANController::init(std::string canType) {
 
     //  if you use zero as the interface index, you can retrieve packets from all CAN interfaces.
     ioctl(CANController::cansocket, SIOCGIFINDEX, &ifr);
-    
+    ioctl(CANController::cansocket, SIOCSIFPFLAGS, &ifr);
+
     struct sockaddr_can addr;
 
     memset(&addr, 0, sizeof(addr));
     addr.can_family = AF_CAN;
-    addr.can_ifindex = ifr.ifr_ifindex;
+    addr.can_ifindex = ifr.ifr_ifindex;   
 
     if(bind(CANController::cansocket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         perror("Bind");
