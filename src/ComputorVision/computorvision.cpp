@@ -187,14 +187,16 @@ std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
 
     int imageCenter = src.cols / 2.0f;
     int laneCenterX = (averagedLines[0][0] + averagedLines[1][0]) / 2;
-    laneOffset = imageCenter - laneCenterX;
-    normalisedLaneOffset = 2 * (float(laneOffset - averagedLines[0][0]) / float(averagedLines[1][0] - averagedLines[0][0])) - 1;
+    int centerDelta = imageCenter - laneCenterX;
+    float normalisedDelta = 2 * (float(centerDelta - averagedLines[0][0]) / float(averagedLines[1][0] - averagedLines[0][0])) - 1;
  
+    cv::putText(frame, "Center Offset: " + std::to_string(centerDelta), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(frame, "Center Offset (N): " + std::to_string(normalisedDelta), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
+
     return averagedLines;
 }
 
 void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
-
     cv::Mat warped;
     cv::Point2f srcP[4] = { //NOTE: This could be hard coded using markers during a test day
         cv::Point2f(edgeLines[0][2], edgeLines[0][3]),
@@ -231,8 +233,11 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
         rightLanePoints.push_back(position);
     }
 
-    curveRadiusR = Polynomial::Curvature(fitR, edgeLines[0][1]);
-    curveRadiusL = Polynomial::Curvature(fitL, edgeLines[0][1]);
+    double curveRadiusR = Polynomial::Curvature(fitR, edgeLines[0][1]);
+    double curveRadiusL = Polynomial::Curvature(fitL, edgeLines[0][1]);
+
+    cv::putText(frame, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(frame, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double vertexRX = Polynomial::Vertex(fitR);
     double vertexLX = Polynomial::Vertex(fitL);
@@ -249,6 +254,7 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     }
 
     //----DRAW STUF -----
+
     cv::putText(frame, roadType, cv::Point(src.cols/2 - 100, 175), 1, 1.5, cv::Scalar(255, 128, 255));
 
     std::vector<cv::Point2f> outPts;
