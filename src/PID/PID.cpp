@@ -46,7 +46,7 @@ double PIDController::PIDController_update(double error) {
 	//std::cout << "inte " << integrator << std::endl;// voor debugging
 	
 	differentiator = gd * (error - prevError)/time;
-	std::cout << "diff " << differentiator << std::endl;//voor debugging
+	//std::cout << "diff " << differentiator << std::endl;//voor debugging
 	
 	//calculate output and clamp
 	output = proportional + integrator + differentiator;
