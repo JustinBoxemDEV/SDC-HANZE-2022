@@ -107,18 +107,18 @@ void MediaCapture::ProcessImage(cv::Mat src)
 
     std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
 
-    float laneOffset = cVision.getLaneOffset();
-    float normalisedLaneOffset = cVision.getNormalisedLaneOffset();
+    double laneOffset = cVision.getLaneOffset();
+    double normalisedLaneOffset = cVision.getNormalisedLaneOffset();
     cv::putText(src, "Center Offset: " + std::to_string(laneOffset), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
 
-    float pidout = pid.PIDController_update(normalisedLaneOffset);
+    double pidout = pid.PIDController_update(normalisedLaneOffset);
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
     cVision.PredictTurn(maskedImage, averagedLines);
     
-    float curveRadiusR = cVision.getRightEdgeCurvature();
-    float curveRadiusL = cVision.getLeftEdgeCurvature();
+    double curveRadiusR = cVision.getRightEdgeCurvature();
+    double curveRadiusL = cVision.getLeftEdgeCurvature();
     cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 }
