@@ -7,7 +7,6 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "../Math/Polynomial.h"
-#include <string>
 #include <thread>
 namespace fs = std::filesystem;
 
@@ -41,11 +40,10 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
     tr.join();
 }
 
-void MediaCapture::execute(){
-    cv::Mat frame;
-
     // Define total frames and start of a counter for FPS calculation
     int totalFrames = 0;
+
+    pid.PIDController_Init();
 
     time_t start, end;
     time(&start);
@@ -108,6 +106,9 @@ void MediaCapture::ProcessImage(cv::Mat src)
     double normalisedLaneOffset = cVision.getNormalisedLaneOffset();
     cv::putText(src, "Center Offset: " + std::to_string(laneOffset), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
+
+    double pidout = pid.PIDController_update(normalisedLaneOffset);
+    cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
     cVision.PredictTurn(maskedImage, averagedLines);
     
