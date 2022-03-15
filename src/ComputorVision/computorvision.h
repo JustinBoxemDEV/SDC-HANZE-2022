@@ -7,19 +7,19 @@ class ComputorVision{
     private:
         cv::Mat frame;
         cv::Point2f dstP[4];
-        float normalisedLaneOffset = 0;
-        float laneOffset = 0;
-        float curveRadiusR = 0;
-        float curveRadiusL = 0;
+        double normalisedLaneOffset = 0;
+        double laneOffset = 0;
+        double curveRadiusR = 0;
+        double curveRadiusL = 0;
 
     private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
     public:
-        float getNormalisedLaneOffset(){ return normalisedLaneOffset; }
-        float getLaneOffset(){ return laneOffset; }
-        float getRightEdgeCurvature(){ return curveRadiusR; }
-        float getLeftEdgeCurvature(){ return curveRadiusL; }
+        double getNormalisedLaneOffset(){ return normalisedLaneOffset; }
+        double getLaneOffset(){ return laneOffset; }
+        double getRightEdgeCurvature(){ return curveRadiusR; }
+        double getLeftEdgeCurvature(){ return curveRadiusL; }
 
         void SetFrame(cv::Mat src);
         cv::Mat BlurImage(cv::Mat src);
