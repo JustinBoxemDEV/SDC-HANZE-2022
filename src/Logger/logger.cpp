@@ -4,9 +4,11 @@
 #include <unistd.h>
 
 std::string Logger::activeFile;
+namespace fs = std::filesystem;
 
 std::string Logger::getCurrentPath() {
-    return "";//(std::string) get_current_dir_name()+"/../logs/";
+    std::string path = fs::current_path().string();
+    return (std::string) path+"/../logs/";
 };
 
 bool Logger::existsFile(std::string fileName) {
@@ -17,17 +19,23 @@ bool Logger::existsFile(std::string fileName) {
 
 void Logger::createFile(std::string fileName) {
     std::string directoryPath = getCurrentPath();
-
-    if(!std::filesystem::is_directory(directoryPath)) {
-        std::filesystem::create_directory(directoryPath);
+    std::cout << "Getting current path" << std::endl;
+    std::cout << directoryPath << std::endl;
+    if(!fs::is_directory(directoryPath)) {
+        std::cout << "Creating the directory" << std::endl;
+        fs::create_directory(directoryPath)?
+            std::cout << "Succeeded creating directory" << std::endl :
+            std::cout << "Failed creating directory" << std::endl;
     };
-
     if(existsFile(fileName)) {
         Logger::warning("File \033[1;37m"+fileName+"\033[0m does already exist!");
     } else {
         std::string filePath = directoryPath + fileName;
         const char *path = const_cast<char*>(filePath.c_str());
+        std::cout << path << std::endl;
         std::ofstream file(path);
+        file.flush();
+        file.close();
         Logger::success("File \033[1;37m"+fileName+"\033[0m successfully created!");
         activeFile = fileName;
     };
