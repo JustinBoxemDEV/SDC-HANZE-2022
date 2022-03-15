@@ -12,6 +12,19 @@ class ComputorVision{
         double curveRadiusR = 0;
         double curveRadiusL = 0;
 
+        cv::Mat masked;
+        cv::Mat mask;
+        cv::Mat edgeMap;
+        cv::Mat blurred;
+
+        cv::Mat denoisedImage;
+        cv::Mat hsv;
+        cv::Mat hsvFilter;
+        cv::Mat binaryImage;
+
+        cv::Mat warped;
+        cv::Mat homography;
+        cv::Mat invertedPerspectiveMatrix;
     private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
