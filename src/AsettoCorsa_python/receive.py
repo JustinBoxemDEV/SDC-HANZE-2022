@@ -21,22 +21,24 @@ def handle_traffic(client_socket):
         # Use a timeout to ensure the program stays (semi)responsive.
         readable, _, _ = select.select([client_socket], [], [], 0.5)
         for readable_socket in readable:
-            data = readable_socket.recv(10)
+            data = readable_socket.recv(1024)
             # Combine the first two bytes to get the arbitration id
+            print(data)
+            print(data[:2])
+
             arbitration_id, = unsignedShortStruct.unpack(data[:2])
             yield arbitration_id, data[2:]
     
 def main():
     logging.info('Creating virtual controller device...')
     controller = VX360CanGamepad()
-    logging.info('Controller created.')
-    logging.info(f'Binding on port {PORT} on ip address {IP}')
+
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client_socket:
         client_socket.bind((IP, PORT))
         logging.info('Ready!')
         for arbitration_id, data in handle_traffic(client_socket):
+            print(arbitration_id, data)
             controller.handle(arbitration_id, data)
-
 
 if __name__ == '__main__':
     logging.basicConfig(
