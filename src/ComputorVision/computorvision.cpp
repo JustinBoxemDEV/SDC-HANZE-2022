@@ -164,13 +164,15 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
     cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
 
-    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
-    cv::dilate(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
+    cv::erode(hsvFilter, hsvFilter, structuringElement);
+    cv::dilate(hsvFilter, hsvFilter, structuringElement);
 
-    cv::dilate(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
-    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
+    cv::dilate(hsvFilter, hsvFilter, structuringElement);
+    cv::erode(hsvFilter, hsvFilter, structuringElement);
 
+    imshow("hsvfilter", hsvFilter);
     binaryImage = DetectEdges(hsvFilter);
+    imshow("binary", binaryImage);
 
     return binaryImage;
 }

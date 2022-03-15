@@ -6,6 +6,7 @@
 class ComputorVision{
     private:
         cv::Mat frame;
+        cv::Mat structuringElement;
         cv::Point2f dstP[4];
         double normalisedLaneOffset = 0;
         double laneOffset = 0;
@@ -29,6 +30,8 @@ class ComputorVision{
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
     public:
+
+        ComputorVision(){structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12));}
         double getNormalisedLaneOffset(){ return normalisedLaneOffset; }
         double getLaneOffset(){ return laneOffset; }
         double getRightEdgeCurvature(){ return curveRadiusR; }
