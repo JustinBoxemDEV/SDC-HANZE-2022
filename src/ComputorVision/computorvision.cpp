@@ -169,7 +169,7 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
 
     cv::dilate(hsvFilter, hsvFilter, structuringElement);
     cv::erode(hsvFilter, hsvFilter, structuringElement);
-
+    
     imshow("hsvfilter", hsvFilter);
     binaryImage = DetectEdges(hsvFilter);
     imshow("binary", binaryImage);
