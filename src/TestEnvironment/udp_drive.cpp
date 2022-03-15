@@ -66,7 +66,7 @@ void UDP_DRIVE::steer(float steeringAngle) {
 };
 
 /**
- * @brief functino to shift up one gear
+ * @brief function to shift up one gear
  * 
  */
 void UDP_DRIVE::gearShiftUp() {
