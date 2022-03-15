@@ -35,15 +35,17 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
         }
     }
     std::cout << "Camera selected: " << cameraID << std::endl;
+    pid.PIDController_Init();
 
     std::thread tr([&](){ execute();});
     tr.join();
 }
 
+void MediaCapture::execute(){
+    cv::Mat frame;
+
     // Define total frames and start of a counter for FPS calculation
     int totalFrames = 0;
-
-    pid.PIDController_Init();
 
     time_t start, end;
     time(&start);
