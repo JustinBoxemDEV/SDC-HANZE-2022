@@ -11,20 +11,17 @@ void ComputorVision::SetFrame(cv::Mat src){
 }
 
 cv::Mat ComputorVision::BlurImage(cv::Mat src){
-    cv::Mat result;
-    cv::GaussianBlur(src, result, cv::Size(3,3), 0, 0);
-    return result;
+    cv::GaussianBlur(src, blurred, cv::Size(3,3), 0, 0);
+    return blurred;
 }
 
 cv::Mat ComputorVision::DetectEdges(cv::Mat src){
-    cv::Mat result;
-    cv::Canny(src, result, 100, 3*3, 3 );
-    return result;
+    cv::Canny(src, edgeMap, 100, 3*3, 3 );
+    return edgeMap;
 }
 
 cv::Mat ComputorVision::MaskImage(cv::Mat src){
-    cv::Mat result;
-    cv::Mat mask = cv::Mat::zeros(src.size(), src.type());
+    mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.7),
         cv::Point(0, src.rows * 0.45),
@@ -32,8 +29,8 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
         cv::Point(src.cols, src.rows * 0.7),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
-    cv::bitwise_and(mask, src , result);
-    return result;
+    cv::bitwise_and(mask, src , masked);
+    return masked;
 }
 
 std::vector<cv::Vec4i> ComputorVision::HoughLines(cv::Mat src){
@@ -162,12 +159,9 @@ std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect w
 }
 
 cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
-    cv::Mat denoisedImage = BlurImage(src);
+    denoisedImage = BlurImage(src);
 
-    cv::Mat hsv;
     cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
-
-    cv::Mat hsvFilter;
     cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
 
     cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
@@ -176,7 +170,7 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     cv::dilate(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
     cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
 
-    cv::Mat binaryImage = DetectEdges(hsvFilter);
+    binaryImage = DetectEdges(hsvFilter);
 
     return binaryImage;
 }
@@ -188,12 +182,11 @@ std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
     int imageCenter = src.cols / 2.0f;
     int laneCenterX = (averagedLines[0][0] + averagedLines[1][0]) / 2;
     laneOffset = imageCenter - laneCenterX;
-    normalisedLaneOffset = 2 * (float(laneOffset - averagedLines[0][0]) / float(averagedLines[1][0] - averagedLines[0][0])) - 1;
+    normalisedLaneOffset = 2 * (double(laneOffset - averagedLines[0][0]) / double(averagedLines[1][0] - averagedLines[0][0])) - 1;
     return averagedLines;
 }
 
 void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
-    cv::Mat warped;
     cv::Point2f srcP[4] = { //NOTE: This could be hard coded using markers during a test day
         cv::Point2f(edgeLines[0][2], edgeLines[0][3]),
         cv::Point2f(edgeLines[1][2], edgeLines[1][3]),
@@ -201,13 +194,11 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
         cv::Point2f(edgeLines[0][0], edgeLines[0][1]),
     };
 
-    cv::Mat homography = cv::getPerspectiveTransform(srcP, dstP);
-    cv::Mat invertedPerspectiveMatrix;
+    homography = cv::getPerspectiveTransform(srcP, dstP);
+    
     invert(homography, invertedPerspectiveMatrix);
 
     cv::warpPerspective(src, warped, homography, cv::Size(src.cols, src.rows));
-
-    std::vector<int> hist = Histogram(warped);
 
     int rectHeight = 120;
     int rectwidth = 60;
@@ -229,11 +220,11 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
         rightLanePoints.push_back(position);
     }
 
-    double curveRadiusR = Polynomial::Curvature(fitR, edgeLines[0][1]);
-    double curveRadiusL = Polynomial::Curvature(fitL, edgeLines[0][1]);
+    curveRadiusR = Polynomial::Curvature(fitR, edgeLines[0][1]);
+    curveRadiusL = Polynomial::Curvature(fitL, edgeLines[0][1]);
 
-    cv::putText(frame, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
-    cv::putText(frame, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
+    // cv::putText(frame, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    // cv::putText(frame, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double vertexRX = Polynomial::Vertex(fitR);
     double vertexLX = Polynomial::Vertex(fitL);

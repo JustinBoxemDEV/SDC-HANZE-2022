@@ -7,7 +7,8 @@ std::string Logger::activeFile;
 namespace fs = std::filesystem;
 
 std::string Logger::getCurrentPath() {
-    return "";//(std::string) get_current_dir_name()+"/../logs/";
+    std::string path = fs::current_path().string();
+    return (std::string) path+"/../logs/";
 };
 
 bool Logger::existsFile(std::string fileName) {

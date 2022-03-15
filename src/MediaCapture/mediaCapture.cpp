@@ -12,70 +12,65 @@ namespace fs = std::filesystem;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 {
-    std::thread tr{[&](){
-        cv::VideoCapture *capture;
-       
-        if (cameraID != 0)
+    if (cameraID != 0)
+    {
+        capture = new cv::VideoCapture(cameraID);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+    }
+    else if (filename != "")
+    {
+        std::cout << filename << std::endl;
+        capture = new cv::VideoCapture(filename);
+    }
+    else
+    {
+        capture = new cv::VideoCapture(0);
+
+        // Camera detection check
+        if (!capture->isOpened())
         {
-            capture = new cv::VideoCapture(cameraID);
-            capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
-            capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+            std::cout << "NO CAMERA DETECTED!" << std::endl;
+            return;
         }
-        else if (filename != "")
-        {
-            std::cout << filename << std::endl;
-            capture = new cv::VideoCapture(filename);
-        }
-        else
-        {
-            capture = new cv::VideoCapture(0);
+    }
+    std::cout << "Camera selected: " << cameraID << std::endl;
 
-            // Camera detection check
-            if (!capture->isOpened())
-            {
-                std::cout << "NO CAMERA DETECTED!" << std::endl;
-                return;
-            }
-        }
-
-        cv::Mat frame;
-        std::cout << "Camera selected: " << cameraID << std::endl;
-
-        // Define total frames and start of a counter for FPS calculation
-        int totalFrames = 0;
-    
-        pid.PIDController_Init();
-        time_t start, end;
-        time(&start);
-
-        // Camera feed
-        while (capture->read(frame))
-        {
-            totalFrames++;
-
-            ProcessImage(frame);
-
-            if (cv::waitKey(1000 / 60) >= 0)
-            {
-                break;
-            }
-        }
-    
-        // End the time counter
-        time(&end);
-
-        // Time elapsed
-        double seconds = difftime(end, start);
-        std::cout << "Time taken : " << seconds << " seconds" << std::endl;
-
-        // Estimate the FPS based on frames / elapsed time in seconds
-        int fps = totalFrames / seconds;
-        std::cout << "Estimated frames per second : " << fps << std::endl;
-
-        }
-    };
-
+    std::thread tr([&](){ execute();});
     tr.join();
+}
+
+    // Define total frames and start of a counter for FPS calculation
+    int totalFrames = 0;
+
+    pid.PIDController_Init();
+
+    time_t start, end;
+    time(&start);
+
+    // Camera feed
+    while (capture->read(frame))
+    {
+        totalFrames++;
+
+        ProcessImage(frame);
+
+        if (cv::waitKey(1000 / 60) >= 0)
+        {
+            break;
+        }
+    }
+
+    // End the time counter
+    time(&end);
+
+    // Time elapsed
+    double seconds = difftime(end, start);
+    std::cout << "Time taken : " << seconds << " seconds" << std::endl;
+
+    // Estimate the FPS based on frames / elapsed time in seconds
+    int fps = totalFrames / seconds;
+    std::cout << "Estimated frames per second : " << fps << std::endl;
 }
 
 cv::Mat MediaCapture::LoadImage(std::string filepath)
@@ -99,10 +94,10 @@ cv::Mat MediaCapture::LoadImage(std::string filepath)
 void MediaCapture::ProcessImage(cv::Mat src)
 {
     cVision.SetFrame(src);
-    cv::Mat wipImage;
-    src.copyTo(wipImage);
+    // cv::Mat wipImage;
+    // src.copyTo(wipImage);
 
-    cv::Mat binaryImage = cVision.CreateBinaryImage(wipImage);
+    cv::Mat binaryImage = cVision.CreateBinaryImage(src);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
     std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
