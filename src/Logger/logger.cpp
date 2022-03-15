@@ -1,14 +1,13 @@
 #include "logger.h"
 #include <fstream>
 #include <filesystem>
-#include <unistd.h>
+// #include <unistd.h>
 
 std::string Logger::activeFile;
 namespace fs = std::filesystem;
 
 std::string Logger::getCurrentPath() {
-    std::string path = fs::current_path().string();
-    return (std::string) path+"/../logs/";
+    return "";//(std::string) get_current_dir_name()+"/../logs/";
 };
 
 bool Logger::existsFile(std::string fileName) {

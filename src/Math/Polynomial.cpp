@@ -94,3 +94,11 @@ std::vector<double> Polynomial::Polyfit(std::vector<cv::Point2f> pts, int degree
 
     return result;
 }
+
+double Polynomial::Curvature(std::vector<double> fit, int yEval){
+    return pow(1 + pow((2 * fit[2] * yEval + fit[2]), 2), 1.5) / abs(2 * fit[1]);
+}
+
+double Polynomial::Vertex(std::vector<double> fit){
+    return (-fit[1]) / 2 * fit[2];
+}
