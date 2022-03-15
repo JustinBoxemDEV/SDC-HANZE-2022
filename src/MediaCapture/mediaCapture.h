@@ -11,7 +11,8 @@ class MediaCapture
 {
     private:
         ComputorVision cVision;
-
+        void execute();
+        cv::VideoCapture *capture; 
     public:
         void ProcessFeed(int cameraID, std::string filename);
         cv::Mat LoadImage(std::string filename);
