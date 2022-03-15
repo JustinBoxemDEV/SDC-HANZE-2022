@@ -1,15 +1,20 @@
 #include "udp_drive.h"
 
-std::string ip = "127.0.0.1";
-float sending_speed = .040;
-
+/**
+ * @brief The (client) socket
+ * 
+ */
 SOCKET UDP_DRIVE::s;
 
+/**
+ * @brief function to initialize the socket for sending fake CAN-messages to the socket server.
+ * 
+ */
 void UDP_DRIVE::init() {
     WSADATA wsa;
     struct sockaddr_in server;
 
-    printf("\nInitialising Winsock...");
+    printf("\nInitialising Winsock...\n");
 	if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
 	{
 		printf("Failed. Error Code : %d",WSAGetLastError());
@@ -18,10 +23,6 @@ void UDP_DRIVE::init() {
 	printf("Initialised.\n");
 
     s = socket(AF_INET, SOCK_DGRAM, 0);
-
-        float steering_angle    =   0.5;
-        float throttle          =   0.6;
-        float brake             =   0;
 
         server.sin_addr.s_addr  =   inet_addr("127.0.0.1");
         server.sin_family       =   AF_INET;
@@ -34,104 +35,52 @@ void UDP_DRIVE::init() {
         puts("connected");
 };
 
+/**
+ * @brief throttle function which takes integer values between 0 and 100. These values represent the speedpercentage.
+ * 
+ * @param speedPercentage 
+ */
 void UDP_DRIVE::throttle(int speedPercentage) {
     short arbitration_id = __builtin_bswap16(0x120);
-    char combined[sizeof arbitration_id + sizeof speedPercentage];
-
-        memcpy(combined, &arbitration_id, sizeof arbitration_id);
-        memcpy(combined+sizeof arbitration_id, &speedPercentage, sizeof speedPercentage);
-
-        const char *canMessage = (const char*) combined;
-
-        if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
-            puts("send failed");
-        };
-
-        puts("Data send");
+    UDP_DRIVE::send(arbitration_id, speedPercentage); 
 };
 
+/**
+ * @brief braking function which takes integer values between 0 and 100. These values represent the brakepercentage.
+ * 
+ * @param brakePercentage 
+ */
 void UDP_DRIVE::brake(int brakePercentage) {
     short arbitration_id = __builtin_bswap16(0x126);
-    char combined[sizeof arbitration_id + sizeof brakePercentage];
-
-    memcpy(combined, &arbitration_id, sizeof arbitration_id);
-    memcpy(combined+sizeof arbitration_id, &brakePercentage, sizeof brakePercentage);
-
-    const char *canMessage = (const char*) combined;
-
-    if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
-        puts("send failed");
-    };
-
-    puts("Data send");
+    UDP_DRIVE::send(arbitration_id, brakePercentage); 
 };
 
+/**
+ * @brief steering function which takes floating values between -1 and 1
+ * 
+ * @param steeringAngle The steering angle
+ */
 void UDP_DRIVE::steer(float steeringAngle) {
     short arbitration_id = __builtin_bswap16(0x12c);
-    char combined[sizeof arbitration_id + sizeof steeringAngle];
-
-    memcpy(combined, &arbitration_id, sizeof arbitration_id);
-    memcpy(combined+sizeof arbitration_id, &steeringAngle, sizeof steeringAngle);
-
-    const char *canMessage = (const char*) combined;
-
-    if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
-        puts("send failed");
-    };
-
-    puts("Data send");
+    UDP_DRIVE::send(arbitration_id, steeringAngle);  
 };
 
+/**
+ * @brief functino to shift up one gear
+ * 
+ */
 void UDP_DRIVE::gearShiftUp() {
     short arbitration_id = __builtin_bswap16(0x121);
     int32_t data = 0;
-    char combined[sizeof arbitration_id + sizeof data];
-
-        memcpy(combined, &arbitration_id, sizeof arbitration_id);
-        memcpy(combined+sizeof arbitration_id, &data, sizeof data);
-
-        const char *canMessage = (const char*) combined;
-
-        if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
-            puts("send failed");
-        };
-
-        puts("Data send");
+    UDP_DRIVE::send(arbitration_id, data);
 };
 
+/**
+ * @brief function to shift down one gear
+ * 
+ */
 void UDP_DRIVE::gearShiftDown() {
     short arbitration_id = __builtin_bswap16(0x122);
     int32_t data = 0;
-    char combined[sizeof arbitration_id + sizeof data];
-
-        memcpy(combined, &arbitration_id, sizeof arbitration_id);
-        memcpy(combined+sizeof arbitration_id, &data, sizeof data);
-
-        const char *canMessage = (const char*) combined;
-
-        if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
-            puts("send failed");
-        };
-
-        puts("Data send");
-};
-
-
-void UDP_DRIVE::drive() {
-        short arbitration_id = __builtin_bswap16(0x120);
-        int32_t data = 0;
-        //float i = -1.0;
-
-        char combined[sizeof arbitration_id + sizeof data];
-
-        memcpy(combined, &arbitration_id, sizeof arbitration_id);
-        memcpy(combined+sizeof arbitration_id, &data, sizeof data);
-
-        const char *canMessage = (const char*) combined;
-
-        if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
-            puts("send failed");
-        };
-
-        puts("Data send");
+    UDP_DRIVE::send(arbitration_id, data);
 };
