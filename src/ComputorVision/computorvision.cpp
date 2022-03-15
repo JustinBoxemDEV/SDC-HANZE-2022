@@ -187,12 +187,8 @@ std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
 
     int imageCenter = src.cols / 2.0f;
     int laneCenterX = (averagedLines[0][0] + averagedLines[1][0]) / 2;
-    int centerDelta = imageCenter - laneCenterX;
-    float normalisedDelta = 2 * (float(centerDelta - averagedLines[0][0]) / float(averagedLines[1][0] - averagedLines[0][0])) - 1;
- 
-    cv::putText(frame, "Center Offset: " + std::to_string(centerDelta), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
-    cv::putText(frame, "Center Offset (N): " + std::to_string(normalisedDelta), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
-
+    laneOffset = imageCenter - laneCenterX;
+    normalisedLaneOffset = 2 * (float(laneOffset - averagedLines[0][0]) / float(averagedLines[1][0] - averagedLines[0][0])) - 1;
     return averagedLines;
 }
 
