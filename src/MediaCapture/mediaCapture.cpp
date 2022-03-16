@@ -6,30 +6,43 @@
 #include <filesystem>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "../Math/Polynomial.h"
+#include <thread>
 namespace fs = std::filesystem;
 
-void MediaCapture::ProcessFeed(int cameraID, std::string filename){
-    cv::VideoCapture* capture;
-
-    if(cameraID!=0){
+void MediaCapture::ProcessFeed(int cameraID, std::string filename)
+{
+    if (cameraID != 0)
+    {
         capture = new cv::VideoCapture(cameraID);
         capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
         capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
-    }else if(filename!=""){
+    }
+    else if (filename != "")
+    {
         std::cout << filename << std::endl;
         capture = new cv::VideoCapture(filename);
-    }else{
+    }
+    else
+    {
         capture = new cv::VideoCapture(0);
 
         // Camera detection check
-        if(!capture->isOpened()){
+        if (!capture->isOpened())
+        {
             std::cout << "NO CAMERA DETECTED!" << std::endl;
             return;
         }
     }
-
-    cv::Mat frame;
     std::cout << "Camera selected: " << cameraID << std::endl;
+    pid.PIDController_Init();
+
+    std::thread tr([&](){ execute();});
+    tr.join();
+}
+
+void MediaCapture::execute(){
+    cv::Mat frame;
 
     // Define total frames and start of a counter for FPS calculation
     int totalFrames = 0;
@@ -38,12 +51,14 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename){
     time(&start);
 
     // Camera feed
-    while (capture->read(frame)){
+    while (capture->read(frame))
+    {
         totalFrames++;
 
         ProcessImage(frame);
 
-        if(cv::waitKey(1000/60)>=0){
+        if (cv::waitKey(1000 / 60) >= 0)
+        {
             break;
         }
     }
@@ -52,84 +67,55 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename){
     time(&end);
 
     // Time elapsed
-    double seconds = difftime (end, start);
+    double seconds = difftime(end, start);
     std::cout << "Time taken : " << seconds << " seconds" << std::endl;
 
     // Estimate the FPS based on frames / elapsed time in seconds
-    int fps  = totalFrames / seconds;
-    std::cout << "Estimated frames per second : " << fps << std::endl; 
+    int fps = totalFrames / seconds;
+    std::cout << "Estimated frames per second : " << fps << std::endl;
 }
 
-cv::Mat MediaCapture::LoadImage(std::string filepath){
+cv::Mat MediaCapture::LoadImage(std::string filepath)
+{
     std::string path = fs::current_path().string() + "/assets/images/" + std::string(filepath);
     cv::Mat img = imread(path, cv::IMREAD_COLOR);
-    if(!fs::exists(path)){
+    if (!fs::exists(path))
+    {
         std::cout << "The requested file cannot be found in /assets/images/!" << std::endl;
         return img;
     }
 
-    if(img.empty()){
+    if (img.empty())
+    {
         std::cout << "Could not read the image: " << path << std::endl;
         return img;
     }
     return img;
 }
 
-void MediaCapture::ProcessImage(cv::Mat src){
-    cv::Mat grayScaleImage;
-    cv::Mat wipImage;
-    src.copyTo(wipImage);
-    cv::Mat denoisedImage = cVision.BlurImage(wipImage);
+void MediaCapture::ProcessImage(cv::Mat src)
+{
+    cVision.SetFrame(src);
+    // cv::Mat wipImage;
+    // src.copyTo(wipImage);
 
-    cv::Mat hsv;
-    cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat binaryImage = cVision.CreateBinaryImage(src);
+    cv::Mat maskedImage = cVision.MaskImage(binaryImage);
+
+    std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
+
+    double laneOffset = cVision.getLaneOffset();
+    double normalisedLaneOffset = cVision.getNormalisedLaneOffset();
+    cv::putText(src, "Center Offset: " + std::to_string(laneOffset), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
+
+    double pidout = pid.PIDController_update(normalisedLaneOffset);
+    cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
+
+    cVision.PredictTurn(maskedImage, averagedLines);
     
-    cv::Mat hsvFilter;
-    cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); //cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
-    
-    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)) );
-    cv::dilate( hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE,  cv::Size(12, 12)) ); 
-
-    cv::dilate( hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)) ); 
-    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE,  cv::Size(12, 12)) );
-
-    cv::Mat edgeMapImage = cVision.DetectEdges(hsvFilter);
-    cv::Mat maskedImage = cVision.MaskImage(edgeMapImage);
-
-    // cv::Mat hsvMask;
-    // cv::bitwise_and(maskedImage, maskedImage, hsvMask, hsvFilter);
-
-    // imshow("Thresholded Image", hsvFilter); 
-    // imshow("mask", hsvMask); 
-    // imshow("maskiamge", maskedImage); 
-
-    std::vector<cv::Vec4i> houghLines = cVision.HoughLines(maskedImage);
-    std::vector<cv::Vec4i> averagedLines = cVision.AverageLines(wipImage, houghLines);
-
-    cv::Mat linesImage = cVision.PlotLaneLines(wipImage, averagedLines);
-
-    cv::Mat warped; 
-
-    cv::Point2f srcP[4] = {
-        cv::Point2f(averagedLines[0][2] , averagedLines[0][3]),       
-        cv::Point2f(averagedLines[1][2], averagedLines[1][3]),
-        cv::Point2f(averagedLines[1][0], averagedLines[1][1]),
-        cv::Point2f(averagedLines[0][0], averagedLines[0][1]),
-    };
-
-    cv::Point2f dstP[4] = {
-        cv::Point2f(src.cols * 0.2, 0),
-        cv::Point2f(src.cols * 0.8, 0), 
-        cv::Point2f(src.cols * 0.8, src.rows), 
-        cv::Point2f(src.cols * 0.2, src.rows),
-    };
-
-    cv::Mat homography = cv::getPerspectiveTransform(srcP, dstP);
-    cv::warpPerspective(maskedImage, warped, homography, cv::Size(src.cols,src.rows));
-    
-    cv::namedWindow("Warped");
-    imshow("Warped", warped);
-
-    cv::namedWindow("Lanes");
-    imshow("Lanes", linesImage);
+    double curveRadiusR = cVision.getRightEdgeCurvature();
+    double curveRadiusL = cVision.getLeftEdgeCurvature();
+    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 }
