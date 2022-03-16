@@ -1,12 +1,14 @@
 #pragma once
 #include "CommunicationStrategy.h"
 #include <iostream>
+#include <string.h>
+#ifdef linux
 #include <sys/socket.h>
 #include <linux/can.h>
-#include <string.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
+#endif
 
 struct CANBus : public CommunicationStrategy {
     public:
@@ -24,7 +26,7 @@ struct CANBus : public CommunicationStrategy {
             canMessage.data[3] = (std::byte) 0x00;
             canMessage.trailer =   0x00000000;
 
-            send(canMessage);
+            sendCanMessage(canMessage);
         };
         virtual void steer(float amount) {
             typedef frame<float> steerFrame;
@@ -36,7 +38,7 @@ struct CANBus : public CommunicationStrategy {
             canMessage.data = amount;
             canMessage.trailer = 0x00000000;
 
-            send(canMessage);
+            sendCanMessage(canMessage);
         };
 
         virtual void brake(int amount) {
@@ -52,7 +54,7 @@ struct CANBus : public CommunicationStrategy {
             canMessage.data[3] = (std::byte) 0x00;
             canMessage.trailer =  0x00000000;
 
-            send(canMessage);
+            sendCanMessage(canMessage);
         };
 
         virtual void forward(int amount) {
@@ -125,7 +127,7 @@ struct CANBus : public CommunicationStrategy {
             __u_int     trailer;
         };
         template <class T>
-        void send(T & canMessage) {
+        void sendCanMessage(T & canMessage) {
             if (write(cansocket, &canMessage, sizeof(canMessage)) != sizeof(canMessage)) {
                 perror("Write");
             };

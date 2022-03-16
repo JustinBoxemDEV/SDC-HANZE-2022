@@ -4,7 +4,7 @@
 #include <winsock2.h>
 #endif
 #include <iostream>
-#include "CommunicationStrategy.h"
+#include "../CommunicationStrategy.h"
 
 class ACStrategy : CommunicationStrategy {
     public:
@@ -34,10 +34,12 @@ class ACStrategy : CommunicationStrategy {
             puts("connected");    
         };
         void steer(float amount) {
-            send(merge(__builtin_bswap16(0x12c), amount));
+            const char* data = merge(__builtin_bswap16(0x12c), amount);
+            sendCanMessage(data);
         };
         void brake(int amount) {
-            send(merge(__builtin_bswap16(0x126), amount));
+            const char* data = merge(__builtin_bswap16(0x126), amount);
+            sendCanMessage(data);
         };
         void forward(int amount) {
             throttle(amount, 1);
@@ -51,18 +53,24 @@ class ACStrategy : CommunicationStrategy {
             neutral();
         };
         void gearShiftUp() {
-            send(merge(__builtin_bswap16(0x121), 0));
+            int dummy = 0;
+            const char* data = merge(__builtin_bswap16(0x121), dummy);
+            sendCanMessage(data);
         };
         void gearShiftDown() {
-            send(merge(__builtin_bswap16(0x122), 0));
+            int dummy = 0;
+            const char* data = merge(__builtin_bswap16(0x122), dummy);
+            sendCanMessage(data);
         };
      private:
         void throttle(int amount, int direction) {
-            send(merge(__builtin_bswap16(0x120), amount));
+            const char* data = merge(__builtin_bswap16(0x120), amount);
+            sendCanMessage(data);
         };
         template<class T>
-        void send(T & canMessage) {
-            if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
+        void sendCanMessage(T & canMessage) {
+            const char* socketMessage = (const char*) canMessage;
+            if(send(s, socketMessage, sizeof(socketMessage), 0) < 0) {
                 puts("send failed");
             };
 
@@ -75,7 +83,8 @@ class ACStrategy : CommunicationStrategy {
             memcpy(combined, &arbitration_id, sizeof arbitration_id);
             memcpy(combined+sizeof arbitration_id, &data, sizeof data);
 
-            return (const char*) combined;
+            const char* merged = combined;
+            return merged;
         };
 };
 

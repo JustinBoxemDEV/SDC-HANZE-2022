@@ -8,5 +8,5 @@ class CommunicationStrategy {
     private:
         virtual void throttle(int amount, int direction) = 0;
         template<class T>
-        void send(T & canMessage);
+        void sendCanMessage(T & canMessage);
 };
