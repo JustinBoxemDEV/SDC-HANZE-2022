@@ -2,26 +2,14 @@
 
 int CANController::cansocket;
 
-struct defaultFrame {
+template <class T>
+struct frame {
     canid_t     can_id;
     __u8        can_dlc;
     __u8        __pad; 
     __u8        __res0; 
     __u8        __res1;
-    std::byte   amount;
-    std::byte   space;
-    std::byte   direction;
-    std::byte   trailer1;
-    __u_int     trailer2;
-}; 
-
-struct steeringFrame {
-    canid_t     can_id;
-    __u8        can_dlc;
-    __u8        __pad;
-    __u8        __res0;
-    __u8        __res1;
-    float       steering;
+    T           data;
     __u_int     trailer;
 };
 
@@ -84,29 +72,27 @@ void CANController::init(std::string canType) {
 
 /**
     Send a throttle message to the canbus. Throttle corresponds to id 0x125.
-    @param speed The speed percentage as integer between 0 and 100.
+    @param speedPercentage The speed percentage as integer between 0 and 100.
     @param direction The driving direction as integer: 0 = neutral, 1 = gas, 2 = reverse.
 
     Additional info:
     Message example: Arb ID: 0x00000120	Data: 50 00 01 00 00 00 00 00
     Send in intervals of 40ms
 */
-void CANController::throttle(int speed, int direction) {
-    std::cout << "VROOM VROOM" << std::endl;
-    struct defaultFrame frame;
-    
-    frame.can_id = 0x000125;
-    frame.can_dlc = 8;
+void CANController::throttle(int speedPercentage, int direction) {
+    typedef frame<std::byte[4]> throttleFrame;
 
-    frame.amount    =   (std::byte) speed;
-    frame.space     =   (std::byte) 0x00;
-    frame.direction =   (std::byte) direction;
-    frame.trailer1  =   (std::byte) 0x00;
-    frame.trailer2  =   0x00000000;
+    throttleFrame canMessage;
 
-    if (write(CANController::cansocket, &frame, sizeof(struct defaultFrame)) != sizeof(struct defaultFrame)) {
-        perror("Write");
-    };
+    canMessage.can_id = 0x120;
+    canMessage.can_dlc = 8;
+    canMessage.data[0] = (std::byte) speedPercentage;
+    canMessage.data[1] = (std::byte) 0x00;
+    canMessage.data[2] = (std::byte) direction;
+    canMessage.data[3] = (std::byte) 0x00;
+    canMessage.trailer =   0x00000000;
+
+    CANController::send(canMessage);
 };
 
 /**
@@ -115,25 +101,24 @@ void CANController::throttle(int speed, int direction) {
 
     Additional info:
     Only allowed when braking -> engine will shutdown (to prevent braking when accelerating)
-    Only send in intervals of 40m
+    Only send in intervals of 40ms
     Message example: Arb ID: 0x00000126	Data: 50 00 00 00 00 00 00 00
     
 */
 void CANController::brake(int brakePercentage) {
-    struct defaultFrame frame;
-    
-    frame.can_id = 0x000126;
-    frame.can_dlc = 8;
+    typedef frame<std::byte[4]> brakeFrame;
 
-    frame.amount    =   (std::byte) brakePercentage;
-    frame.space     =   (std::byte) 0x00;
-    frame.direction =   (std::byte) 0x00;
-    frame.trailer1  =   (std::byte) 0x00;
-    frame.trailer2  =   0x00000000;
+    brakeFrame canMessage;
 
-    if (write(CANController::cansocket, &frame, sizeof(struct defaultFrame)) != sizeof(struct defaultFrame)) {
-        perror("Write");
-    };
+    canMessage.can_id = 0x126;
+    canMessage.can_dlc = 8;
+    canMessage.data[0] = (std::byte) brakePercentage;
+    canMessage.data[1] = (std::byte) 0x00;
+    canMessage.data[2] = (std::byte) 0x00;
+    canMessage.data[3] = (std::byte) 0x00;
+    canMessage.trailer   =   0x00000000;
+
+    CANController::send(canMessage);
 };
 
 /**
@@ -146,17 +131,16 @@ void CANController::brake(int brakePercentage) {
     Message example: Arb ID: 0x000006F1	Data: 00 00 00 00 00 00 00 00
 */
 void CANController::steer(float amount) {
-    struct steeringFrame frame;
-    
-    frame.can_id    = 0x6F1;
-    frame.can_dlc   = 8;
+    typedef frame<float> steerFrame;
 
-    frame.steering  = amount;
-    frame.trailer   = 0x00000000;
+    steerFrame canMessage;
 
-    if (write(CANController::cansocket, &frame, sizeof(struct steeringFrame)) != sizeof(struct steeringFrame)) {
-        perror("Write");
-    };
+    canMessage.can_id = 0x12c;
+    canMessage.can_dlc = 8;
+    canMessage.data = amount;
+    canMessage.trailer = 0x00000000;
+
+    CANController::send(canMessage);
 };
 
 /**

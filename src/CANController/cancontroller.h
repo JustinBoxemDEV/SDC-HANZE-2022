@@ -10,11 +10,21 @@
 class CANController {
     public:
         static int cansocket;
-        static void create();
-        static void closeCANController(std::string canType="can");
-        static void throttle(int speed, int direction);
+
+        static void init(std::string canType="can");
+
+        static void throttle(int speedPercentage, int direction);
         static void brake(int brakePercentage);
         static void steer(float amount);
-        static void init(std::string canType="can");
+
         static void readCANMessages();
+        static void closeCANController(std::string canType="can");
+
+    private:
+        template<class T>
+        static void send(T & canMessage) {
+            if (write(CANController::cansocket, &canMessage, sizeof(canMessage)) != sizeof(canMessage)) {
+                perror("Write");
+            };
+        };
 };

@@ -1,31 +1,38 @@
-#pragma once
-#include <stdio.h>
-#include <winsock2.h>
-#include <iostream>
+// #pragma once
+// #include <stdio.h>
+// #include <winsock2.h>
+// #include <iostream>
 
-class UDP_DRIVE {
-    public:
-        static SOCKET s;
-        static void drive();
-        static void throttle(int speedPercentage);
-        static void brake(int brakePercentage);
-        static void steer(float steeringAngle);
-        static void gearShiftUp();
-        static void gearShiftDown();
-        static void init();
-        template<class T>
-        static void send(short arbitration_id, T & data) {
-            char combined[sizeof arbitration_id + sizeof data];
+// class UDP_DRIVE {
+//     public:
+//         static SOCKET s;
 
-            memcpy(combined, &arbitration_id, sizeof arbitration_id);
-            memcpy(combined+sizeof arbitration_id, &data, sizeof data);
+//         static void init();
+//         static void throttle(int speedPercentage);
+//         static void brake(int brakePercentage);
+//         static void steer(float amount);
 
-            const char *canMessage = (const char*) combined;
+//         static void gearShiftUp();
+//         static void gearShiftDown();
+//     private:
+//         template<class T>
+//         static void send(T & canMessage) {
 
-            if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
-                puts("send failed");
-            };
+//             if(send(s, canMessage, sizeof(canMessage), 0) < 0) {
+//                 puts("send failed");
+//             };
 
-            puts("Data send");
-        };
-};
+//             puts("Data send");
+//         };
+
+//         template<class T>
+//         const char* merge(short arbitration_id, T & data) {
+//             char combined[sizeof arbitration_id + sizeof data];
+
+//             memcpy(combined, &arbitration_id, sizeof arbitration_id);
+//             memcpy(combined+sizeof arbitration_id, &data, sizeof data);
+
+//             return (const char*) combined;
+//         };
+
+// };
