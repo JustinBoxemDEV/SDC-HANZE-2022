@@ -1,11 +1,14 @@
-#include "PID.h";
+#include "PID.h"
 #include <iostream>
 
-void PIDController::PIDController_Init(PIDController) {
-	gp = 0.15;
-	gi = 0.03;
-	gd = 0.025;
-	
+void PIDController::PIDController_Init() {
+	// gp = 0.15;
+	// gi = 0.03;
+	// gd = 0.025;
+	std::cout << "gp: "<< gp << std::endl;
+	std::cout << "gi: "<< gi << std::endl;
+	std::cout << "gd: "<< gd << std::endl;
+
 	lowPassFilter = 0.02;
 	minOutputLimit = -1;
 	maxOutputLimit = 1;
@@ -19,15 +22,15 @@ void PIDController::PIDController_Init(PIDController) {
 }
 
 
-double PIDController::PIDController_update(PIDController, double error) {
+double PIDController::PIDController_update(double error) {
 
 	
 	proportional = gp * error;
-	std::cout << "prop " << proportional << std::endl;// voor debugging
+	//std::cout << "prop " << proportional << std::endl;// voor debugging
 	
 	if ((error < 0.0 && prevError > 0.0) || (error > 0.0 && prevError < 0.0) || (error == 0.0)) {
 		time = 0.03333333333;// time = 1/fps
-		std::cout << "reset time " << std::endl;
+		//std::cout << "reset time " << std::endl;
 	}
 	//calculate I and clamp
 	integrator = integrator + 0.5 * gi * time * (error + prevError);
@@ -40,10 +43,11 @@ double PIDController::PIDController_update(PIDController, double error) {
 
 		integrator = maxLimitI;
 	}
-	std::cout << "inte " << integrator << std::endl;// voor debugging
+	//std::cout << "inte " << integrator << std::endl;// voor debugging
 	
-	differentiator = -(2.0 * gd * (error - prevError) + (2.0 * lowPassFilter - time) * differentiator) / (2.0 * lowPassFilter + time);//<== verander
-	std::cout << "diff " << differentiator << std::endl;//voor debugging
+	differentiator = gd * (error - prevError)/time;
+	//std::cout << "diff " << differentiator << std::endl;//voor debugging
+	
 	//calculate output and clamp
 	output = proportional + integrator + differentiator;
 	if (output > maxOutputLimit) {
@@ -54,7 +58,7 @@ double PIDController::PIDController_update(PIDController, double error) {
 	}
 	time = time + 0.03333333333; // time + 1/fps
 	prevError = error;
-	std::cout << "time " << time << std::endl;
+	//std::cout << "time " << time << std::endl;
 	return output;
 }
 

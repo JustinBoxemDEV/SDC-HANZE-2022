@@ -78,3 +78,8 @@ https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget/
 https://www.ssh.com/academy/ssh/tunneling
 
 https://www.ssh.com/academy/ssh/tunneling/example#remote-forwarding
+
+### VNC --- Xvnc on TigerVNC
+https://tigervnc.org/doc/Xvnc.html
+
+https://github.com/TigerVNC/tigervnc/issues/1106
