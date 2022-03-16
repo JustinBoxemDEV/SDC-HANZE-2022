@@ -112,6 +112,7 @@ void MediaCapture::ProcessImage(cv::Mat src)
     double pidout = pid.PIDController_update(normalisedLaneOffset);
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
+    imshow("masked", maskedImage);
     cVision.PredictTurn(maskedImage, averagedLines);
     
     double curveRadiusR = cVision.getRightEdgeCurvature();

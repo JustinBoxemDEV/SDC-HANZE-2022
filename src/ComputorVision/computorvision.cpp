@@ -24,8 +24,8 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.7),
-        cv::Point(0, src.rows * 0.45),
-        cv::Point(src.cols, src.rows * 0.45),
+        cv::Point(0, src.rows * 0.35),
+        cv::Point(src.cols, src.rows * 0.35),
         cv::Point(src.cols, src.rows * 0.7),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -89,7 +89,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.45); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.35); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
@@ -170,9 +170,9 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     cv::dilate(hsvFilter, hsvFilter, structuringElement);
     cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    imshow("hsvfilter", hsvFilter);
+    // imshow("hsvfilter", hsvFilter);
     binaryImage = DetectEdges(hsvFilter);
-    imshow("binary", binaryImage);
+    // imshow("binary", binaryImage);
 
     return binaryImage;
 }
@@ -232,7 +232,7 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     double vertexLX = Polynomial::Vertex(fitL);
 
     std::string roadType = "";
-    int turnThreshold = 200;
+    int turnThreshold = 400;
 
     if(vertexLX < turnThreshold){
         roadType = "Left Turn";
