@@ -10,15 +10,15 @@
 #endif
 
 CANStrategy::CANStrategy() {
-    // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
-    // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
+    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
+    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
     // Vcan
     //system("sudo ip link del dev vcan0 type vcan");
     //system("sudo ip link add dev vcan0 type vcan");
-    system("sudo ip link set vcan0 type vcan");
-    system("sudo ip link set vcan0 up");
+    // system("sudo ip link set vcan0 type vcan");
+    // system("sudo ip link set vcan0 up");
 
-    CANStrategy::init("vcan0");
+    CANStrategy::init("can0");
 };
 
 void CANStrategy::throttle(int amount, int direction) {
