@@ -1,3 +1,5 @@
+#pragma once
+
 class CommunicationStrategy {
     public:
         virtual void steer(float amount) = 0;

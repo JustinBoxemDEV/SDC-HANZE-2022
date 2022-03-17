@@ -1,13 +1,41 @@
 #pragma once
-#include "../CANBus.h"
+#include "../CommunicationStrategy.h"
+#include <iostream>
+#include <string.h>
+#ifdef linux
+#include <sys/socket.h>
+#include <linux/can.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <unistd.h>
+#endif
 
-class CANStrategy : public CANBus {
+class CANStrategy : public CommunicationStrategy {
     public:
-        CANStrategy() {
-            system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
-            system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
-        
-            CANBus::init("can0");
+        int cansocket;
+        CANStrategy();
+        void throttle(int amount, int direction);
+        void steer(float amount);
+        void brake(int amount);
+        void forward(int amount);
+        void neutral();
+        void stop();
+        void readCANMessages();
+        void init(const char* canType);
+        template <class T>
+        struct frame {
+            canid_t     can_id;
+            __u8        can_dlc;
+            __u8        __pad; 
+            __u8        __res0; 
+            __u8        __res1;
+            T           data;
+            __u_int     trailer;
+        };
+        template<typename T>
+        void sendCanMessage(T & canMessage) {
+            if (write(cansocket, &canMessage, sizeof(canMessage)) != sizeof(canMessage)) {
+                perror("Write");
+            };
         };
 };
-

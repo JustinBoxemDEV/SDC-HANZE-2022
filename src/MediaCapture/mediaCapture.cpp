@@ -39,7 +39,7 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 
     std::thread tr([&](){ execute();});
     tr.join();
-}
+};
 
 void MediaCapture::execute(){
     cv::Mat frame;
@@ -73,7 +73,7 @@ void MediaCapture::execute(){
     // Estimate the FPS based on frames / elapsed time in seconds
     int fps = totalFrames / seconds;
     std::cout << "Estimated frames per second : " << fps << std::endl;
-}
+};
 
 cv::Mat MediaCapture::LoadImage(std::string filepath)
 {
@@ -91,7 +91,7 @@ cv::Mat MediaCapture::LoadImage(std::string filepath)
         return img;
     }
     return img;
-}
+};
 
 void MediaCapture::ProcessImage(cv::Mat src)
 {
@@ -118,4 +118,4 @@ void MediaCapture::ProcessImage(cv::Mat src)
     double curveRadiusL = cVision.getLeftEdgeCurvature();
     cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
-}
+};

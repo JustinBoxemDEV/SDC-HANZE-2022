@@ -1,3 +1,4 @@
+#ifdef false
 #pragma once
 #include <stdio.h>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
@@ -9,64 +10,16 @@
 class ACStrategy : CommunicationStrategy {
     public:
         SOCKET s;
-        ACStrategy() {
-            WSADATA wsa;
-            struct sockaddr_in server;
-
-            printf("\nInitialising Winsock...\n");
-            if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
-            {
-                printf("Failed. Error Code : %d",WSAGetLastError());
-            };
-
-            printf("Initialised.\n");
-
-            s = socket(AF_INET, SOCK_DGRAM, 0);
-
-            server.sin_addr.s_addr  =   inet_addr("127.0.0.1");
-            server.sin_family       =   AF_INET;
-            server.sin_port         =   htons(5454);
-
-            if (connect(s, (struct sockaddr *)&server, sizeof(server)) < 0) {
-                puts("connect error");
-            };
-
-            puts("connected");    
-        };
-        void steer(float amount) {
-            const char* data = merge(__builtin_bswap16(0x12c), amount);
-            sendCanMessage(data);
-        };
-        void brake(int amount) {
-            const char* data = merge(__builtin_bswap16(0x126), amount);
-            sendCanMessage(data);
-        };
-        void forward(int amount) {
-            throttle(amount, 1);
-        };
-        void neutral() {
-            // TODO: get current gear and reduce it to 0
-        };
-        void stop() {
-            throttle(0, 0);
-            brake(100);
-            neutral();
-        };
-        void gearShiftUp() {
-            int dummy = 0;
-            const char* data = merge(__builtin_bswap16(0x121), dummy);
-            sendCanMessage(data);
-        };
-        void gearShiftDown() {
-            int dummy = 0;
-            const char* data = merge(__builtin_bswap16(0x122), dummy);
-            sendCanMessage(data);
-        };
+        ACStrategy();
+        void steer(float amount);
+        void brake(int amount);
+        void forward(int amount);
+        void neutral();
+        void stop();
+        void gearShiftUp();
+        void gearShiftDown();
      private:
-        void throttle(int amount, int direction) {
-            const char* data = merge(__builtin_bswap16(0x120), amount);
-            sendCanMessage(data);
-        };
+        void throttle(int amount, int direction);
         template<class T>
         void sendCanMessage(T & canMessage) {
             const char* socketMessage = (const char*) canMessage;
@@ -87,4 +40,4 @@ class ACStrategy : CommunicationStrategy {
             return merged;
         };
 };
-
+#endif
