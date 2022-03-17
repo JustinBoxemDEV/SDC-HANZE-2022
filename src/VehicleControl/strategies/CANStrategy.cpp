@@ -76,6 +76,8 @@ void CANStrategy::neutral() {
 
 void CANStrategy::stop() {
     // stop gas, break and set to neutral
+    CANStrategy::throttle(0, 1);
+    CANStrategy::brake(100);
 };
 
 void CANStrategy::readCANMessages() {

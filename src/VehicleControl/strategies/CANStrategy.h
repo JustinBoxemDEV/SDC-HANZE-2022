@@ -14,7 +14,6 @@ class CANStrategy : public CommunicationStrategy {
     public:
         int cansocket;
         CANStrategy();
-        void throttle(int amount, int direction);
         void steer(float amount);
         void brake(int amount);
         void forward(int amount);
@@ -32,6 +31,8 @@ class CANStrategy : public CommunicationStrategy {
             T           data;
             __u_int     trailer;
         };
+    private:
+        void throttle(int amount, int direction);
         template<typename T>
         void sendCanMessage(T & canMessage) {
             if (write(cansocket, &canMessage, sizeof(canMessage)) != sizeof(canMessage)) {
