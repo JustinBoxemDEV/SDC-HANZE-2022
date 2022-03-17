@@ -24,8 +24,8 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.7),
-        cv::Point(0, src.rows * 0.35),
-        cv::Point(src.cols, src.rows * 0.35),
+        cv::Point(0, src.rows * 0.30),
+        cv::Point(src.cols, src.rows * 0.30),
         cv::Point(src.cols, src.rows * 0.7),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -89,7 +89,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.35); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.30); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
@@ -162,7 +162,8 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     denoisedImage = BlurImage(src);
 
     cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
-    cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
+    cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
+    // cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
 
     cv::erode(hsvFilter, hsvFilter, structuringElement);
     cv::dilate(hsvFilter, hsvFilter, structuringElement);
@@ -170,7 +171,30 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     cv::dilate(hsvFilter, hsvFilter, structuringElement);
     cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    // imshow("hsvfilter", hsvFilter);
+    cv::Mat sobelx;
+    cv::Mat sobely;
+    cv::Mat sobelxy;
+
+    cv::Mat gray;
+    cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
+    Sobel(gray, sobelx, CV_64F, 1, 0);
+    Sobel(gray, sobely, CV_64F, 0, 1);
+    Sobel(gray, sobelxy, CV_64F, 1, 1);
+
+    convertScaleAbs(sobelx, sobelx);
+    convertScaleAbs(sobely, sobely);
+    convertScaleAbs(sobelxy, sobelxy);
+    // imshow("sobx'", sobelx);
+    // imshow("soby'", sobely);
+    // imshow("sobxy'", sobelxy);
+
+    cv::Mat sobel;
+    cv::bitwise_or(sobelx, sobely, sobel);
+    cv::bitwise_or(sobel, sobelxy, sobel);
+    imshow("sobel'", sobel);
+
+
+    imshow("hsvfilter", hsvFilter);
     binaryImage = DetectEdges(hsvFilter);
     // imshow("binary", binaryImage);
 
@@ -232,7 +256,7 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     double vertexLX = Polynomial::Vertex(fitL);
 
     std::string roadType = "";
-    int turnThreshold = 400;
+    int turnThreshold = 3000;
 
     if(vertexLX < turnThreshold){
         roadType = "Left Turn";
@@ -250,8 +274,8 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     std::vector<cv::Point> allPts;
 
     cv::perspectiveTransform(rightLinePixels, outPts, invertedPerspectiveMatrix);
-    cv::line(frame, cv::Point(edgeLines[1][0], edgeLines[1][1]), outPts[0], cv::Scalar(0, 255, 0), 3);
-    allPts.push_back(cv::Point(edgeLines[1][0], edgeLines[1][1]));
+    // cv::line(frame, cv::Point(edgeLines[1][0], edgeLines[1][1]), outPts[0], cv::Scalar(0, 255, 0), 3);
+    // allPts.push_back(cv::Point(edgeLines[1][0], edgeLines[1][1]));
 
     for (int i = 0; i < outPts.size() - 1; ++i)
     {
@@ -270,8 +294,8 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     }
 
     allPts.push_back(cv::Point(outPts[0].x - (outPts.size() - 1), outPts[0].y));
-    cv::line(frame, cv::Point(edgeLines[0][0], edgeLines[0][1]), outPts[outPts.size() -1], cv::Scalar(0, 255, 0), 3);
-    allPts.push_back(cv::Point(edgeLines[0][0], edgeLines[0][1]));
+    // cv::line(frame, cv::Point(edgeLines[0][0], edgeLines[0][1]), outPts[outPts.size() -1], cv::Scalar(0, 255, 0), 3);
+    // allPts.push_back(cv::Point(edgeLines[0][0], edgeLines[0][1]));
 
     std::vector<std::vector<cv::Point>> arr;
     arr.push_back(allPts);

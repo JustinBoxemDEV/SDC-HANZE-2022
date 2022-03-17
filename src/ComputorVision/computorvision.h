@@ -13,6 +13,15 @@ class ComputorVision{
         double curveRadiusR = 0;
         double curveRadiusL = 0;
 
+
+        int hMin = 0;
+        int hMax = 178;
+        int sMin = 0; //33
+        int sMax = 255;
+        int vMin = 0;
+        int vMax = 255;
+
+
         cv::Mat masked;
         cv::Mat mask;
         cv::Mat edgeMap;
@@ -31,7 +40,16 @@ class ComputorVision{
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
     public:
 
-        ComputorVision(){structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12));}
+        ComputorVision(){
+            cv::namedWindow("Trackbars", 0); 
+            cv::createTrackbar("Hue min", "Trackbars", &hMin, hMax);
+            cv::createTrackbar("Hue max", "Trackbars", &hMax, hMax);
+            cv::createTrackbar("Sat min", "Trackbars", &sMin, sMax);
+            cv::createTrackbar("Sat max", "Trackbars", &sMax, sMax);
+            cv::createTrackbar("Val min", "Trackbars", &vMin, vMax);
+            cv::createTrackbar("Val max", "Trackbars", &vMax, vMax);
+            structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12));
+        }
         double getNormalisedLaneOffset(){ return normalisedLaneOffset; }
         double getLaneOffset(){ return laneOffset; }
         double getRightEdgeCurvature(){ return curveRadiusR; }

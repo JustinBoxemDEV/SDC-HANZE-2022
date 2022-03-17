@@ -44,6 +44,7 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 void MediaCapture::execute(){
     cv::Mat frame;
 
+
     // Define total frames and start of a counter for FPS calculation
     int totalFrames = 0;
 
