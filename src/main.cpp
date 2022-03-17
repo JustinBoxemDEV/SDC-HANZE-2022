@@ -125,5 +125,6 @@ int screenCaptureCommand(int argc, char** argv) {
     return screenCapture::run();
     #else
     cout << "ERROR: screen capture is currently not working for linux!" << endl;
+    return -1;
     #endif
 }
