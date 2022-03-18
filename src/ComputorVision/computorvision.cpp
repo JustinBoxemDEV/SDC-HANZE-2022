@@ -24,8 +24,8 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.7),
-        cv::Point(0, src.rows * 0.30),
-        cv::Point(src.cols, src.rows * 0.30),
+        cv::Point(0, src.rows * 0.3),
+        cv::Point(src.cols, src.rows * 0.3),
         cv::Point(src.cols, src.rows * 0.7),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -89,7 +89,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.30); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.3); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
@@ -161,50 +161,88 @@ std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect w
 cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     denoisedImage = BlurImage(src);
 
-    cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
-    cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
+    // cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
+    // cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
     // cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
 
-    cv::erode(hsvFilter, hsvFilter, structuringElement);
-    cv::dilate(hsvFilter, hsvFilter, structuringElement);
+    // cv::erode(hsvFilter, hsvFilter, structuringElement);
+    // cv::dilate(hsvFilter, hsvFilter, structuringElement);
 
-    cv::dilate(hsvFilter, hsvFilter, structuringElement);
-    cv::erode(hsvFilter, hsvFilter, structuringElement);
+    // cv::dilate(hsvFilter, hsvFilter, structuringElement);
+    // cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    cv::Mat sobelx;
-    cv::Mat sobely;
-    cv::Mat sobelxy;
+    // cv::Mat sobelx;
+    // cv::Mat sobely;
+    // cv::Mat sobelxy;
 
-    cv::Mat gray;
-    cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
-    Sobel(gray, sobelx, CV_64F, 1, 0);
-    Sobel(gray, sobely, CV_64F, 0, 1);
-    Sobel(gray, sobelxy, CV_64F, 1, 1);
+    // cv::Mat gray;
+    // cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
+    // Sobel(gray, sobelx, CV_64F, 1, 0);
+    // Sobel(gray, sobely, CV_64F, 0, 1);
+    // Sobel(gray, sobelxy, CV_64F, 1, 1);
 
-    convertScaleAbs(sobelx, sobelx);
-    convertScaleAbs(sobely, sobely);
-    convertScaleAbs(sobelxy, sobelxy);
+    // convertScaleAbs(sobelx, sobelx);
+    // convertScaleAbs(sobely, sobely);
+    // convertScaleAbs(sobelxy, sobelxy);
     // imshow("sobx'", sobelx);
     // imshow("soby'", sobely);
     // imshow("sobxy'", sobelxy);
-    cv::Mat hsl;
 
-    cv::cvtColor(src, hsl, cv::COLOR_BGR2HLS);
-    std::vector<cv::Mat> hslChannels(3);
-    cv::split(hsl, hslChannels);
+    cv::Mat rgb;
+    cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
+    std::vector<cv::Mat> rgbChannels(3);
+    cv::split(rgb, rgbChannels);
 
-    imshow("h", hslChannels[0]);
-    imshow("s", hslChannels[1]);
-    imshow("l", hslChannels[2]);
+    imshow("rgb - r", rgbChannels[0]);
+    imshow("rgb - g", rgbChannels[1]);
+    imshow("rgb - b", rgbChannels[2]);
 
-    cv::Mat sobel;
-    cv::bitwise_or(sobelx, sobely, sobel);
-    cv::bitwise_or(sobel, sobelxy, sobel);
+    // cv::Mat hls;
+    // cv::cvtColor(src, hls, cv::COLOR_BGR2HLS);
+    // std::vector<cv::Mat> hlsChannels(3);
+    // cv::split(hls, hlsChannels);
+
+    // imshow("hls - h", hlsChannels[0]);
+    // imshow("hls - l", hlsChannels[1]);
+    // imshow("hls - s", hlsChannels[2]);
+
+    // cv::Mat hsv;
+    // cv::cvtColor(src, hsv, cv::COLOR_BGR2HSV);
+    // std::vector<cv::Mat> hsvChannels(3);
+    // cv::split(hsv, hsvChannels);
+
+    // imshow("hsv - h", hsvChannels[0]);
+    // imshow("hsv - s", hsvChannels[1]);
+    // imshow("hsv - v", hsvChannels[2]);
+
+    // cv::Mat lab;
+    // cv::cvtColor(src, lab, cv::COLOR_BGR2Lab);
+    // std::vector<cv::Mat> labChannels(3);
+    // cv::split(lab, labChannels);
+
+    // imshow("lab - l", labChannels[0]);
+    // imshow("lab - a", labChannels[1]);
+    // imshow("lab - b", labChannels[2]);
+
+    // cv::Mat lux;
+    // cv::cvtColor(src, lux, cv::COLOR_BGR2Luv);
+    // std::vector<cv::Mat> luxChannels(3);
+    // cv::split(lux, luxChannels);
+
+    // imshow("lux - l", luxChannels[0]);
+    // imshow("lux - u", luxChannels[1]);
+    // imshow("lux - x", luxChannels[2]);
+
+
+    // cv::Mat sobel;
+    // cv::bitwise_or(sobelx, sobely, sobel);
+    // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
     cv::Mat mask;
-    cv::inRange(hslChannels[0], 100,255, mask);
-    
+    cv::inRange(rgbChannels[0], 40,150, mask);
+    imshow("test", mask);
+
     // imshow("hsvfilter", hsvFilter);
     binaryImage = DetectEdges(mask);
     imshow("binary", binaryImage);
@@ -236,7 +274,7 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     invert(homography, invertedPerspectiveMatrix);
 
     cv::warpPerspective(src, warped, homography, cv::Size(src.cols, src.rows));
-
+    imshow("warped", warped);
     int rectHeight = 120;
     int rectwidth = 60;
     int rectY = src.rows - rectHeight;
