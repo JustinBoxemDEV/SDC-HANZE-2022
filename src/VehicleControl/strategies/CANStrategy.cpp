@@ -1,13 +1,12 @@
+#ifdef linux
 #include "CANStrategy.h"
 #include <iostream>
 #include <string.h>
-#ifdef linux
 #include <sys/socket.h>
 #include <linux/can.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
-#endif
 
 CANStrategy::CANStrategy() {
     system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
@@ -116,9 +115,9 @@ void CANStrategy::init(const char* canType) {
     if(bind(CANStrategy::cansocket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         perror("Bind");
     };
-    
-    // When starting the kart
 
+    // When starting the kart
+    sleep(15);
     // Wait 15 seconds after kart is turned on, set the kart to drive (forwards) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
     throttle(0, 1);
     sleep(0.1);
@@ -127,3 +126,4 @@ void CANStrategy::init(const char* canType) {
     // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
     steer(0.00);    
 };
+#endif

@@ -1,14 +1,13 @@
+#ifdef linux
 #pragma once
 #include "../CommunicationStrategy.h"
 #include <iostream>
 #include <string.h>
-#ifdef linux
 #include <sys/socket.h>
 #include <linux/can.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
-#endif
 
 class CANStrategy : public CommunicationStrategy {
     public:
@@ -40,3 +39,4 @@ class CANStrategy : public CommunicationStrategy {
             };
         };
 };
+#endif

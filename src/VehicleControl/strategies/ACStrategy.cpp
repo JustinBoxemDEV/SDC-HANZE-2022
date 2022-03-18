@@ -1,9 +1,7 @@
-#ifdef false
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #include "ACStrategy.h"
 #include <stdio.h>
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #include <winsock2.h>
-#endif
 #include <iostream>
 
 ACStrategy::ACStrategy() {

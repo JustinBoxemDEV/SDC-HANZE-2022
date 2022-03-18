@@ -1,9 +1,7 @@
-#ifdef false
 #pragma once
-#include <stdio.h>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+#include <stdio.h>
 #include <winsock2.h>
-#endif
 #include <iostream>
 #include "../CommunicationStrategy.h"
 

@@ -1,3 +1,4 @@
+#include "../VehicleControl/strategies/ACStrategy.h"
 #include <stdint.h>
 #include <iostream>
 #include "mediaCapture.h"
@@ -8,7 +9,15 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "../Math/Polynomial.h"
 #include <thread>
+#include <cmath>
+
 namespace fs = std::filesystem;
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+// Hardcoded VehicleStrategy
+ACStrategy assettocorsa;
+
+#endif
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 {
@@ -36,6 +45,15 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
     }
     std::cout << "Camera selected: " << cameraID << std::endl;
     pid.PIDController_Init();
+
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+
+    // Hardcoded strategy calls
+    assettocorsa.gearShiftUp();
+    // Hardcoded start speed of the cart (10%)
+    assettocorsa.forward(10);
+
+    #endif
 
     std::thread tr([&](){ execute();});
     tr.join();
@@ -111,6 +129,14 @@ void MediaCapture::ProcessImage(cv::Mat src)
 
     double pidout = pid.PIDController_update(normalisedLaneOffset);
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
+
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+
+    if(!isnan(pidout)) {
+        assettocorsa.steer( (float) pidout);
+    };
+
+    #endif
 
     cVision.PredictTurn(maskedImage, averagedLines);
     
