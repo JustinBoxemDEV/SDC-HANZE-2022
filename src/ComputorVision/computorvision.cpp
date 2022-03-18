@@ -187,16 +187,27 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // imshow("sobx'", sobelx);
     // imshow("soby'", sobely);
     // imshow("sobxy'", sobelxy);
+    cv::Mat hsl;
+
+    cv::cvtColor(src, hsl, cv::COLOR_BGR2HLS);
+    std::vector<cv::Mat> hslChannels(3);
+    cv::split(hsl, hslChannels);
+
+    imshow("h", hslChannels[0]);
+    imshow("s", hslChannels[1]);
+    imshow("l", hslChannels[2]);
 
     cv::Mat sobel;
     cv::bitwise_or(sobelx, sobely, sobel);
     cv::bitwise_or(sobel, sobelxy, sobel);
-    imshow("sobel'", sobel);
+    // imshow("sobel'", sobel);
 
-
-    imshow("hsvfilter", hsvFilter);
-    binaryImage = DetectEdges(hsvFilter);
-    // imshow("binary", binaryImage);
+    cv::Mat mask;
+    cv::inRange(hslChannels[0], 100,255, mask);
+    
+    // imshow("hsvfilter", hsvFilter);
+    binaryImage = DetectEdges(mask);
+    imshow("binary", binaryImage);
 
     return binaryImage;
 }
