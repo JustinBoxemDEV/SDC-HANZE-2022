@@ -141,7 +141,7 @@ int screenCaptureCommand(int argc, char** argv) {
 // //TODO: Not functional yet, throttle function not called
 // void recursive() {
 
-//     std::cout << "What do you want to do? Type throttle, brake, steer or exit" << std::endl;
+//     std::cout << "What do you want to do? Type throttle, brake, steer, shift up, shift down, neutral or exit" << std::endl;
 
 //     char input[25];
 //     std::cin.get(input, 25);
