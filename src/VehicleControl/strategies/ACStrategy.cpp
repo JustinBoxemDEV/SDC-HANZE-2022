@@ -65,7 +65,7 @@ void ACStrategy::gearShiftDown() {
     ACStrategy::sendCanMessage(data);
 };
 
-void throttle(int amount, int direction) {
+void ACStrategy::throttle(int amount, int direction) {
     const char* data = ACStrategy::merge(__builtin_bswap16(0x120), amount);
     ACStrategy::sendCanMessage(data);
 };
