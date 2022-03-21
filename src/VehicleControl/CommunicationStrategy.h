@@ -1,4 +1,5 @@
 #pragma once
+#include "C:\Users\Sabin\Documents\vsc_cpp_projects\SDC-HANZE-2022\src\utils\TaskScheduler\TaskScheduler.h"
 
 class CommunicationStrategy {
     public:
@@ -7,6 +8,7 @@ class CommunicationStrategy {
         virtual void forward(int amount) = 0;
         virtual void neutral() = 0;
         virtual void stop() = 0;
+        // TaskScheduler TaskScheduler;
     private:
         virtual void throttle(int amount, int direction) = 0;
         template<class T>
