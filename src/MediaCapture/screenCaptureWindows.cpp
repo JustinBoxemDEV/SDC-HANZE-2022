@@ -13,7 +13,7 @@ cv::Mat ScreenCapture::getMat(HWND hwnd) {
 	target.cbSize = sizeof(MONITORINFO);
 	HMONITOR pHM = GetPrimaryMonitorHandle();
 	GetMonitorInfo(pHM, &target);
-	
+
     int width = target.rcMonitor.right;
     int height = target.rcMonitor.bottom;
 

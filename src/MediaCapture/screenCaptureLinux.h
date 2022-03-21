@@ -1,6 +1,6 @@
 #ifdef false // __linux__
-#ifndef CAPTURE_SCREEN_H
-#define CAPTURE_SCREEN_H
+
+#pragma once
 
 #include <stdio.h>
 #include <errno.h>
@@ -32,5 +32,4 @@ class CaptureScreenLinux {
 
 };
 
-#endif
 #endif
