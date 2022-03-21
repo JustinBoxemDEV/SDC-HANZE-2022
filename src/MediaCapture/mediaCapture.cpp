@@ -75,7 +75,7 @@ void MediaCapture::execute(){
     std::cout << "Estimated frames per second : " << fps << std::endl;
 }
 
-cv::Mat MediaCapture::LoadImage(std::string filepath)
+cv::Mat MediaCapture::LoadTestImage(std::string filepath)
 {
     std::string path = fs::current_path().string() + "/assets/images/" + std::string(filepath);
     cv::Mat img = imread(path, cv::IMREAD_COLOR);

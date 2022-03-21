@@ -35,9 +35,9 @@ target_link_libraries(SDC ${OpenCV_LIBS} )
 
 # target_link_libraries(SDC ${OpenCV_LIBS} )
 
-include_directories(/usr/include/X11)
-
-# link_directories(/usr/lib/x84_64-linux-gnu/)
-
-target_link_libraries(SDC libX11.so)
-target_link_libraries(SDC libXext.so)
+#include_directories(/usr/include/X11)
+#
+## link_directories(/usr/lib/x84_64-linux-gnu/)
+#
+#target_link_libraries(SDC libX11.so)
+#target_link_libraries(SDC libXext.so)
