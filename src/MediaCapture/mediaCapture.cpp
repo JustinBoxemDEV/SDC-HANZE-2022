@@ -68,6 +68,8 @@ void MediaCapture::execute(){
     time_t start, end;
     time(&start);
 
+    // assettocorsa.taskScheduler.SCH_Start();
+
     // Camera feed
     while (capture->read(frame))
     {

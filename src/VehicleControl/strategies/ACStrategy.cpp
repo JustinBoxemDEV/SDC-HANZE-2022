@@ -26,6 +26,8 @@ ACStrategy::ACStrategy() {
         puts("connect error");
     };
 
+    // taskScheduler.SCH_Init();
+
     puts("connected");    
 };
 
