@@ -1,3 +1,4 @@
+#ifdef linux
 #include "cansocket.h"
 
 int CANSocket::cansocket;
@@ -79,3 +80,5 @@ void CANSocket::sendFrame() {
         perror("Write");
     };
 };
+
+#endif

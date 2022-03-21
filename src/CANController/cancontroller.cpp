@@ -1,3 +1,4 @@
+#ifdef linux
 #include "cancontroller.h"
 
 int CANController::cansocket;
@@ -184,3 +185,5 @@ void CANController::readCANMessages() {
         printf("%02X ",frame.data[i]);
         printf("\r\n");
 };
+
+#endif
