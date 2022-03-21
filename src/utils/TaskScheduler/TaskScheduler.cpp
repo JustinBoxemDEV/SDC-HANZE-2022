@@ -1,8 +1,7 @@
 #include "TaskScheduler.h"
 #include <iostream>
 
-void TaskScheduler::SCH_Dispatch_Tasks()
-{
+void TaskScheduler::SCH_Dispatch_Tasks(){
    unsigned char Index = 0;
 
    auto currentTime = clock.now();
@@ -13,8 +12,7 @@ void TaskScheduler::SCH_Dispatch_Tasks()
    lastTime = currentTime;
 
    // Dispatches (runs) the next task (if one is ready)
-   for(Index = 0; Index < SCH_MAX_TASKS; Index++)
-   {
+   for(Index = 0; Index < SCH_MAX_TASKS; Index++){
       if((SCH_tasks_G[Index].pTask != 0)){
          if((SCH_tasks_G[Index].Delay < 0)) 
          {
@@ -40,8 +38,7 @@ void TaskScheduler::SCH_Dispatch_Tasks()
    }
 }
 
-unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float DELAY, const float PERIOD)
-{
+unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float DELAY, const float PERIOD){
    
    unsigned char Index = 0;
 
@@ -66,9 +63,7 @@ unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float D
    return Index;
 }
 
-unsigned char TaskScheduler::SCH_Delete_Task(const unsigned char TASK_INDEX)
-{
-   // Return_code can be used for error reporting, NOT USED HERE THOUGH!
+unsigned char TaskScheduler::SCH_Delete_Task(const unsigned char TASK_INDEX){
    unsigned char Return_code = 0;
 
    SCH_tasks_G[TASK_INDEX].pTask = 0;
@@ -79,8 +74,7 @@ unsigned char TaskScheduler::SCH_Delete_Task(const unsigned char TASK_INDEX)
 }
 
 
-void TaskScheduler::SCH_Init()
-{
+void TaskScheduler::SCH_Init(){
    unsigned char i;
 
    for(i = 0; i < SCH_MAX_TASKS; i++)
@@ -89,8 +83,7 @@ void TaskScheduler::SCH_Init()
    }
 }
 
-void TaskScheduler::SCH_Start()
-{
+void TaskScheduler::SCH_Start(){
    // take timestamp of start (first lasttime)
    lastTime = clock.now();
 }

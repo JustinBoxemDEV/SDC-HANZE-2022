@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <iostream>
 #include "../CommunicationStrategy.h"
+#include "C:\Users\Sabin\Documents\vsc_cpp_projects\SDC-HANZE-2022\src\utils\TaskScheduler\TaskScheduler.h"
 
 class ACStrategy : CommunicationStrategy {
     public:
@@ -16,6 +17,7 @@ class ACStrategy : CommunicationStrategy {
         void stop();
         void gearShiftUp();
         void gearShiftDown();
+        TaskScheduler taskScheduler;
      private:
         void throttle(int amount, int direction);
         template<class T>

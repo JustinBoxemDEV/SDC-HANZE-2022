@@ -26,20 +26,32 @@ ACStrategy::ACStrategy() {
         puts("connect error");
     };
 
+    // taskScheduler.SCH_Init();
+
     puts("connected");    
 };
 
 void ACStrategy::steer(float amount) {
     const char* data = ACStrategy::merge(__builtin_bswap16(0x12c), amount);
+    // taskScheduler.SCH_Add_Task([=](){ACStrategy::sendCanMessage(data);}, 0, 0);
     ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::brake(int amount) {
     const char* data = ACStrategy::merge(__builtin_bswap16(0x126), amount);
+    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
+    ACStrategy::sendCanMessage(data);
+};
+
+void ACStrategy::throttle(int amount, int direction) {
+    const char* data = ACStrategy::merge(__builtin_bswap16(0x120), amount);
+    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
     ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::forward(int amount) {
+    int a = amount;
+    // taskScheduler.SCH_Add_Task([=, &amount](){ACStrategy::throttle(a, 1);}, 0, 0);
     ACStrategy::throttle(amount, 1);
 };
 
@@ -56,17 +68,15 @@ void ACStrategy::stop() {
 void ACStrategy::gearShiftUp() {
     int dummy = 0;
     const char* data = ACStrategy::merge(__builtin_bswap16(0x121), dummy);
+    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
     ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::gearShiftDown() {
     int dummy = 0;
     const char* data = ACStrategy::merge(__builtin_bswap16(0x122), dummy);
+    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
     ACStrategy::sendCanMessage(data);
 };
 
-void throttle(int amount, int direction) {
-    const char* data = ACStrategy::merge(__builtin_bswap16(0x120), amount);
-    ACStrategy::sendCanMessage(data);
-};
 #endif

@@ -48,7 +48,7 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 
     #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 
-    // Hardcoded strategy calls
+    // Hardcoded strategy calls for AC
     assettocorsa.gearShiftUp();
     // Hardcoded start speed of the cart (10%)
     assettocorsa.forward(10);
@@ -68,12 +68,17 @@ void MediaCapture::execute(){
     time_t start, end;
     time(&start);
 
+    // assettocorsa.taskScheduler.SCH_Start();
+
     // Camera feed
     while (capture->read(frame))
     {
         totalFrames++;
 
         ProcessImage(frame);
+
+        // TODO: dispatch tasks
+        // assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
 
         if (cv::waitKey(1000 / 60) >= 0)
         {
@@ -133,7 +138,7 @@ void MediaCapture::ProcessImage(cv::Mat src)
     #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 
     if(!isnan(pidout)) {
-        assettocorsa.steer( (float) pidout);
+        assettocorsa.steer((float) pidout);
     };
 
     #endif

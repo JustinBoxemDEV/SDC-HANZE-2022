@@ -1,5 +1,6 @@
 import vgamepad
 import struct
+import time
 
 class VX360CanGamepad(vgamepad.VX360Gamepad):
     """
@@ -25,10 +26,12 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
             self.brake_float(VX360CanGamepad.convert_brake_data(data))
         elif arbitration_id == 0x12c:
             self.steer_float(VX360CanGamepad.convert_steering_data(data))
+        elif arbitration_id == 0x121:
+            self.gearshiftup()
+        elif arbitration_id == 0x122:
+            self.gearshiftdown()
         self.update()    
 
-         
-    
     @staticmethod
     def convert_throttle_data(data):
         """
@@ -37,7 +40,7 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         """
         throttle_percentage = data[0] # Throttle between 0 and 100 (incl)
         # direction = data[2] # 0 = forwards, 1 = backwards
-        print(throttle_percentage);
+        print(throttle_percentage)
         return throttle_percentage/100
 
     @staticmethod
@@ -77,3 +80,19 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         """
         # 255 is the maximum value of a byte
         self.report.bLeftTrigger = round(255 * brake_percentage)
+
+    def gearshiftup(self):
+        self.press_button(button=0x1000)
+        self.update()
+        time.sleep(0.5)
+        self.release_button(button=0x1000)
+        self.update()
+        time.sleep(0.5)
+
+    def gearshiftdown(self):
+        self.press_button(button=0x4000)
+        self.update()
+        time.sleep(0.5)
+        self.release_button(button=0x4000)
+        self.update()
+        time.sleep(0.5)

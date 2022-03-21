@@ -3,8 +3,7 @@
 #define SCH_MAX_TASKS 10
 #include <chrono>
 
-class TaskScheduler
-{
+class TaskScheduler{
     private:
         std::chrono::high_resolution_clock clock;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;

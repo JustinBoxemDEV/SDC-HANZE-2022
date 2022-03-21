@@ -71,8 +71,9 @@ int ScreenCapture::run() {
     ACStrategy assettocorsa;
     MediaCapture mediacapture;
     mediacapture.pid.PIDController_Init();
-    assettocorsa.gearShiftUp();
+    // assettocorsa.gearShiftUp();
     assettocorsa.forward(30);
+    assettocorsa.gearShiftUp();
 
     while (key != 27) {
         src = hwnd2mat(hwndDesktop);
