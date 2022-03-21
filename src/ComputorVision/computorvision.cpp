@@ -24,8 +24,8 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.7),
-        cv::Point(0, src.rows * 0.3),
-        cv::Point(src.cols, src.rows * 0.3),
+        cv::Point(0, src.rows * 0.31),
+        cv::Point(src.cols, src.rows * 0.31),
         cv::Point(src.cols, src.rows * 0.7),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -89,7 +89,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.3); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.31); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
@@ -188,14 +188,14 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // imshow("soby'", sobely);
     // imshow("sobxy'", sobelxy);
 
-    cv::Mat rgb;
-    cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
-    std::vector<cv::Mat> rgbChannels(3);
-    cv::split(rgb, rgbChannels);
+    // cv::Mat rgb;
+    // cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
+    // std::vector<cv::Mat> rgbChannels(3);
+    // cv::split(rgb, rgbChannels);
 
-    imshow("rgb - r", rgbChannels[0]);
-    imshow("rgb - g", rgbChannels[1]);
-    imshow("rgb - b", rgbChannels[2]);
+    // imshow("rgb - r", rgbChannels[0]);
+    // imshow("rgb - g", rgbChannels[1]);
+    // imshow("rgb - b", rgbChannels[2]);
 
     // cv::Mat hls;
     // cv::cvtColor(src, hls, cv::COLOR_BGR2HLS);
@@ -206,14 +206,18 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // imshow("hls - l", hlsChannels[1]);
     // imshow("hls - s", hlsChannels[2]);
 
-    // cv::Mat hsv;
-    // cv::cvtColor(src, hsv, cv::COLOR_BGR2HSV);
-    // std::vector<cv::Mat> hsvChannels(3);
-    // cv::split(hsv, hsvChannels);
+    cv::Mat hsv;
+    cv::cvtColor(src, hsv, cv::COLOR_BGR2HSV);
+    std::vector<cv::Mat> hsvChannels(3);
+    cv::split(hsv, hsvChannels);
 
-    // imshow("hsv - h", hsvChannels[0]);
-    // imshow("hsv - s", hsvChannels[1]);
-    // imshow("hsv - v", hsvChannels[2]);
+    imshow("hsv - h", hsvChannels[0]);
+    imshow("hsv - s", hsvChannels[1]);
+    imshow("hsv - v", hsvChannels[2]);
+
+    
+
+    
 
     // cv::Mat lab;
     // cv::cvtColor(src, lab, cv::COLOR_BGR2Lab);
@@ -240,7 +244,18 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // imshow("sobel'", sobel);
 
     cv::Mat mask;
-    cv::inRange(rgbChannels[0], 40,150, mask);
+    cv::inRange(hsvChannels[1], 50,255, mask);
+
+    // cv::erode(mask, mask, structuringElement);
+    // cv::dilate(mask, mask, structuringElement);
+
+    cv::dilate(mask, mask, structuringElement);
+    cv::erode(mask, mask, structuringElement);
+
+
+    cv::inRange(hsvChannels[2], 185,255, hsvChannels[2]);
+    // imshow("test2", hsvChannels[2]);
+    cv::bitwise_or(mask, hsvChannels[2], mask);
     imshow("test", mask);
 
     // imshow("hsvfilter", hsvFilter);
