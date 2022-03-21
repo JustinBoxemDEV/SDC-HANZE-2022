@@ -42,6 +42,7 @@ std::vector<cv::Vec4i> ComputorVision::HoughLines(cv::Mat src){
 std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines){
     std::vector<cv::Vec2f> left;
     std::vector<cv::Vec2f> right;
+    int angleThreshold = 5;
 
     for (auto line : lines)
     {
@@ -54,7 +55,13 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
 
         double slope = (static_cast<double>(end.y) - static_cast<double>(start.y))/ (static_cast<double>(end.x) - static_cast<double>(start.x) + 0.00001);
         double yIntercept = static_cast<double>(start.y) - (slope * static_cast<double>(start.x));
-        
+
+        double angle = atan2(end.y - start.y, end.x - start.x) * 180.0 / CV_PI;
+
+        if((angle < angleThreshold && angle >  -angleThreshold) || (angle > 180 - angleThreshold && angle < 180 + angleThreshold)){
+            continue;
+        }
+
         if(slope < 0){
           left.push_back(cv::Vec2f(slope, yIntercept));
         }else{
@@ -197,10 +204,10 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // imshow("rgb - g", rgbChannels[1]);
     // imshow("rgb - b", rgbChannels[2]);
 
-    // cv::Mat hls;
-    // cv::cvtColor(src, hls, cv::COLOR_BGR2HLS);
-    // std::vector<cv::Mat> hlsChannels(3);
-    // cv::split(hls, hlsChannels);
+    cv::Mat hls;
+    cv::cvtColor(src, hls, cv::COLOR_BGR2HLS);
+    std::vector<cv::Mat> hlsChannels(3);
+    cv::split(hls, hlsChannels);
 
     // imshow("hls - h", hlsChannels[0]);
     // imshow("hls - l", hlsChannels[1]);
@@ -211,13 +218,9 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     std::vector<cv::Mat> hsvChannels(3);
     cv::split(hsv, hsvChannels);
 
-    imshow("hsv - h", hsvChannels[0]);
-    imshow("hsv - s", hsvChannels[1]);
-    imshow("hsv - v", hsvChannels[2]);
-
-    
-
-    
+    // imshow("hsv - h", hsvChannels[0]);
+    // imshow("hsv - s", hsvChannels[1]);
+    // imshow("hsv - v", hsvChannels[2]);
 
     // cv::Mat lab;
     // cv::cvtColor(src, lab, cv::COLOR_BGR2Lab);
@@ -243,20 +246,19 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
-    cv::Mat mask;
-    cv::inRange(hsvChannels[1], 50,255, mask);
+    cv::inRange(hsvChannels[1], 50,255, hsvChannels[1]);
 
     // cv::erode(mask, mask, structuringElement);
     // cv::dilate(mask, mask, structuringElement);
 
-    cv::dilate(mask, mask, structuringElement);
-    cv::erode(mask, mask, structuringElement);
+    cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
+    cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
 
 
-    cv::inRange(hsvChannels[2], 185,255, hsvChannels[2]);
-    // imshow("test2", hsvChannels[2]);
-    cv::bitwise_or(mask, hsvChannels[2], mask);
-    imshow("test", mask);
+    cv::inRange(hlsChannels[1], 185,255, hlsChannels[1]);
+
+    cv::Mat mask;
+    cv::bitwise_or(hsvChannels[1], hlsChannels[1], mask);
 
     // imshow("hsvfilter", hsvFilter);
     binaryImage = DetectEdges(mask);
