@@ -7,18 +7,24 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
+#include "../../Logger/logger.h"
+#include "../../utils/Time/time.h"
+
+std::string timestamp;
 
 CANStrategy::CANStrategy() {
-    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
-    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
+    // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
+    // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
     std::cout << "Initialize bus" << std::endl;
     // Vcan
-    //system("sudo ip link del dev vcan0 type vcan");
-    //system("sudo ip link add dev vcan0 type vcan");
-    // system("sudo ip link set vcan0 type vcan");
-    // system("sudo ip link set vcan0 up");
-
-    CANStrategy::init("can0");
+    system("sudo ip link del dev vcan0 type vcan");
+    system("sudo ip link add dev vcan0 type vcan");
+    system("sudo ip link set vcan0 type vcan");
+    system("sudo ip link set vcan0 up");
+    timestamp = Time::currentDateTime();
+    Logger::createFile("send " + timestamp);
+    Logger::createFile("receive " + timestamp);
+    CANStrategy::init("vcan0");
 };
 
 void CANStrategy::throttle(int amount, int direction) {
@@ -34,6 +40,9 @@ void CANStrategy::throttle(int amount, int direction) {
     canMessage.data[3] = (std::byte) 0x00;
     canMessage.trailer =  0x00000000;
 
+    Logger::setActiveFile("send " + timestamp);
+    Logger::info("Throttle : speed = " + std::to_string(amount) + " : direction = " + std::to_string(direction));
+
     CANStrategy::sendCanMessage(canMessage);
 };
 
@@ -46,6 +55,9 @@ void CANStrategy::steer(float amount) {
     canMessage.can_dlc = 8;
     canMessage.data = amount;
     canMessage.trailer = 0x00000000;
+
+    Logger::setActiveFile("send " + timestamp);
+    Logger::info("Steering : angle = " + std::to_string(amount));
 
     CANStrategy::sendCanMessage<steerFrame>(canMessage);
 };
@@ -63,6 +75,9 @@ void CANStrategy::brake(int amount) {
     canMessage.data[3] = (std::byte) 0x00;
     canMessage.trailer =  0x00000000;
 
+    Logger::setActiveFile("send " + timestamp);
+    Logger::info("Brake : amount = " + std::to_string(amount));
+
     CANStrategy::sendCanMessage(canMessage);
 };
 
@@ -75,6 +90,9 @@ void CANStrategy::neutral() {
 };
 
 void CANStrategy::stop() {
+    Logger::setActiveFile("send " + timestamp);
+    Logger::info("Force stopping");
+
     // stop gas, break and set to neutral
     CANStrategy::throttle(0, 1);
     sleep(0.04);
@@ -90,9 +108,12 @@ void CANStrategy::readCANMessages() {
         
     };
     printf("0x%03X [%d] ",frame.can_id, frame.can_dlc);
-    for (int i = 0; i < frame.can_dlc; i++)
+    for (int i = 0; i < frame.can_dlc; i++) {
+        Logger::setActiveFile("receive " + timestamp);
+        Logger::info(frame.data[i]);
         printf("%02X ",frame.data[i]);
         printf("\r\n");
+    };
 };
 
 void CANStrategy::init(const char* canType) {

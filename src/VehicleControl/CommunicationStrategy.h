@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Users\Sabin\Documents\vsc_cpp_projects\SDC-HANZE-2022\src\utils\TaskScheduler\TaskScheduler.h"
+#include "../utils/TaskScheduler/TaskScheduler.h"
 
 class CommunicationStrategy {
     public:
