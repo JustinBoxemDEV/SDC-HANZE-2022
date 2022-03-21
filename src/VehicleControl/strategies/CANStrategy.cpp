@@ -10,8 +10,6 @@
 #include "../../Logger/logger.h"
 #include "../../utils/Time/time.h"
 
-std::string timestamp;
-
 CANStrategy::CANStrategy() {
     // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
     // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
@@ -21,9 +19,9 @@ CANStrategy::CANStrategy() {
     system("sudo ip link add dev vcan0 type vcan");
     system("sudo ip link set vcan0 type vcan");
     system("sudo ip link set vcan0 up");
-    timestamp = Time::currentDateTime();
-    Logger::createFile("send " + timestamp);
-    Logger::createFile("receive " + timestamp);
+    this->timestamp = Time::currentDateTime();
+    Logger::createFile("send " + this->timestamp);
+    Logger::createFile("receive " + this->timestamp);
     CANStrategy::init("vcan0");
 };
 
@@ -40,7 +38,7 @@ void CANStrategy::throttle(int amount, int direction) {
     canMessage.data[3] = (std::byte) 0x00;
     canMessage.trailer =  0x00000000;
 
-    Logger::setActiveFile("send " + timestamp);
+    Logger::setActiveFile("send " + this->timestamp);
     Logger::info("Throttle : speed = " + std::to_string(amount) + " : direction = " + std::to_string(direction));
 
     CANStrategy::sendCanMessage(canMessage);
@@ -55,8 +53,8 @@ void CANStrategy::steer(float amount) {
     canMessage.can_dlc = 8;
     canMessage.data = amount;
     canMessage.trailer = 0x00000000;
-
-    Logger::setActiveFile("send " + timestamp);
+    
+    Logger::setActiveFile("send " + this->timestamp);
     Logger::info("Steering : angle = " + std::to_string(amount));
 
     CANStrategy::sendCanMessage<steerFrame>(canMessage);
@@ -75,7 +73,7 @@ void CANStrategy::brake(int amount) {
     canMessage.data[3] = (std::byte) 0x00;
     canMessage.trailer =  0x00000000;
 
-    Logger::setActiveFile("send " + timestamp);
+    Logger::setActiveFile("send " + this->timestamp);
     Logger::info("Brake : amount = " + std::to_string(amount));
 
     CANStrategy::sendCanMessage(canMessage);
@@ -90,7 +88,7 @@ void CANStrategy::neutral() {
 };
 
 void CANStrategy::stop() {
-    Logger::setActiveFile("send " + timestamp);
+    Logger::setActiveFile("send " + this->timestamp);
     Logger::info("Force stopping");
 
     // stop gas, break and set to neutral
@@ -104,15 +102,18 @@ void CANStrategy::readCANMessages() {
     struct can_frame frame;
     nbytes = read(CANStrategy::cansocket, &frame, sizeof(struct can_frame));
     if (nbytes < 0) {
-    perror("Read");
-        
+        perror("Read");
     };
     printf("0x%03X [%d] ",frame.can_id, frame.can_dlc);
+    // string 
     for (int i = 0; i < frame.can_dlc; i++) {
-        Logger::setActiveFile("receive " + timestamp);
-        Logger::info(frame.data[i]);
+        // append to string
+        // std::cout << typeid(frame.data).name();
+        
+        // Logger::setActiveFile("receive " + this->timestamp);
+        // Logger::info(frame.data[i]);
         printf("%02X ",frame.data[i]);
-        printf("\r\n");
+        printf("\r");
     };
 };
 

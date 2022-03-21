@@ -55,7 +55,6 @@ unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(void), const float D
    }
 
    // IF there is space in the task array
-   std::cout << "There is space" << std::endl;
    SCH_tasks_G[Index].pTask = pFunction;
    SCH_tasks_G[Index].Delay = DELAY;
    SCH_tasks_G[Index].Period = PERIOD;

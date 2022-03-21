@@ -1,4 +1,5 @@
 #include "../VehicleControl/strategies/ACStrategy.h"
+#include "../VehicleControl/strategies/CANStrategy.h"
 #include <stdint.h>
 #include <iostream>
 #include "mediaCapture.h"
@@ -18,6 +19,8 @@ namespace fs = std::filesystem;
 ACStrategy assettocorsa;
 
 #endif
+
+//CANStrategy canStrategy;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 {
@@ -142,6 +145,10 @@ void MediaCapture::ProcessImage(cv::Mat src)
     };
 
     #endif
+
+    // if(!isnan(pidout)) {
+    //     canStrategy.steer((float) pidout);
+    // };
 
     cVision.PredictTurn(maskedImage, averagedLines);
     
