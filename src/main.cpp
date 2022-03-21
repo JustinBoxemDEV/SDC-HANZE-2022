@@ -9,8 +9,11 @@
 #include <filesystem>
 #include <string>
 #include "MediaCapture/mediaCapture.h"
-#include "MediaLoader/captureScreen.h"
-#include "MediaLoader/screenshot.cpp"
+#ifdef __WIN32__
+#include "MediaCapture/screenCaptureWindows.h"
+#else
+#include "MediaCapture/screenCaptureLinux.h"
+#endif
 
 namespace fs = std::filesystem;
 using namespace std;
@@ -19,39 +22,11 @@ int helpCommand(int argc, char** argv);
 int videoCommand(int argc, char** argv);
 int imageCommand(int argc, char** argv);
 int invalidCommand(int argc, char** argv);
+int screenCaptureCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
-        /**
-         * CaptureScreen
-         */
-        CaptureScreen captureScreen;
-        captureScreen.runMain();
-
-        // /**
-        //  * Screenshot
-        //  */
-        // ScreenShot screen(0,0,1920,1080);
-        // cv::Mat img;
-
-        // clock_t current_ticks, delta_ticks;
-        // clock_t fps = 0;
-        
-        // while(true) 
-        // {
-        // current_ticks = clock();
-        //     screen(img);
-
-        //     cv::imshow("img", img);
-        //     char k = cv::waitKey(1);
-        //     if (k == 'q')
-        //         break;
-
-        //     delta_ticks = clock() - current_ticks; //the time, in ms, that took to render the scene
-        //     if(delta_ticks > 0)
-        //         fps = CLOCKS_PER_SEC / delta_ticks;
-        //     cout << fps << endl;
-        // }
+        return screenCaptureCommand(argc, argv);
     } 
     
     else if (string(argv[1]) == "-help" || 
@@ -63,7 +38,7 @@ int main(int argc, char** argv) {
         return videoCommand(argc, argv);
     }
 
-    else if(string(argv[1])=="-image") {
+    else if (string(argv[1])=="-image") {
         return imageCommand(argc, argv);
     }
 
@@ -126,7 +101,7 @@ int imageCommand(int argc, char** argv) {
     // An image was provided to look for
     if(argc==3){
         MediaCapture mediaCapture;
-        cv::Mat img = mediaCapture.LoadImage(std::string(argv[2]));
+        cv::Mat img = mediaCapture.LoadTestImage(std::string(argv[2]));
         mediaCapture.ProcessImage(img);
         cv::waitKey(0);
         return 0;
@@ -143,4 +118,15 @@ int imageCommand(int argc, char** argv) {
 int invalidCommand(int argc, char** argv) {
     std::cout << "ERROR: " << std::string(argv[1]) << " is not recognised. Use -help for information" << std::endl;
     return -1;
+}
+
+int screenCaptureCommand(int argc, char** argv) {
+    #ifdef __WIN32__
+    ScreenCapture screenCapture;
+    screenCapture.run();
+    return 0;
+    #else
+    cout << "ERROR: screen capture is currently not working for linux!" << endl;
+    return -1;
+    #endif
 }
