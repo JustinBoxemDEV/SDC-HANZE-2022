@@ -11,6 +11,7 @@
 CANStrategy::CANStrategy() {
     system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
     system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
+    std::cout << "Initialize bus" << std::endl;
     // Vcan
     //system("sudo ip link del dev vcan0 type vcan");
     //system("sudo ip link add dev vcan0 type vcan");
@@ -76,6 +77,7 @@ void CANStrategy::neutral() {
 void CANStrategy::stop() {
     // stop gas, break and set to neutral
     CANStrategy::throttle(0, 1);
+    sleep(0.04);
     CANStrategy::brake(100);
 };
 
