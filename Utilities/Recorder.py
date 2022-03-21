@@ -14,7 +14,7 @@ dt = datetime.now()
 ts = datetime.timestamp(dt)
 str_date_time = dt.strftime("%d-%m-%Y-%H:%M")
 
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
 capFocus = 25  # min: 0, max: 255, increment:5
 cap.set(28, capFocus) 
 
