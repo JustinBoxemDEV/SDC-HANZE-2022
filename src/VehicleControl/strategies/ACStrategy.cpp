@@ -1,5 +1,6 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #include "ACStrategy.h"
+#include "C:\Users\Sabin\Documents\vsc_cpp_projects\SDC-HANZE-2022\src\utils\TaskScheduler\MessageTask.h"
 #include <stdio.h>
 #include <winsock2.h>
 #include <iostream>
@@ -23,35 +24,45 @@ ACStrategy::ACStrategy() {
     server.sin_port         =   htons(5454);
 
     if (connect(ACStrategy::s, (struct sockaddr *)&server, sizeof(server)) < 0) {
-        puts("connect error");
+        puts("Connect error");
     };
 
-    // taskScheduler.SCH_Init();
+    taskScheduler.SCH_Init();
 
-    puts("connected");    
+    puts("Connected");    
 };
 
 void ACStrategy::steer(float amount) {
     const char* data = ACStrategy::merge(__builtin_bswap16(0x12c), amount);
-    // taskScheduler.SCH_Add_Task([=](){ACStrategy::sendCanMessage(data);}, 0, 0);
-    ACStrategy::sendCanMessage(data);
+    MessageTask messageTask = MessageTask(data, &s);
+
+    taskScheduler.SCH_Add_Task(&messageTask, 1, 4);
+    taskScheduler.SCH_Dispatch_Tasks();
+
+    // ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::brake(int amount) {
     const char* data = ACStrategy::merge(__builtin_bswap16(0x126), amount);
-    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
-    ACStrategy::sendCanMessage(data);
+    MessageTask messageTask = MessageTask(data, &s);
+
+    taskScheduler.SCH_Add_Task(&messageTask, 1, 4);
+    taskScheduler.SCH_Dispatch_Tasks();
+
+    // ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::throttle(int amount, int direction) {
     const char* data = ACStrategy::merge(__builtin_bswap16(0x120), amount);
-    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
-    ACStrategy::sendCanMessage(data);
+    MessageTask messageTask = MessageTask(data, &s);
+    
+    taskScheduler.SCH_Add_Task(&messageTask, 1, 4);
+    taskScheduler.SCH_Dispatch_Tasks();
+
+    // ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::forward(int amount) {
-    int a = amount;
-    // taskScheduler.SCH_Add_Task([=, &amount](){ACStrategy::throttle(a, 1);}, 0, 0);
     ACStrategy::throttle(amount, 1);
 };
 
@@ -68,14 +79,12 @@ void ACStrategy::stop() {
 void ACStrategy::gearShiftUp() {
     int dummy = 0;
     const char* data = ACStrategy::merge(__builtin_bswap16(0x121), dummy);
-    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
     ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::gearShiftDown() {
     int dummy = 0;
     const char* data = ACStrategy::merge(__builtin_bswap16(0x122), dummy);
-    // taskScheduler.SCH_Add_Task(ACStrategy::sendCanMessage(data), 0, 0);
     ACStrategy::sendCanMessage(data);
 };
 

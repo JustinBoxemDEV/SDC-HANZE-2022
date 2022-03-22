@@ -1,3 +1,4 @@
+#ifdef linux
 #pragma once
 #include <iostream>
 #include <sys/socket.h>
@@ -16,3 +17,4 @@ class CANSocket {
         static void readFrame();
         static void sendFrame();
 };
+#endif

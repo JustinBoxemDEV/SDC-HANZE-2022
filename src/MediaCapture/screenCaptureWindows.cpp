@@ -68,12 +68,12 @@ int ScreenCapture::run() {
     cv::Mat src;
 
     //Hardcoded VehicleStrategy
-    ACStrategy assettocorsa;
+    // ACStrategy assettocorsa;
     MediaCapture mediacapture;
     mediacapture.pid.PIDController_Init();
-    // assettocorsa.gearShiftUp();
-    assettocorsa.forward(30);
-    assettocorsa.gearShiftUp();
+
+    // AC Specific things here
+
 
     while (key != 27) {
         src = hwnd2mat(hwndDesktop);
@@ -81,6 +81,9 @@ int ScreenCapture::run() {
         // imshow("output", src);
 
         mediacapture.ProcessImage(src);
+        // mediacapture.execute();
+
+
         key = cv::waitKey(1); // you can change wait time
     }
 

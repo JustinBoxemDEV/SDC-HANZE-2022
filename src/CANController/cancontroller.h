@@ -1,3 +1,4 @@
+#ifdef linux
 #pragma once
 #include <iostream>
 #include <sys/socket.h>
@@ -18,3 +19,5 @@ class CANController {
         static void init(std::string canType="can");
         static void readCANMessages();
 };
+
+#endif

@@ -21,15 +21,6 @@ class ACStrategy : CommunicationStrategy {
      private:
         void throttle(int amount, int direction);
         template<class T>
-        void sendCanMessage(T & canMessage) {
-            const char* socketMessage = (const char*) canMessage;
-            if(send(s, socketMessage, sizeof(socketMessage), 0) < 0) {
-                puts("send failed");
-            };
-
-            puts("Data send");
-        };
-        template<class T>
         const char* merge(short arbitration_id, T & data) {
             char combined[sizeof arbitration_id + sizeof data];
 
@@ -38,6 +29,14 @@ class ACStrategy : CommunicationStrategy {
 
             const char* merged = combined;
             return merged;
+        };
+        void sendCanMessage(const char* canMessage) {
+            const char* socketMessage = (const char*) canMessage;
+            if(send(s, socketMessage, sizeof(socketMessage), 0) < 0) {
+                puts("send failed");
+            };
+
+            puts("Data sent");
         };
 };
 #endif
