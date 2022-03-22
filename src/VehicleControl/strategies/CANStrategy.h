@@ -13,6 +13,7 @@
 class CANStrategy : public CommunicationStrategy {
     public:
         int cansocket;
+        std::string timestamp;
         CANStrategy();
         void steer(float amount);
         void brake(int amount);
