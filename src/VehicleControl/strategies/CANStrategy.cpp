@@ -13,20 +13,20 @@
 std::string timestamp;
 
 CANStrategy::CANStrategy() {
-    // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
-    // system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
-    // std::cout << "Initialize bus" << std::endl;
+    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
+    system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
+    std::cout << "Initialize bus" << std::endl;
 
-    // Vcan for testing
-    system("sudo ip link del dev vcan0 type vcan");
-    system("sudo ip link add dev vcan0 type vcan");
-    system("sudo ip link set vcan0 type vcan");
-    system("sudo ip link set vcan0 up");
+    // // Vcan for testing
+    // system("sudo ip link del dev vcan0 type vcan");
+    // system("sudo ip link add dev vcan0 type vcan");
+    // system("sudo ip link set vcan0 type vcan");
+    // system("sudo ip link set vcan0 up");
 
     timestamp = Time::currentDateTime();
     Logger::createFile("send " + timestamp);
     Logger::createFile("receive " + timestamp);
-    CANStrategy::init("vcan0"); // change to can for physical kart
+    CANStrategy::init("can0"); // change to can for physical kart
 };
 
 void CANStrategy::init(const char* canType) {
