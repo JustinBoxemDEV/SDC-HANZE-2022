@@ -53,17 +53,17 @@ void CANStrategy::init(const char* canType) {
     };
 
     // When starting the kart
-    sleep(15);
+    sleep(5);
     // Wait 15 seconds after kart is turned on, set the kart to drive (forwards) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
     throttle(0, 1);
-    sleep(4);
+    sleep(0.04);
 
     // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
     brake(0);
-    sleep(4);
+    sleep(0.04);
     // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
     steer(0.00);   
-    sleep(4); 
+    sleep(0.04); 
 };
 
 void CANStrategy::throttle(int amount, int direction) {

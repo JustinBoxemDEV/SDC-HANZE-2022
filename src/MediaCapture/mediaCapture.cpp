@@ -20,7 +20,7 @@ ACStrategy assettocorsa;
 #endif
 
 // Hardcoded CANStrategy
-// CANStrategy canStrategy;
+CANStrategy canStrategy;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 {
@@ -145,6 +145,16 @@ void MediaCapture::ProcessImage(cv::Mat src){
     std::cout << "we on windows boys " << std::endl;
     if(!isnan(pidout)) {
         assettocorsa.steer((float) pidout);
+        std::cout << "Steering with: " << pidout << std::endl;
+    };
+
+    #endif
+
+    #if linux
+    std::cout << "we on linux boys " << std::endl;
+    if(!isnan(pidout)) {
+        canStrategy.steer((float) pidout);
+        std::cout << "Steering with: " << pidout << std::endl;
     };
 
     #endif
