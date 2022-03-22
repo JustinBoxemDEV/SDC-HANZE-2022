@@ -1,4 +1,3 @@
-#ifdef linux
 #include "cancontroller.h"
 
 int CANController::cansocket;
