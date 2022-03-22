@@ -1,4 +1,3 @@
-#include "VehicleControl/strategies/CANStrategy.h"
 #include <iostream>
 #include <string.h>
 #include <unistd.h>
@@ -13,6 +12,7 @@
 #include <filesystem>
 #include <string>
 #include "MediaCapture/mediaCapture.h"
+#include "VehicleControl/strategies/CANStrategy.h"
 #include "./utils/TaskScheduler/TaskScheduler.h"
 #ifdef __WIN32__
 #include "MediaCapture/screenCaptureWindows.h"
@@ -27,7 +27,8 @@ using namespace std;
 // CANStrategy canStrategy;
 
 // void recursive() {
-//     int send_amount = 100; // Could make this dynamic from input I guess
+//     int send_amount = 25; // Could make this dynamic from input I guess
+//     int sleep_time = 2;
 
 //     std::cout << "(LOOP VERSION) Hi there! ;) What do you want to do? Type throttle, brake, steer or exit" << std::endl;
 
@@ -48,7 +49,7 @@ using namespace std;
 
 //         for(int i = 0; i < send_amount; i++) {
 //            canStrategy.forward(std::stoi(speed)); 
-//            sleep(0.04);
+//            sleep(sleep_time);
 //         };
 //         recursive();
 //     } else if (strcmp(input, "brake")==0) {
@@ -64,7 +65,7 @@ using namespace std;
 
 //         for(int i = 0; i < 100; i++) {
 //             canStrategy.brake(std::stoi(brakePercentage));
-//             sleep(0.04);
+//             sleep(sleep_time);
 //         };
 //         recursive();
 //     } else if (strcmp(input, "steer") == 0) {
@@ -80,7 +81,7 @@ using namespace std;
         
 //         for(int i = 0; i < 100; i++) {
 //             canStrategy.steer(std::stof(steeringamount));
-//             sleep(0.04);
+//             sleep(sleep_time);
 //         };
 //         recursive();
 //     }
@@ -100,7 +101,7 @@ using namespace std;
 // };
 
 
-// [BUILD 2] With scheduler 
+// [BUILD 2] With scheduler (TODO: refactor. This wont work anymore with the new scheduler)
 // TaskScheduler taskScheduler;
 
 // void plswork() {
@@ -125,19 +126,19 @@ using namespace std;
 
 // [BUILD 3] Full build (CAN + Computer vision + PID)
 
-// int main(int argc, char** argv) {
-//     if (argc == 1) {
-//         MediaCapture mediaCapture;
-//         mediaCapture.ProcessFeed(0, "");
-//         return 0;
-//     } 
-// }
+int main(int argc, char** argv) {
+    if (argc == 1) {
+        MediaCapture mediaCapture;
+        mediaCapture.ProcessFeed(0, "");
+        return 0;
+    } 
+}
 
 // [BUILD 4] Read CAN messages (steering angle)
-CANStrategy canStrategy;
+// CANStrategy canStrategy;
 
-int main(int argc, char** argv) {
-    while(true) {
-        canStrategy.readCANMessages();
-    }
-}
+// int main(int argc, char** argv) {
+//     while(true) {
+//         canStrategy.readCANMessages();
+//     }
+// }

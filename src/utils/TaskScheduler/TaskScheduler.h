@@ -1,3 +1,4 @@
+#include "CANMessageTask.h"
 #ifndef TASK_SCHEDULER_H
 #define TASK_SCHEDULER_H
 #define SCH_MAX_TASKS 10
@@ -9,7 +10,7 @@ class TaskScheduler{
         std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;
     public:
         struct sTask{
-            void (* pTask)(void);
+            CANMessageTask *Task;
             double Delay;
             double Period;
         };
@@ -19,7 +20,8 @@ class TaskScheduler{
 
         // Core scheduler functions
         void SCH_Dispatch_Tasks();
-        unsigned char SCH_Add_Task(void (*)(void), const float, const float);
+        // unsigned char SCH_Add_Task(MessageTask* messageTask, const float DELAY, const float PERIOD);
+        unsigned char SCH_Add_Task(CANMessageTask* messageTask, const float DELAY, const float PERIOD);
         unsigned char SCH_Delete_Task(const unsigned char);
         sTask SCH_tasks_G[SCH_MAX_TASKS] = {0};
 };

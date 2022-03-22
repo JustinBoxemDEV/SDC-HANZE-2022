@@ -1,5 +1,4 @@
 #include "../VehicleControl/strategies/ACStrategy.h"
-#include "../VehicleControl/strategies/CANStrategy.h"
 #include <stdint.h>
 #include <iostream>
 #include "mediaCapture.h"
@@ -11,16 +10,17 @@
 #include "../Math/Polynomial.h"
 #include <thread>
 #include <cmath>
+#include "../VehicleControl/strategies/CANStrategy.h"
 
 namespace fs = std::filesystem;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 // Hardcoded VehicleStrategy
 ACStrategy assettocorsa;
-
 #endif
 
-//CANStrategy canStrategy;
+// Hardcoded CANStrategy
+// CANStrategy canStrategy;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 {
@@ -52,17 +52,22 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
     #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 
     // Hardcoded strategy calls for AC
-    assettocorsa.gearShiftUp();
+    // assettocorsa.gearShiftUp();
     // Hardcoded start speed of the cart (10%)
-    assettocorsa.forward(10);
+    
+    assettocorsa.forward(50);
+    assettocorsa.gearShiftUp();
+    std::cout << "we have done the things" << std::endl;
 
     #endif
 
+    std::cout << "DO WE GET HERE " << std::endl;
     std::thread tr([&](){ execute();});
     tr.join();
 };
 
 void MediaCapture::execute(){
+    std::cout << "EXECUTING " << std::endl;
     cv::Mat frame;
 
     // Define total frames and start of a counter for FPS calculation
@@ -71,20 +76,19 @@ void MediaCapture::execute(){
     time_t start, end;
     time(&start);
 
-    // assettocorsa.taskScheduler.SCH_Start();
+    // canStrategy.taskScheduler.SCH_Start();
 
     // Camera feed
-    while (capture->read(frame))
-    {
+    while (capture->read(frame)){
         totalFrames++;
-
+        // std::cout << "GOING" << std::endl;
         ProcessImage(frame);
 
         // TODO: dispatch tasks
-        // assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
+        // std::cout << "dispatching task " << std::endl;SCH_Init
+        // canStrategy.taskScheduler.SCH_Dispatch_Tasks();
 
-        if (cv::waitKey(1000 / 60) >= 0)
-        {
+        if (cv::waitKey(1000 / 60) >= 0){
             break;
         }
     }
@@ -119,8 +123,7 @@ cv::Mat MediaCapture::LoadImage(std::string filepath)
     return img;
 };
 
-void MediaCapture::ProcessImage(cv::Mat src)
-{
+void MediaCapture::ProcessImage(cv::Mat src){
     cVision.SetFrame(src);
     // cv::Mat wipImage;
     // src.copyTo(wipImage);
@@ -139,16 +142,12 @@ void MediaCapture::ProcessImage(cv::Mat src)
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
     #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-
+    std::cout << "we on windows boys " << std::endl;
     if(!isnan(pidout)) {
         assettocorsa.steer((float) pidout);
     };
 
     #endif
-
-    // if(!isnan(pidout)) {
-    //     canStrategy.steer((float) pidout);
-    // };
 
     cVision.PredictTurn(maskedImage, averagedLines);
     
@@ -156,4 +155,6 @@ void MediaCapture::ProcessImage(cv::Mat src)
     double curveRadiusL = cVision.getLeftEdgeCurvature();
     cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
+
+    // std::cout << "DONE WITH FRAME " << std::endl;
 };

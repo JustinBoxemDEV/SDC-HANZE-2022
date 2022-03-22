@@ -8,11 +8,11 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
+#include "../../utils/TaskScheduler/TaskScheduler.h"
 
 class CANStrategy : public CommunicationStrategy {
     public:
         int cansocket;
-        std::string timestamp;
         CANStrategy();
         void steer(float amount);
         void brake(int amount);
@@ -31,6 +31,7 @@ class CANStrategy : public CommunicationStrategy {
             T           data;
             __u_int     trailer;
         };
+        TaskScheduler taskScheduler;
     private:
         void throttle(int amount, int direction);
         template<typename T>
