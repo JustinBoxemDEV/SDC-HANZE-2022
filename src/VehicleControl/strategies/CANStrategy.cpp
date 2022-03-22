@@ -153,13 +153,64 @@ void CANStrategy::readCANMessages() {
     perror("Read");
         
     };
-    printf("0x%03X [%d] ",frame.can_id, frame.can_dlc);
+    // std::string s(frame.can_id, sizeof(frame.can_id));
+    // std::cout << s << ": bytes conversion\n";
+    // std::string data(frame.can_dlc, sizeof(frame.can_dlc));
+    // std::cout << data << ": data conversion\n";
+
+    // std::string receivedMessage = s+data;
+    // std::cout << receivedMessage << " : the received message\n";
+
+    std::string s = std::to_string(frame.can_id);
+    std::cout << "The id: " << s << std::endl;
+
+    std::stringstream stream;
+    stream << "0x" << std::hex << frame.can_id;
+    std::string id(stream.str());
+    std::cout << "id: " << id << std::endl;
+
+    stream.clear();
+
+    std::string dlc = "[" + std::to_string(frame.can_dlc) + "]";
+    std::cout << "The dlc: " << dlc << std::endl;
+
+    // std::string data = std::to_string(frame.data);
+    // std::cout << "The data: " << data << std::endl;
+
+    int dataLength = std::stoi(std::to_string(frame.can_dlc));
+    std::string data;
+    std::stringstream dataStream;    
+    //printf("0x%03X [%d] ",frame.can_id, frame.can_dlc);
     for (int i = 0; i < frame.can_dlc; i++) {
-        Logger::setActiveFile("receive " + timestamp);
-        Logger::info(frame.data[i]);
-        printf("%02X ",frame.data[i]);
-        printf("\r\n");
+        //Logger::setActiveFile("receive " + timestamp);
+        //Logger::info(frame.data[i]);
+
+        dataStream << std::hex << std::stoi(std::to_string(frame.data[i]));
+        dataStream << " ";
+        std::string hex(dataStream.str());
+
+        std::cout << "data " << i << ": " << hex << "\n";
+
+        //std::cout << "frame data: " << std::hex << (int) std::to_string(frame.data[i]) << std::endl;
+        // printf("%02X ",frame.data[i]);
+        // printf("\r\n");
+        std::cout << i << " -> i " << dataLength << " -> dlc " << std::endl;
+        if(i == dataLength-1) {
+            std::cout << "STOP THE FOR LOOP" << std::endl;
+            data.append(hex);
+        }
     };
+    
+    std::string canMessage = id + " " + dlc + " " + data;
+    std::cout << "canMessage: " << canMessage << std::endl;
+    
+    Logger::setActiveFile("receive " + timestamp);
+    Logger::info(canMessage);
+
+    std::cout << "test the data: " << data << std::endl;
+    data.clear();
 };
+
+
 
 #endif

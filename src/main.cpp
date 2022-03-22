@@ -126,19 +126,19 @@ using namespace std;
 
 // [BUILD 3] Full build (CAN + Computer vision + PID)
 
-int main(int argc, char** argv) {
-    if (argc == 1) {
-        MediaCapture mediaCapture;
-        mediaCapture.ProcessFeed(0, "");
-        return 0;
-    } 
-}
+// int main(int argc, char** argv) {
+//     if (argc == 1) {
+//         MediaCapture mediaCapture;
+//         mediaCapture.ProcessFeed(0, "");
+//         return 0;
+//     } 
+// }
 
 // [BUILD 4] Read CAN messages (steering angle)
-// CANStrategy canStrategy;
+CANStrategy canStrategy;
 
-// int main(int argc, char** argv) {
-//     while(true) {
-//         canStrategy.readCANMessages();
-//     }
-// }
+int main(int argc, char** argv) {
+    while(true) {
+        canStrategy.readCANMessages();
+    }
+}
