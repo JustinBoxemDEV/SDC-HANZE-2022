@@ -3,14 +3,20 @@
 
 class CommunicationStrategy {
     public:
-        virtual void steer(float amount) = 0;
-        virtual void brake(int amount) = 0;
-        virtual void forward(int amount) = 0;
+        virtual void steer() = 0;
+        virtual void brake() = 0;
+        virtual void throttle() = 0;
         virtual void neutral() = 0;
         virtual void stop() = 0;
         // TaskScheduler TaskScheduler;
+        struct Actuators {
+            float steeringAngle = 0;
+            float throttlePercentage = 0;
+            float brakePercentage = 0;
+            float steeringFeedback = 0;
+        };
+        Actuators actuators;
     private:
-        virtual void throttle(int amount, int direction) = 0;
         template<class T>
         void sendCanMessage(T & canMessage);
 };

@@ -5,9 +5,9 @@ class VehicleControlManager {
     public:
         CommunicationStrategy *vehicleStrategy;
         VehicleControlManager(CommunicationStrategy *vehicleStrategy__);
-        void forward(int amount);
-        void brake(int amount);
-        void steer(float amount);
+        void throttle();
+        void brake();
+        void steer();
         void stop();
         void neutral();
 };

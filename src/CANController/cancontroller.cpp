@@ -146,7 +146,7 @@ void CANController::brake(int brakePercentage) {
     An amount parameter of -1.0 represents steering all the way left, 1.0 represents steering all the way right, and 0 will centre the steering wheel.
     Message example: Arb ID: 0x000006F1	Data: 00 00 00 00 00 00 00 00
 */
-void CANController::steer(float amount) {
+void CANController::steer() {
     struct steeringFrame frame;
     
     frame.can_id    = 0x6F1;

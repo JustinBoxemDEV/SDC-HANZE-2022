@@ -38,3 +38,6 @@
 
 # Log files
 /logs
+
+# Python
+__pycache__

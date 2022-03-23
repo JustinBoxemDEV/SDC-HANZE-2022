@@ -1,6 +1,6 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #include "ACStrategy.h"
-#include "C:\Users\Sabin\Documents\vsc_cpp_projects\SDC-HANZE-2022\src\utils\TaskScheduler\MessageTask.h"
+#include "..\..\utils\TaskScheduler\MessageTask.h"
 #include <stdio.h>
 #include <winsock2.h>
 #include <iostream>
@@ -32,48 +32,33 @@ ACStrategy::ACStrategy() {
     puts("Connected");    
 };
 
-void ACStrategy::steer(float amount) {
-    const char* data = ACStrategy::merge(__builtin_bswap16(0x12c), amount);
-    MessageTask messageTask = MessageTask(data, &s);
-
-    taskScheduler.SCH_Add_Task(&messageTask, 1, 4);
-    taskScheduler.SCH_Dispatch_Tasks();
-
-    // ACStrategy::sendCanMessage(data);
+void ACStrategy::steer() {
+    const char* data = ACStrategy::merge(__builtin_bswap16(0x12c), actuators.steeringAngle);
+    ACStrategy::sendCanMessage(data);
 };
 
-void ACStrategy::brake(int amount) {
-    const char* data = ACStrategy::merge(__builtin_bswap16(0x126), amount);
-    MessageTask messageTask = MessageTask(data, &s);
-
-    taskScheduler.SCH_Add_Task(&messageTask, 1, 4);
-    taskScheduler.SCH_Dispatch_Tasks();
-
-    // ACStrategy::sendCanMessage(data);
+void ACStrategy::brake() {
+    const char* data = ACStrategy::merge(__builtin_bswap16(0x126), actuators.brakePercentage);
+    ACStrategy::sendCanMessage(data);
 };
 
-void ACStrategy::throttle(int amount, int direction) {
-    const char* data = ACStrategy::merge(__builtin_bswap16(0x120), amount);
-    MessageTask messageTask = MessageTask(data, &s);
-    
-    taskScheduler.SCH_Add_Task(&messageTask, 1, 4);
-    taskScheduler.SCH_Dispatch_Tasks();
-
-    // ACStrategy::sendCanMessage(data);
-};
-
-void ACStrategy::forward(int amount) {
-    ACStrategy::throttle(amount, 1);
+void ACStrategy::throttle() {
+    const char* data = ACStrategy::merge(__builtin_bswap16(0x120), actuators.throttlePercentage);
+    ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::neutral() {
-    // TODO: get current gear and reduce it to 0
+    // Temporary fix
+    gearShiftDown();
+    gearShiftDown();
+    gearShiftDown();
+    gearShiftDown();
 };
 
 void ACStrategy::stop() {
-    ACStrategy::throttle(0, 0);
-    ACStrategy::brake(100);
-    ACStrategy::neutral();
+    throttle();
+    brake();
+    neutral();
 };
 
 void ACStrategy::gearShiftUp() {

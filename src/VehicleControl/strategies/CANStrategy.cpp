@@ -46,9 +46,9 @@ void CANStrategy::throttle(int amount, int direction) {
     CANStrategy::sendCanMessage(canMessage);
 };
 
-void CANStrategy::steer(float amount) {
+void CANStrategy::steer() {
     typedef CANStrategy::frame<float> steerFrame;
-
+    int amount = 0;
     steerFrame canMessage;
 
     canMessage.can_id = 0x12c;
@@ -83,6 +83,10 @@ void CANStrategy::brake(int amount) {
 
 void CANStrategy::forward(int amount) {
     CANStrategy::throttle(amount, 1);
+};
+
+void CANStrategy::backward(int amount) {
+    CANStrategy::throttle(amount, 2;
 };
 
 void CANStrategy::neutral() {

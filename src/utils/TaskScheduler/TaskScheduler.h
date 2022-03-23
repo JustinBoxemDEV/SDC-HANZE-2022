@@ -10,7 +10,7 @@ class TaskScheduler{
         std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;
     public:
         struct sTask{
-            MessageTask *Task;
+            void (* pTask) (void);
             double Delay;
             double Period;
         };
@@ -20,7 +20,7 @@ class TaskScheduler{
 
         // Core scheduler functions
         void SCH_Dispatch_Tasks();
-        unsigned char SCH_Add_Task(MessageTask* messageTask, const float DELAY, const float PERIOD);
+        unsigned char SCH_Add_Task(void (*pFunction)(), const float DELAY, const float PERIOD);
         unsigned char SCH_Delete_Task(const unsigned char);
         sTask SCH_tasks_G[SCH_MAX_TASKS] = {0};
 };

@@ -4,16 +4,16 @@ VehicleControlManager::VehicleControlManager(CommunicationStrategy *vehicleStrat
     vehicleStrategy = vehicleStrategy__;
 };
 
-void VehicleControlManager::forward(int amount) {
-    vehicleStrategy->forward(amount);
+void VehicleControlManager::throttle() {
+    vehicleStrategy->throttle();
 };
 
-void VehicleControlManager::steer(float amount) {
-    vehicleStrategy->steer(amount);
+void VehicleControlManager::steer() {
+    vehicleStrategy->steer();
 };
 
-void VehicleControlManager::brake(int amount) {
-    vehicleStrategy->brake(amount);
+void VehicleControlManager::brake() {
+    vehicleStrategy->brake();
 };
 
 void VehicleControlManager::stop() {

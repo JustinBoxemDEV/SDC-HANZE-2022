@@ -13,12 +13,14 @@ class CANStrategy : public CommunicationStrategy {
     public:
         int cansocket;
         CANStrategy();
-        void steer(float amount);
+        void steer();
         void brake(int amount);
-        void forward(int amount);
+        void throttle(int amount, int direction);
         void neutral();
         void stop();
         void readCANMessages();
+        void forward(int amount);
+        void backward(int amount)
         void init(const char* canType);
         template <class T>
         struct frame {
@@ -31,7 +33,7 @@ class CANStrategy : public CommunicationStrategy {
             __u_int     trailer;
         };
     private:
-        void throttle(int amount, int direction);
+        
         template<typename T>
         void sendCanMessage(T & canMessage) {
             if (write(cansocket, &canMessage, sizeof(canMessage)) != sizeof(canMessage)) {

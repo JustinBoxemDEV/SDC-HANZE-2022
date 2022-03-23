@@ -59,6 +59,6 @@ double PIDController::PIDController_update(double error) {
 	time = time + 0.03333333333; // time + 1/fps
 	prevError = error;
 	//std::cout << "time " << time << std::endl;
-	return output;
+	return -output;
 }
 

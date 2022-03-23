@@ -16,30 +16,6 @@ cv::Mat hwnd2mat(HWND hwnd) {
     int width = rc.right;//rc.right;
     int height = rc.bottom;
 
-	// //testssssssssss
-	// std::cout << "all windows bottom:"  << std::endl;
-	// std::cout << rc.bottom  << std::endl;
-	// std::cout << "all windows right:"  << std::endl;
-	// std::cout << rc.right  << std::endl;
-
-	// // LPMONITORINFO target;
-	// // HMONITOR pMH = GetPrimaryMonitorHandle();
-	// // GetMonitorInfo(pMH, target);
-
-	// MONITORINFO target;
-	// target.cbSize = sizeof(MONITORINFO);
-
-	// HMONITOR pHM = GetPrimaryMonitorHandle();
-	// GetMonitorInfo(pHM, &target);
-
-	// std::cout << "primary window bottom:"  << std::endl;
-	// std::cout << target.rcMonitor.bottom << std::endl;
-	// std::cout << "primary window right:"  << std::endl;
-	// std::cout << target.rcMonitor.right << std::endl;
-
-
-	//end testtttttttttttts
-
     cv::Mat src;
     src.create(height, width, CV_8UC4);
 
@@ -60,6 +36,20 @@ cv::Mat hwnd2mat(HWND hwnd) {
 
     return src;
 }
+ACStrategy assettocorsa;
+
+// Scuffed fix for scheduler
+void steer(){
+    assettocorsa.steer();
+}
+
+void brake(){
+    assettocorsa.brake();
+}
+
+void throttle(){
+    assettocorsa.throttle();
+}
 
 int ScreenCapture::run() {
     HWND hwndDesktop;
@@ -67,24 +57,28 @@ int ScreenCapture::run() {
     int key = 0;
     cv::Mat src;
 
-    //Hardcoded VehicleStrategy
-    // ACStrategy assettocorsa;
-    MediaCapture mediacapture;
+    MediaCapture mediacapture(&assettocorsa);
     mediacapture.pid.PIDController_Init();
 
-    // AC Specific things here
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+    // Wait 2 seconds so you can tab back into the game
+    Sleep(2000);
+    assettocorsa.gearShiftUp();
+    #endif
 
-
+    assettocorsa.actuators.throttlePercentage = 80;
+    assettocorsa.taskScheduler.SCH_Add_Task(throttle, 0, 0.04);
+    assettocorsa.taskScheduler.SCH_Add_Task(steer, 0.02, 0.04);
+    assettocorsa.taskScheduler.SCH_Start();
+    
     while (key != 27) {
         src = hwnd2mat(hwndDesktop);
-        // you can do some image processing here
-        // imshow("output", src);
 
         mediacapture.ProcessImage(src);
-        // mediacapture.execute();
 
+        assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
 
-        key = cv::waitKey(1); // you can change wait time
+        key = cv::waitKey(1);
     }
 
 	return 0;

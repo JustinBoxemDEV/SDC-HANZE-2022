@@ -13,55 +13,36 @@
 
 namespace fs = std::filesystem;
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-// Hardcoded VehicleStrategy
-ACStrategy assettocorsa;
+void MediaCapture::ProcessFeed(int cameraID, std::string filename)
+{
+    if (cameraID != 0)
+    {
+        capture = new cv::VideoCapture(cameraID);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+    }
+    else if (filename != "")
+    {
+        std::cout << filename << std::endl;
+        capture = new cv::VideoCapture(filename);
+    }
+    else
+    {
+        capture = new cv::VideoCapture(0);
 
-#endif
+        // Camera detection check
+        if (!capture->isOpened())
+        {
+            std::cout << "NO CAMERA DETECTED!" << std::endl;
+            return;
+        }
+    }
+    std::cout << "Camera selected: " << cameraID << std::endl;
+    pid.PIDController_Init();
 
-// void MediaCapture::ProcessFeed(int cameraID, std::string filename)
-// {
-//     if (cameraID != 0)
-//     {
-//         capture = new cv::VideoCapture(cameraID);
-//         capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
-//         capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
-//     }
-//     else if (filename != "")
-//     {
-//         std::cout << filename << std::endl;
-//         capture = new cv::VideoCapture(filename);
-//     }
-//     else
-//     {
-//         capture = new cv::VideoCapture(0);
-
-//         // Camera detection check
-//         if (!capture->isOpened())
-//         {
-//             std::cout << "NO CAMERA DETECTED!" << std::endl;
-//             return;
-//         }
-//     }
-//     std::cout << "Camera selected: " << cameraID << std::endl;
-//     pid.PIDController_Init();
-
-//     #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-
-//     // Hardcoded strategy calls for AC
-//     // assettocorsa.gearShiftUp();
-//     // Hardcoded start speed of the cart (10%)
-    
-//     assettocorsa.forward(50);
-//     assettocorsa.gearShiftUp();
-//     std::cout << "we have done the things" << std::endl;
-
-//     #endif
-
-//     std::cout << "DO WE GET HERE " << std::endl;
-//     std::thread tr([&](){ execute();});
-//     tr.join();
-// };
+    std::thread tr([&](){ execute();});
+    tr.join();
+};
 
 void MediaCapture::execute(){
     std::cout << "EXECUTING " << std::endl;
@@ -73,21 +54,13 @@ void MediaCapture::execute(){
     time_t start, end;
     time(&start);
 
-    assettocorsa.taskScheduler.SCH_Start();
-
     // Camera feed
     while (capture->read(frame)){
         totalFrames++;
-        std::cout << "GOING" << std::endl;
         ProcessImage(frame);
 
-        // TODO: dispatch tasks
-        std::cout << "dispatching task " << std::endl;
-        assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
-
         if (cv::waitKey(1000 / 60) >= 0){
-            // break;
-            std::cout << "oopsie woopsie " << std::endl;
+            break;
         }
     }
 
@@ -137,15 +110,12 @@ void MediaCapture::ProcessImage(cv::Mat src){
     cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double pidout = pid.PIDController_update(normalisedLaneOffset);
+    
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
-    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-    std::cout << "we on windows boys " << std::endl;
-    if(!isnan(pidout)) {
-        assettocorsa.steer((float) pidout);
-    };
-
-    #endif
+    if(strategy != nullptr && !isnan(pidout)){
+        strategy->actuators.steeringAngle = pidout;
+    }
 
     cVision.PredictTurn(maskedImage, averagedLines);
     
@@ -153,6 +123,4 @@ void MediaCapture::ProcessImage(cv::Mat src){
     double curveRadiusL = cVision.getLeftEdgeCurvature();
     cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
-
-    std::cout << "DONE WITH FRAME " << std::endl;
 };

@@ -4,22 +4,21 @@
 #include <winsock2.h>
 #include <iostream>
 #include "../CommunicationStrategy.h"
-#include "C:\Users\Sabin\Documents\vsc_cpp_projects\SDC-HANZE-2022\src\utils\TaskScheduler\TaskScheduler.h"
+#include "../../utils/TaskScheduler/TaskScheduler.h"
 
-class ACStrategy : CommunicationStrategy {
+class ACStrategy : public CommunicationStrategy {
     public:
         SOCKET s;
         ACStrategy();
-        void steer(float amount);
-        void brake(int amount);
-        void forward(int amount);
+        void steer() override;
+        void brake() override;
+        void throttle() override;
         void neutral();
         void stop();
         void gearShiftUp();
         void gearShiftDown();
         TaskScheduler taskScheduler;
      private:
-        void throttle(int amount, int direction);
         template<class T>
         const char* merge(short arbitration_id, T & data) {
             char combined[sizeof arbitration_id + sizeof data];
@@ -36,7 +35,7 @@ class ACStrategy : CommunicationStrategy {
                 puts("send failed");
             };
 
-            puts("Data sent");
+            puts("Sent can-message");
         };
 };
 #endif

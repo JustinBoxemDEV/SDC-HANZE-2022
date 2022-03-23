@@ -49,7 +49,7 @@ int screenCaptureCommand(int argc, char** argv) {
 
 // CODE TO MANUAL CONTROL AC --- U need to comment above section to make this work
 
-#include "VehicleControl/strategies/ACStrategy.h"
+// #include "VehicleControl/strategies/ACStrategy.h"
 
 // ACStrategy assettocorsa2;
 
