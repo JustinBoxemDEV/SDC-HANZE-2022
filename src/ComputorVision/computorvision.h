@@ -48,7 +48,7 @@ class ComputorVision{
             cv::createTrackbar("Sat max", "Trackbars", &sMax, sMax);
             cv::createTrackbar("Val min", "Trackbars", &vMin, vMax);
             cv::createTrackbar("Val max", "Trackbars", &vMax, vMax);
-            structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12));
+            structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(9, 9));
         }
         double getNormalisedLaneOffset(){ return normalisedLaneOffset; }
         double getLaneOffset(){ return laneOffset; }

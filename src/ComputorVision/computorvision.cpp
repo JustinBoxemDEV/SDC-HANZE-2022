@@ -23,10 +23,10 @@ cv::Mat ComputorVision::DetectEdges(cv::Mat src){
 cv::Mat ComputorVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
-        cv::Point(0, src.rows * 0.7),
-        cv::Point(0, src.rows * 0.31),
-        cv::Point(src.cols, src.rows * 0.31),
-        cv::Point(src.cols, src.rows * 0.7),
+        cv::Point(0, src.rows * 0.8),
+        cv::Point(0, src.rows * 0.6),
+        cv::Point(src.cols, src.rows * 0.6),
+        cv::Point(src.cols, src.rows * 0.8),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
     cv::bitwise_and(mask, src , masked);
@@ -55,7 +55,6 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
 
         double slope = (static_cast<double>(end.y) - static_cast<double>(start.y))/ (static_cast<double>(end.x) - static_cast<double>(start.x) + 0.00001);
         double yIntercept = static_cast<double>(start.y) - (slope * static_cast<double>(start.x));
-
         double angle = atan2(end.y - start.y, end.x - start.x) * 180.0 / CV_PI;
 
         if((angle < angleThreshold && angle >  -angleThreshold) || (angle > 180 - angleThreshold && angle < 180 + angleThreshold)){
@@ -96,7 +95,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.31); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.6); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
@@ -179,20 +178,21 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // cv::erode(hsvFilter, hsvFilter, structuringElement);
     
     // cv::Mat sobelx;
-    // cv::Mat sobely;
+    cv::Mat sobely;
     // cv::Mat sobelxy;
 
-    // cv::Mat gray;
-    // cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
+    cv::Mat gray;
+    cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
     // Sobel(gray, sobelx, CV_64F, 1, 0);
-    // Sobel(gray, sobely, CV_64F, 0, 1);
+    Sobel(gray, sobely, CV_64F, 0, 1);
     // Sobel(gray, sobelxy, CV_64F, 1, 1);
+    // imshow("soby'", sobely);
+    cv::inRange(sobely, 75,255, sobely);
 
     // convertScaleAbs(sobelx, sobelx);
-    // convertScaleAbs(sobely, sobely);
+    convertScaleAbs(sobely, sobely);
     // convertScaleAbs(sobelxy, sobelxy);
     // imshow("sobx'", sobelx);
-    // imshow("soby'", sobely);
     // imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
@@ -246,22 +246,26 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
-    cv::inRange(hsvChannels[1], 50,255, hsvChannels[1]);
 
-    // cv::erode(mask, mask, structuringElement);
-    // cv::dilate(mask, mask, structuringElement);
-
+    cv::inRange(hsvChannels[1], 105,255, hsvChannels[1]);
     cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
     cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
+    // imshow("hsv s'", hsvChannels[1]);
 
+    cv::inRange(hlsChannels[2], 70,255, hlsChannels[2]);
+    cv::dilate(hlsChannels[2], hlsChannels[2], structuringElement);
+    cv::erode(hlsChannels[2], hlsChannels[2], structuringElement);
+    // imshow("hls s'", hlsChannels[2]);
 
-    cv::inRange(hlsChannels[1], 185,255, hlsChannels[1]);
+    cv::inRange(hlsChannels[1], 170,255, hlsChannels[1]);
 
     cv::Mat mask;
-    cv::bitwise_or(hsvChannels[1], hlsChannels[1], mask);
+    cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
+    cv::bitwise_or(mask, hsvChannels[1], mask);
 
     // imshow("hsvfilter", hsvFilter);
     binaryImage = DetectEdges(mask);
+    cv::bitwise_or(binaryImage, sobely, binaryImage);
     imshow("binary", binaryImage);
 
     return binaryImage;
