@@ -24,10 +24,6 @@
 namespace fs = std::filesystem;
 using namespace std;
 
-int helpCommand(int argc, char** argv);
-int videoCommand(int argc, char** argv);
-int imageCommand(int argc, char** argv);
-int invalidCommand(int argc, char** argv);
 int screenCaptureCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
@@ -38,14 +34,24 @@ int main(int argc, char** argv) {
 
 int screenCaptureCommand(int argc, char** argv) {
     #ifdef __WIN32__
-    ScreenCapture screenCapture;
-    screenCapture.run();
+    ScreenCaptureWindows screenCaptureWindows;
+    screenCaptureWindows.run();
     return 0;
     #else
     cout << "ERROR: screen capture is currently not working for linux!" << endl;
     return -1;
     #endif
 }
+
+// TEST CANBUS
+// int main(int argc, char** argv){
+//     if(argc == 1){
+//         MediaCapture mediacapture;
+//         mediacapture.ProcessFeed(0, "");
+//         return 0;
+//     }
+// }
+
 
 // CODE TO MANUAL CONTROL AC --- U need to comment above section to make this work
 

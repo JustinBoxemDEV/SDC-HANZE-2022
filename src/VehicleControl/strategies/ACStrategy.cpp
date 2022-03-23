@@ -56,6 +56,10 @@ void ACStrategy::neutral() {
 };
 
 void ACStrategy::stop() {
+    actuators.brakePercentage = 0;
+    actuators.throttlePercentage = 0;
+    actuators.steeringAngle = 0;
+    
     throttle();
     brake();
     neutral();

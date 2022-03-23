@@ -51,7 +51,7 @@ void throttle(){
     assettocorsa.throttle();
 }
 
-int ScreenCapture::run() {
+int ScreenCaptureWindows::run() {
     HWND hwndDesktop;
 	hwndDesktop = GetDesktopWindow();
     int key = 0;

@@ -13,21 +13,17 @@
 
 namespace fs = std::filesystem;
 
-void MediaCapture::ProcessFeed(int cameraID, std::string filename)
-{
-    if (cameraID != 0)
-    {
+void MediaCapture::ProcessFeed(int cameraID, std::string filename){
+    if (cameraID != 0){
         capture = new cv::VideoCapture(cameraID);
         capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
         capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
     }
-    else if (filename != "")
-    {
+    else if (filename != ""){
         std::cout << filename << std::endl;
         capture = new cv::VideoCapture(filename);
     }
-    else
-    {
+    else{
         capture = new cv::VideoCapture(0);
 
         // Camera detection check

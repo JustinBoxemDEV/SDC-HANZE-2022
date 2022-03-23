@@ -9,7 +9,7 @@
 
 // source: https://github.com/CasualCoder91/ZumaOpenCVBot
 
-class ScreenCapture {
+class ScreenCaptureWindows {
     public:
         int run();
     private:
