@@ -46,7 +46,7 @@ int CameraCapture::run(int cameraID) {
     MediaCapture mediacapture(&canStrategy);
     mediacapture.pid.PIDController_Init();
 
-    canStrategy.taskScheduler.SCH_Add_Task(brake, 0, 0.04);
+    // canStrategy.taskScheduler.SCH_Add_Task(brake, 0, 0.04);  // zelfs wanneer het bericht de instructie bevat om niet te remmen, zal de motorcontroller tijdelijk worden uitgeschakeld als een soort failsafe
     canStrategy.taskScheduler.SCH_Add_Task(forward, 0, 0.04);
     canStrategy.taskScheduler.SCH_Add_Task(steer, 0.02, 0.04);
     canStrategy.taskScheduler.SCH_Start();
