@@ -23,9 +23,6 @@ def handle_traffic(client_socket):
         for readable_socket in readable:
             data = readable_socket.recv(1024)
             # Combine the first two bytes to get the arbitration id
-            print(data)
-            print(data[:2])
-
             arbitration_id, = unsignedShortStruct.unpack(data[:2])
             yield arbitration_id, data[2:]
     
@@ -37,7 +34,9 @@ def main():
         client_socket.bind((IP, PORT))
         logging.info('Ready!')
         for arbitration_id, data in handle_traffic(client_socket):
-            print(arbitration_id, data)
+            print(f"arbitration id: {arbitration_id}")
+            print(f"data: {data} ")
+            # print(arbitration_id, data)
             controller.handle(arbitration_id, data)
 
 if __name__ == '__main__':

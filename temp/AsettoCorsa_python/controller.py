@@ -38,6 +38,8 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         Convert a throttle message to a float between 0 (no throttle) and 1 (full throttle).
         Driving backwards is, unfortunately, NOT SUPPORTED yet.
         """
+        # TODO: Fix little/big endian problem for throttle and braking!
+        print(f"Data (first byte) when it reaches the controller: {data[0]}")
         throttle_percentage = data[0] # Throttle between 0 and 100 (incl)
         # direction = data[2] # 0 = forwards, 1 = backwards
         print(throttle_percentage)
@@ -48,7 +50,8 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         """
         Convert a brake message to a float between 0 (no braking) and 1 (fully applied brakes).
         """
-        brake_percentage = data[0] # Throttle between 0 and 100 (incl)
+        # TODO: Fix little/big endian problem for throttle and braking!
+        brake_percentage = data[0] # Brake between 0 and 100 (incl)
         return brake_percentage/100
 
     @staticmethod

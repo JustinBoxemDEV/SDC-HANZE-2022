@@ -4,7 +4,7 @@ VehicleControlManager::VehicleControlManager(CommunicationStrategy *vehicleStrat
     vehicleStrategy = vehicleStrategy__;
 };
 
-void VehicleControlManager::throttle() {
+void VehicleControlManager::forward() {
     vehicleStrategy->forward();
 };
 

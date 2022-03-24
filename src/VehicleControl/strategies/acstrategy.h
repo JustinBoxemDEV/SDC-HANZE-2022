@@ -35,7 +35,6 @@ class ACStrategy : public CommunicationStrategy {
             if(send(s, socketMessage, sizeof(socketMessage), 0) < 0) {
                 puts("send failed");
             };
-
             puts("Sent can-message");
         };
 };
