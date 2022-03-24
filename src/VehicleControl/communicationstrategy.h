@@ -11,8 +11,8 @@ class CommunicationStrategy {
         // TaskScheduler TaskScheduler;
         struct Actuators {
             float steeringAngle = 0;
-            float throttlePercentage = 0;
-            float brakePercentage = 0;
+            int throttlePercentage = 0;
+            int brakePercentage = 0;
             float steeringFeedback = 0;
         };
         Actuators actuators;

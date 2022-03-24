@@ -39,8 +39,6 @@ void ACStrategy::brake() {
 };
 
 void ACStrategy::forward() {
-    // TODO: Fix little/big endian problem for throttle and braking!
-    std::cout << "(ACStrategy) Throttling with: " << actuators.throttlePercentage << std::endl;
     const char* data = ACStrategy::merge(__builtin_bswap16(0x120), actuators.throttlePercentage);
     ACStrategy::sendCanMessage(data);
 };
