@@ -22,11 +22,11 @@ CANStrategy::CANStrategy() {
 };
 
 void CANStrategy::init(const char* canType) {
-    if (strcmp(canType, "can0"){
+    if (strcmp(canType, "can0")){
         std::cout << "Initializing canbus" << std::endl;
         system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
         system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
-    }else if (strcmp(canType, "vcan0"){
+    }else if (strcmp(canType, "vcan0")){
         std::cout << "Initializing virtual canbus" << std::endl;
         system("sudo ip link del dev vcan0 type vcan");
         system("sudo ip link add dev vcan0 type vcan");
@@ -60,14 +60,14 @@ void CANStrategy::init(const char* canType) {
 
     // When starting the kart
     sleep(5);
-    // Wait 15 seconds after kart is turned on, set the kart to drive (forwards) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
-    throttle(0, 1);
+    // Wait 15 seconds after kart is turned on, set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
+    actuators.throttlePercentage = 0;
     sleep(0.04);
     // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
-    brake(0);
+    actuators.brakePercentage = 0;
     sleep(0.04);
     // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
-    steer(0.00);
+    actuators.steeringAngle = 0;
     sleep(0.04);
 };
 
@@ -97,40 +97,40 @@ void CANStrategy::steer() {
 
     canMessage.can_id = 0x12c;
     canMessage.can_dlc = 8;
-    canMessage.data = amount;
+    canMessage.data = actuators.steeringAngle;
     canMessage.trailer = 0x00000000;
 
     Logger::setActiveFile("send " + timestamp);
-    Logger::info("Steering : angle = " + std::to_string(amount));
+    Logger::info("Steering : angle = " + std::to_string(actuators.steeringAngle));
 
     CANStrategy::sendCanMessage<steerFrame>(canMessage);
 };
 
-void CANStrategy::brake(int amount) {
+void CANStrategy::brake() {
     typedef CANStrategy::frame<std::byte[4]> brakeFrame;
 
     brakeFrame canMessage;
 
     canMessage.can_id = 0x126;
     canMessage.can_dlc = 8;
-    canMessage.data[0] = (std::byte) amount;
+    canMessage.data[0] = (std::byte) actuators.brakePercentage;
     canMessage.data[1] = (std::byte) 0x00;
     canMessage.data[2] = (std::byte) 0x00;
     canMessage.data[3] = (std::byte) 0x00;
     canMessage.trailer =  0x00000000;
 
     Logger::setActiveFile("send " + timestamp);
-    Logger::info("Brake : amount = " + std::to_string(amount));
+    Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage));
 
     CANStrategy::sendCanMessage(canMessage);
 };
 
-void CANStrategy::forward(int amount) {
-    CANStrategy::throttle(amount, 1);
+void CANStrategy::forward() {
+    CANStrategy::throttle(actuators.throttlePercentage, 1);
 };
 
-void CANStrategy::backward(int amount) {
-    CANStrategy::throttle(amount, 2;
+void CANStrategy::backward() {
+    CANStrategy::throttle(actuators.throttlePercentage, 2);
 };
 
 void CANStrategy::neutral() {
@@ -138,13 +138,13 @@ void CANStrategy::neutral() {
 };
 
 void CANStrategy::stop() {
-    Logger::setActiveFile("send " + timestamp);
-    Logger::info("Force stopping");
+    // Logger::setActiveFile("send " + timestamp);
+    // Logger::info("Force stopping");
 
-    // stop gas, break and set to neutral
-    CANStrategy::throttle(0, 0);
-    sleep(0.04);
-    CANStrategy::brake(100);
+    // // stop gas, break and set to neutral
+    // CANStrategy::throttle(0, 0);
+    // sleep(0.04);
+    // CANStrategy::brake(100);
 };
 
 void CANStrategy::readCANMessages() {

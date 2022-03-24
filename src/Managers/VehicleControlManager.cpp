@@ -5,7 +5,7 @@ VehicleControlManager::VehicleControlManager(CommunicationStrategy *vehicleStrat
 };
 
 void VehicleControlManager::throttle() {
-    vehicleStrategy->throttle();
+    vehicleStrategy->forward();
 };
 
 void VehicleControlManager::steer() {

@@ -1,6 +1,7 @@
 #ifdef linux
 #pragma once
 #include "../CommunicationStrategy.h"
+#include "../../utils/TaskScheduler/TaskScheduler.h"
 #include <iostream>
 #include <string.h>
 #include <sys/socket.h>
@@ -14,15 +15,17 @@ class CANStrategy : public CommunicationStrategy {
         int cansocket;
         std::string timestamp;
         CANStrategy();
-        void steer();
-        void brake(int amount);
-        void throttle(int amount, int direction);
+        void steer() override;
+        void brake() override;
+        void forward() override;
         void neutral();
         void stop();
         void readCANMessages();
-        void forward(int amount);
-        void backward(int amount)
+    
+        void backward();
         void init(const char* canType);
+        TaskScheduler taskScheduler;
+        
         template <class T>
         struct frame {
             canid_t     can_id;
@@ -34,7 +37,7 @@ class CANStrategy : public CommunicationStrategy {
             __u_int     trailer;
         };
     private:
-        
+        void throttle(int amount, int direction);
         template<typename T>
         void sendCanMessage(T & canMessage) {
             if (write(cansocket, &canMessage, sizeof(canMessage)) != sizeof(canMessage)) {

@@ -42,7 +42,7 @@ void ACStrategy::brake() {
     ACStrategy::sendCanMessage(data);
 };
 
-void ACStrategy::throttle() {
+void ACStrategy::forward() {
     const char* data = ACStrategy::merge(__builtin_bswap16(0x120), actuators.throttlePercentage);
     ACStrategy::sendCanMessage(data);
 };
@@ -60,7 +60,7 @@ void ACStrategy::stop() {
     actuators.throttlePercentage = 0;
     actuators.steeringAngle = 0;
     
-    throttle();
+    forward();
     brake();
     neutral();
 };

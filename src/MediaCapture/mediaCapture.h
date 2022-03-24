@@ -1,18 +1,28 @@
-#ifndef MEDIA_CAPTURE_H
-#define MEDIA_CAPTURE_H
+#pragma once
 
 #include <stdint.h>
+#include <iostream>
+#include <time.h>
 #include <string>
-#include "opencv2/opencv.hpp"
+#include <filesystem>
+#include <thread>
+#include <cmath>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "../ComputorVision/computorvision.h"
 #include "../PID/PID.h"
 #include "../VehicleControl/CommunicationStrategy.h"
+#include "../VehicleControl/strategies/ACStrategy.h"
+#include "../Math/Polynomial.h"
+#include "../MediaCapture/screenCaptureWindows.h"
+#include "../MediaCapture/CameraCapture.h"
 
-class MediaCapture
-{
+class MediaCapture {
     private:
         ComputorVision cVision;
-        cv::VideoCapture *capture; 
+        // cv::VideoCapture *capture; 
         CommunicationStrategy* strategy;
     public:
         MediaCapture(){}
@@ -22,9 +32,7 @@ class MediaCapture
 
         void execute();
         PIDController pid{0.6, 1.2, 2};
-        void ProcessFeed(int cameraID, std::string filename);
+        void ProcessFeed(bool screenCapture = false, int cameraID = 0, std::string filename = "");
         cv::Mat LoadImage(std::string filename);
         void ProcessImage(cv::Mat src);
 };
-
-#endif

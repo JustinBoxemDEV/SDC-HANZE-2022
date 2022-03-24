@@ -1,5 +1,5 @@
-#pragma once
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+#pragma once
 #include <stdio.h>
 #include <winsock2.h>
 #include <iostream>
@@ -12,7 +12,7 @@ class ACStrategy : public CommunicationStrategy {
         ACStrategy();
         void steer() override;
         void brake() override;
-        void throttle() override;
+        void forward() override;
         void neutral();
         void stop();
         void gearShiftUp();

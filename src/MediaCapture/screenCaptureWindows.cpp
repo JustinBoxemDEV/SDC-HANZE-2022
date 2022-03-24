@@ -47,8 +47,8 @@ void brake(){
     assettocorsa.brake();
 }
 
-void throttle(){
-    assettocorsa.throttle();
+void forward(){
+    assettocorsa.forward();
 }
 
 int ScreenCaptureWindows::run() {
@@ -60,14 +60,12 @@ int ScreenCaptureWindows::run() {
     MediaCapture mediacapture(&assettocorsa);
     mediacapture.pid.PIDController_Init();
 
-    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
     // Wait 2 seconds so you can tab back into the game
     Sleep(2000);
     assettocorsa.gearShiftUp();
-    #endif
 
     assettocorsa.actuators.throttlePercentage = 80;
-    assettocorsa.taskScheduler.SCH_Add_Task(throttle, 0, 0.04);
+    assettocorsa.taskScheduler.SCH_Add_Task(forward, 0, 0.04);
     assettocorsa.taskScheduler.SCH_Add_Task(steer, 0.02, 0.04);
     assettocorsa.taskScheduler.SCH_Start();
     

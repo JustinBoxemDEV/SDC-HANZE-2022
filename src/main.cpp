@@ -25,17 +25,19 @@ namespace fs = std::filesystem;
 using namespace std;
 
 int screenCaptureCommand(int argc, char** argv);
+int cameraCaptureCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
         return screenCaptureCommand(argc, argv);
+        // return cameraCaptureCommand(argc, argv);
     } 
 }
 
 int screenCaptureCommand(int argc, char** argv) {
     #ifdef __WIN32__
-    ScreenCaptureWindows screenCaptureWindows;
-    screenCaptureWindows.run();
+    MediaCapture mediacapture;
+    mediacapture.ProcessFeed(true); // screenCapture=true
     return 0;
     #else
     cout << "ERROR: screen capture is currently not working for linux!" << endl;
@@ -44,13 +46,18 @@ int screenCaptureCommand(int argc, char** argv) {
 }
 
 // TEST CANBUS
-// int main(int argc, char** argv){
-//     if(argc == 1){
-//         MediaCapture mediacapture;
-//         mediacapture.ProcessFeed(0, "");
-//         return 0;
-//     }
-// }
+int cameraCaptureCommand(int argc, char** argv) {
+    #ifdef linux
+    MediaCapture mediacapture;
+    mediacapture.ProcessFeed(false, 0); // cameraID=0
+
+    return 0;
+    #else
+    cout << "ERROR: This camera capture does not work for windows!" << endl;
+    return -1;
+    #endif
+}
+
 
 
 // CODE TO MANUAL CONTROL AC --- U need to comment above section to make this work
