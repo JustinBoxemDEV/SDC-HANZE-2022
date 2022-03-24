@@ -13,7 +13,6 @@ class ComputorVision{
         double curveRadiusR = 0;
         double curveRadiusL = 0;
 
-
         int hMin = 0;
         int hMax = 178;
         int sMin = 0; //33
