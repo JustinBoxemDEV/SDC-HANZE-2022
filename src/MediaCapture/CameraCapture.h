@@ -4,7 +4,9 @@
 #include "opencv2/opencv.hpp"
 #include "../ComputorVision/computorvision.h"
 #include "../PID/PID.h"
-#include "../VehicleControl/CommunicationStrategy.h"
+#include "../VehicleControl/communicationstrategy.h"
+#include "../VehicleControl/strategies/canstrategy.h"
+#include "mediaCapture.h"
 
 class CameraCapture {
     public:

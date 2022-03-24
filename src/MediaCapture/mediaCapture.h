@@ -13,8 +13,8 @@
 
 #include "../ComputorVision/computorvision.h"
 #include "../PID/PID.h"
-#include "../VehicleControl/CommunicationStrategy.h"
-#include "../VehicleControl/strategies/ACStrategy.h"
+#include "../VehicleControl/communicationstrategy.h"
+#include "../VehicleControl/strategies/acstrategy.h"
 #include "../Math/Polynomial.h"
 #include "../MediaCapture/screenCaptureWindows.h"
 #include "../MediaCapture/CameraCapture.h"

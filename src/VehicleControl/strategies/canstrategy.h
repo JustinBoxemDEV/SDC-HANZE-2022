@@ -1,6 +1,6 @@
 #ifdef linux
 #pragma once
-#include "../CommunicationStrategy.h"
+#include "../communicationstrategy.h"
 #include "../../utils/TaskScheduler/TaskScheduler.h"
 #include <iostream>
 #include <string.h>
@@ -9,6 +9,8 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
+#include "../../Logger/logger.h"
+#include "../../utils/Time/time.h"
 
 class CANStrategy : public CommunicationStrategy {
     public:

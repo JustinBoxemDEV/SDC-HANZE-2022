@@ -1,5 +1,5 @@
 #pragma once
-#include "../VehicleControl/CommunicationStrategy.h"
+#include "../VehicleControl/communicationstrategy.h"
 
 class VehicleControlManager {
     public:

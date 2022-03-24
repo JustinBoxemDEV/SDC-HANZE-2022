@@ -1,13 +1,12 @@
 // THIS CURRENT MAIN IS A MESS THAT JUST TESTS THE SCHEDULER I APOLOGISE
 
-#include "VehicleControl/strategies/CANStrategy.h"
+#include "VehicleControl/strategies/canstrategy.h"
 #include <iostream>
 #include <string.h>
 #include <unistd.h>
 
 #include "opencv2/opencv.hpp"
 #include <opencv2/imgproc.hpp>
-#include <iostream>
 #include "ComputorVision/computorvision.h"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
@@ -29,7 +28,7 @@ int cameraCaptureCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
-        return screenCaptureCommand(argc, argv);
+        return cameraCaptureCommand(argc, argv);
         // return cameraCaptureCommand(argc, argv);
     } 
 }

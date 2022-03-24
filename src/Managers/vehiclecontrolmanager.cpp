@@ -1,4 +1,4 @@
-#include "VehicleControlManager.h"
+#include "vehiclecontrolmanager.h"
 
 VehicleControlManager::VehicleControlManager(CommunicationStrategy *vehicleStrategy__) {
     vehicleStrategy = vehicleStrategy__;

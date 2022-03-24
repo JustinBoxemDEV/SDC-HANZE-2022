@@ -5,6 +5,7 @@
 #include <iostream>
 #include "../CommunicationStrategy.h"
 #include "../../utils/TaskScheduler/TaskScheduler.h"
+#include "../../utils/TaskScheduler/MessageTask.h"
 
 class ACStrategy : public CommunicationStrategy {
     public:

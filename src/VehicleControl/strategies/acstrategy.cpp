@@ -1,9 +1,5 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-#include "ACStrategy.h"
-#include "..\..\utils\TaskScheduler\MessageTask.h"
-#include <stdio.h>
-#include <winsock2.h>
-#include <iostream>
+#include "acstrategy.h"
 
 ACStrategy::ACStrategy() {
     WSADATA wsa;
