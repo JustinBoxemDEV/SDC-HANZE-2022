@@ -41,8 +41,7 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         # TODO: Fix little/big endian problem for throttle and braking!
         print(f"Data (first byte) when it reaches the controller: {data[0]}")
         throttle_percentage = data[0] # Throttle between 0 and 100 (incl)
-        # direction = data[2] # 0 = forwards, 1 = backwards
-        print(throttle_percentage)
+        print(f"Throttle percentage recieved by controller: {throttle_percentage/100}")
         return throttle_percentage/100
 
     @staticmethod
