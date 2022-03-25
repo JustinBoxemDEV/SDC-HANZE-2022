@@ -23,10 +23,10 @@ cv::Mat ComputorVision::DetectEdges(cv::Mat src){
 cv::Mat ComputorVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
-        cv::Point(0, src.rows * 0.7),
-        cv::Point(0, src.rows * 0.45),
-        cv::Point(src.cols, src.rows * 0.45),
-        cv::Point(src.cols, src.rows * 0.7),
+        cv::Point(0, src.rows * 0.8),
+        cv::Point(0, src.rows * 0.6),
+        cv::Point(src.cols, src.rows * 0.6),
+        cv::Point(src.cols, src.rows * 0.8),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
     cv::bitwise_and(mask, src , masked);
@@ -42,6 +42,7 @@ std::vector<cv::Vec4i> ComputorVision::HoughLines(cv::Mat src){
 std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines){
     std::vector<cv::Vec2f> left;
     std::vector<cv::Vec2f> right;
+    int angleThreshold = 5;
 
     for (auto line : lines)
     {
@@ -54,7 +55,12 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
 
         double slope = (static_cast<double>(end.y) - static_cast<double>(start.y))/ (static_cast<double>(end.x) - static_cast<double>(start.x) + 0.00001);
         double yIntercept = static_cast<double>(start.y) - (slope * static_cast<double>(start.x));
-        
+        double angle = atan2(end.y - start.y, end.x - start.x) * 180.0 / CV_PI;
+
+        if((angle < angleThreshold && angle >  -angleThreshold) || (angle > 180 - angleThreshold && angle < 180 + angleThreshold)){
+            continue;
+        }
+
         if(slope < 0){
           left.push_back(cv::Vec2f(slope, yIntercept));
         }else{
@@ -89,7 +95,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.45); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.6); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
@@ -161,16 +167,106 @@ std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect w
 cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     denoisedImage = BlurImage(src);
 
-    cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
-    cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
+    // cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
+    // cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
+    // cv::inRange(hsv, cv::Scalar(0, 0, 36), cv::Scalar(179, 65, 154), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
 
-    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
-    cv::dilate(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
+    // cv::erode(hsvFilter, hsvFilter, structuringElement);
+    // cv::dilate(hsvFilter, hsvFilter, structuringElement);
 
-    cv::dilate(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
-    cv::erode(hsvFilter, hsvFilter, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(12, 12)));
+    // cv::dilate(hsvFilter, hsvFilter, structuringElement);
+    // cv::erode(hsvFilter, hsvFilter, structuringElement);
+    
+    // cv::Mat sobelx;
+    cv::Mat sobely;
+    // cv::Mat sobelxy;
 
-    binaryImage = DetectEdges(hsvFilter);
+    cv::Mat gray;
+    cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
+    // Sobel(gray, sobelx, CV_64F, 1, 0);
+    Sobel(gray, sobely, CV_64F, 0, 1);
+    // Sobel(gray, sobelxy, CV_64F, 1, 1);
+    // imshow("soby'", sobely);
+    cv::inRange(sobely, 75,255, sobely);
+
+    // convertScaleAbs(sobelx, sobelx);
+    convertScaleAbs(sobely, sobely);
+    // convertScaleAbs(sobelxy, sobelxy);
+    // imshow("sobx'", sobelx);
+    // imshow("sobxy'", sobelxy);
+
+    // cv::Mat rgb;
+    // cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
+    // std::vector<cv::Mat> rgbChannels(3);
+    // cv::split(rgb, rgbChannels);
+
+    // imshow("rgb - r", rgbChannels[0]);
+    // imshow("rgb - g", rgbChannels[1]);
+    // imshow("rgb - b", rgbChannels[2]);
+
+    cv::Mat hls;
+    cv::cvtColor(src, hls, cv::COLOR_BGR2HLS);
+    std::vector<cv::Mat> hlsChannels(3);
+    cv::split(hls, hlsChannels);
+
+    // imshow("hls - h", hlsChannels[0]);
+    // imshow("hls - l", hlsChannels[1]);
+    // imshow("hls - s", hlsChannels[2]);
+
+    cv::Mat hsv;
+    cv::cvtColor(src, hsv, cv::COLOR_BGR2HSV);
+    std::vector<cv::Mat> hsvChannels(3);
+    cv::split(hsv, hsvChannels);
+
+    // imshow("hsv - h", hsvChannels[0]);
+    // imshow("hsv - s", hsvChannels[1]);
+    // imshow("hsv - v", hsvChannels[2]);
+
+    // cv::Mat lab;
+    // cv::cvtColor(src, lab, cv::COLOR_BGR2Lab);
+    // std::vector<cv::Mat> labChannels(3);
+    // cv::split(lab, labChannels);
+
+    // imshow("lab - l", labChannels[0]);
+    // imshow("lab - a", labChannels[1]);
+    // imshow("lab - b", labChannels[2]);
+
+    // cv::Mat lux;
+    // cv::cvtColor(src, lux, cv::COLOR_BGR2Luv);
+    // std::vector<cv::Mat> luxChannels(3);
+    // cv::split(lux, luxChannels);
+
+    // imshow("lux - l", luxChannels[0]);
+    // imshow("lux - u", luxChannels[1]);
+    // imshow("lux - x", luxChannels[2]);
+
+
+    // cv::Mat sobel;
+    // cv::bitwise_or(sobelx, sobely, sobel);
+    // cv::bitwise_or(sobel, sobelxy, sobel);
+    // imshow("sobel'", sobel);
+
+
+    cv::inRange(hsvChannels[1], 105,255, hsvChannels[1]);
+    cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
+    cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
+    // imshow("hsv s'", hsvChannels[1]);
+
+    cv::inRange(hlsChannels[2], 70,255, hlsChannels[2]);
+    cv::dilate(hlsChannels[2], hlsChannels[2], structuringElement);
+    cv::erode(hlsChannels[2], hlsChannels[2], structuringElement);
+    // imshow("hls s'", hlsChannels[2]);
+
+    cv::inRange(hlsChannels[1], 170,255, hlsChannels[1]);
+
+    cv::Mat mask;
+    cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
+    cv::bitwise_or(mask, hsvChannels[1], mask);
+
+    // imshow("hsvfilter", hsvFilter);
+    binaryImage = DetectEdges(mask);
+    cv::bitwise_or(binaryImage, sobely, binaryImage);
+    imshow("binary", binaryImage);
 
     return binaryImage;
 }
@@ -199,7 +295,7 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     invert(homography, invertedPerspectiveMatrix);
 
     cv::warpPerspective(src, warped, homography, cv::Size(src.cols, src.rows));
-
+    imshow("warped", warped);
     int rectHeight = 120;
     int rectwidth = 60;
     int rectY = src.rows - rectHeight;
@@ -230,7 +326,7 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     double vertexLX = Polynomial::Vertex(fitL);
 
     std::string roadType = "";
-    int turnThreshold = 200;
+    int turnThreshold = 3000;
 
     if(vertexLX < turnThreshold){
         roadType = "Left Turn";
@@ -248,8 +344,8 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     std::vector<cv::Point> allPts;
 
     cv::perspectiveTransform(rightLinePixels, outPts, invertedPerspectiveMatrix);
-    cv::line(frame, cv::Point(edgeLines[1][0], edgeLines[1][1]), outPts[0], cv::Scalar(0, 255, 0), 3);
-    allPts.push_back(cv::Point(edgeLines[1][0], edgeLines[1][1]));
+    // cv::line(frame, cv::Point(edgeLines[1][0], edgeLines[1][1]), outPts[0], cv::Scalar(0, 255, 0), 3);
+    // allPts.push_back(cv::Point(edgeLines[1][0], edgeLines[1][1]));
 
     for (int i = 0; i < outPts.size() - 1; ++i)
     {
@@ -268,8 +364,8 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     }
 
     allPts.push_back(cv::Point(outPts[0].x - (outPts.size() - 1), outPts[0].y));
-    cv::line(frame, cv::Point(edgeLines[0][0], edgeLines[0][1]), outPts[outPts.size() -1], cv::Scalar(0, 255, 0), 3);
-    allPts.push_back(cv::Point(edgeLines[0][0], edgeLines[0][1]));
+    // cv::line(frame, cv::Point(edgeLines[0][0], edgeLines[0][1]), outPts[outPts.size() -1], cv::Scalar(0, 255, 0), 3);
+    // allPts.push_back(cv::Point(edgeLines[0][0], edgeLines[0][1]));
 
     std::vector<std::vector<cv::Point>> arr;
     arr.push_back(allPts);
