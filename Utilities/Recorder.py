@@ -1,9 +1,4 @@
 import cv2
-<<<<<<< HEAD
-
-cap = cv2.VideoCapture(0)
-out = cv2.VideoWriter('outpy.mp4',cv2.VideoWriter_fourcc(*'mp4v'), 30, (1280, 720))
-=======
 import os
 import sys
 from datetime import datetime
@@ -24,7 +19,6 @@ capFocus = 25  # min: 0, max: 255, increment:5
 cap.set(28, capFocus) 
 
 out = cv2.VideoWriter(currentPath + "/assets/videos/" + str_date_time +  "---" + str(fps) + "fps.mp4",cv2.VideoWriter_fourcc(*'mp4v'),int(fps), (1280, 720))
->>>>>>> main
 
 if (cap.isOpened()== False):
     print("Error opening video stream or file")
@@ -43,8 +37,4 @@ while(cap.isOpened()):
 
 cap.release()
 out.release()
-<<<<<<< HEAD
 cv2.destroyAllWindows()
-=======
-cv2.destroyAllWindows()
->>>>>>> main
