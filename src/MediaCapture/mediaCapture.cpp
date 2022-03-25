@@ -12,73 +12,73 @@ namespace fs = std::filesystem;
 
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 {
-    std::thread tr{[&](){
-        cv::VideoCapture *capture;
-       
-        if (cameraID != 0)
+    if (cameraID != 0)
+    {
+        capture = new cv::VideoCapture(cameraID);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
+    }
+    else if (filename != "")
+    {
+        std::cout << filename << std::endl;
+        capture = new cv::VideoCapture(filename);
+    }
+    else
+    {
+        capture = new cv::VideoCapture(0);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
+
+        // Camera detection check
+        if (!capture->isOpened())
         {
-            capture = new cv::VideoCapture(cameraID);
-            capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
-            capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+            std::cout << "NO CAMERA DETECTED!" << std::endl;
+            return;
         }
-        else if (filename != "")
-        {
-            std::cout << filename << std::endl;
-            capture = new cv::VideoCapture(filename);
-        }
-        else
-        {
-            capture = new cv::VideoCapture(0);
+    }
+    std::cout << "Camera selected: " << cameraID << std::endl;
+    pid.PIDController_Init();
 
-            // Camera detection check
-            if (!capture->isOpened())
-            {
-                std::cout << "NO CAMERA DETECTED!" << std::endl;
-                return;
-            }
-        }
-
-        cv::Mat frame;
-        std::cout << "Camera selected: " << cameraID << std::endl;
-
-        // Define total frames and start of a counter for FPS calculation
-        int totalFrames = 0;
-    
-        pid.PIDController_Init();
-        time_t start, end;
-        time(&start);
-
-        // Camera feed
-        while (capture->read(frame))
-        {
-            totalFrames++;
-
-            ProcessImage(frame);
-
-            if (cv::waitKey(1000 / 60) >= 0)
-            {
-                break;
-            }
-        }
-    
-        // End the time counter
-        time(&end);
-
-        // Time elapsed
-        double seconds = difftime(end, start);
-        std::cout << "Time taken : " << seconds << " seconds" << std::endl;
-
-        // Estimate the FPS based on frames / elapsed time in seconds
-        int fps = totalFrames / seconds;
-        std::cout << "Estimated frames per second : " << fps << std::endl;
-
-        }
-    };
-
+    std::thread tr([&](){ execute();});
     tr.join();
 }
 
-cv::Mat MediaCapture::LoadImage(std::string filepath)
+void MediaCapture::execute(){
+    cv::Mat frame;
+
+
+    // Define total frames and start of a counter for FPS calculation
+    int totalFrames = 0;
+
+    time_t start, end;
+    time(&start);
+
+    // Camera feed
+    while (capture->read(frame))
+    {
+        totalFrames++;
+
+        ProcessImage(frame);
+
+        if (cv::waitKey(1000 / 60) >= 0)
+        {
+            break;
+        }
+    }
+
+    // End the time counter
+    time(&end);
+
+    // Time elapsed
+    double seconds = difftime(end, start);
+    std::cout << "Time taken : " << seconds << " seconds" << std::endl;
+
+    // Estimate the FPS based on frames / elapsed time in seconds
+    int fps = totalFrames / seconds;
+    std::cout << "Estimated frames per second : " << fps << std::endl;
+}
+
+cv::Mat MediaCapture::LoadTestImage(std::string filepath)
 {
     std::string path = fs::current_path().string() + "/assets/images/" + std::string(filepath);
     cv::Mat img = imread(path, cv::IMREAD_COLOR);
@@ -99,10 +99,10 @@ cv::Mat MediaCapture::LoadImage(std::string filepath)
 void MediaCapture::ProcessImage(cv::Mat src)
 {
     cVision.SetFrame(src);
-    cv::Mat wipImage;
-    src.copyTo(wipImage);
+    // cv::Mat wipImage;
+    // src.copyTo(wipImage);
 
-    cv::Mat binaryImage = cVision.CreateBinaryImage(wipImage);
+    cv::Mat binaryImage = cVision.CreateBinaryImage(src);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
     std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
@@ -115,6 +115,7 @@ void MediaCapture::ProcessImage(cv::Mat src)
     double pidout = pid.PIDController_update(normalisedLaneOffset);
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
+    imshow("masked", maskedImage);
     cVision.PredictTurn(maskedImage, averagedLines);
     
     double curveRadiusR = cVision.getRightEdgeCurvature();

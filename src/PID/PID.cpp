@@ -19,7 +19,6 @@ double PIDController::PIDController_update(double error) {
 
 	proportional = gp * error;	
 	differentiator = gd * (error - prevError)/time;	
-	//integrator = integrator + 0.5 * gi * time * (error + prevError);
 	integrator = gi *(integrator + error * time);
 	output = proportional + integrator + differentiator;
 
