@@ -5,9 +5,9 @@ CANStrategy canStrategy;
 
 void CameraCapture::getCamera(int cameraID){
     capture = new cv::VideoCapture(cameraID);
-    // capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
-    // capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
-
+    capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
+    
     // Camera detection check
     if (!capture->isOpened()){
         std::cout << "NO CAMERA DETECTED!" << std::endl;
@@ -55,6 +55,7 @@ int CameraCapture::run(int cameraID) {
     canStrategy.taskScheduler.SCH_Start();
 
     while (capture->read(frame)){
+        totalFrames++;
         mediacapture.ProcessImage(frame);
 
         canStrategy.taskScheduler.SCH_Dispatch_Tasks();

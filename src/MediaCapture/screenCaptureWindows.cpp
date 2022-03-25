@@ -10,11 +10,14 @@ HMONITOR GetPrimaryMonitorHandle() {
 	return MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
 }
 
-cv::Mat hwnd2mat(HWND hwnd) {
-    RECT rc;
-    GetClientRect(hwnd, &rc);
-    int width = rc.right;//rc.right;
-    int height = rc.bottom;
+cv::Mat ScreenCapture::getMat(HWND hwnd) {
+    MONITORINFO target;
+	target.cbSize = sizeof(MONITORINFO);
+	HMONITOR pHM = GetPrimaryMonitorHandle();
+	GetMonitorInfo(pHM, &target);
+
+    int width = target.rcMonitor.right;
+    int height = target.rcMonitor.bottom;
 
     cv::Mat src;
     src.create(height, width, CV_8UC4);
@@ -70,7 +73,7 @@ int ScreenCaptureWindows::run() {
     assettocorsa.taskScheduler.SCH_Start();
     
     while (key != 27) {
-        src = hwnd2mat(hwndDesktop);
+        src = getMat(hwndDesktop);
 
         mediacapture.ProcessImage(src);
 
@@ -81,5 +84,4 @@ int ScreenCaptureWindows::run() {
 
 	return 0;
 }
-
 #endif

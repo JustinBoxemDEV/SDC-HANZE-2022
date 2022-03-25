@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <stdint.h>
@@ -33,6 +34,6 @@ class MediaCapture {
         void execute();
         PIDController pid{0.6, 1.2, 2};
         void ProcessFeed(bool screenCapture = false, int cameraID = 0, std::string filename = "");
-        cv::Mat LoadImage(std::string filename);
+        cv::Mat LoadImg(std::string filename);
         void ProcessImage(cv::Mat src);
 };

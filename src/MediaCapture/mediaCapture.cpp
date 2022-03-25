@@ -47,14 +47,14 @@ void MediaCapture::ProcessImage(cv::Mat src){
     if(strategy != nullptr && !isnan(pidout)){
         strategy->actuators.steeringAngle = pidout;
         std::cout << "Steering with: " << pidout << std::endl;
-    }
 
-    cVision.PredictTurn(maskedImage, averagedLines);
-    
-    double curveRadiusR = cVision.getRightEdgeCurvature();
-    double curveRadiusL = cVision.getLeftEdgeCurvature();
-    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
-    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
+        cVision.PredictTurn(maskedImage, averagedLines);
+        
+        double curveRadiusR = cVision.getRightEdgeCurvature();
+        double curveRadiusL = cVision.getLeftEdgeCurvature();
+        cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+        cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
+    }
 }
 
 // WE DONT USE ANYTHING BELOW THIS RIGHT NOW
@@ -90,7 +90,7 @@ void MediaCapture::execute(){
     // std::cout << "Estimated frames per second : " << fps << std::endl;
 }
 
-cv::Mat MediaCapture::LoadImage(std::string filepath){
+cv::Mat MediaCapture::LoadImg(std::string filepath){
     std::string path = fs::current_path().string() + "/assets/images/" + std::string(filepath);
     cv::Mat img = imread(path, cv::IMREAD_COLOR);
     if (!fs::exists(path)){

@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
         return cameraCaptureCommand(argc, argv);
     } 
 }
-
+// TEST AC
 int screenCaptureCommand(int argc, char** argv) {
     #ifdef __WIN32__
     MediaCapture mediacapture;
@@ -48,7 +48,7 @@ int screenCaptureCommand(int argc, char** argv) {
 int cameraCaptureCommand(int argc, char** argv) {
     #ifdef linux
     MediaCapture mediacapture;
-    mediacapture.ProcessFeed(false, 0); // cameraID=0
+    mediacapture.ProcessFeed(false, 4); // cameraID=4 for webcam, cameraID=0 for built in laptop cam
 
     return 0;
     #else
@@ -57,112 +57,81 @@ int cameraCaptureCommand(int argc, char** argv) {
     #endif
 }
 
-
-
-// CODE TO MANUAL CONTROL AC --- U need to comment above section to make this work
-
-// #include "VehicleControl/strategies/ACStrategy.h"
-
-// ACStrategy assettocorsa2;
-
-// void recursive() {
-//     int send_amount = 1000; // Could make this dynamic from input I guess
-
-//     std::cout << "(MANUAL AC VER) What do you want to do? ;) Type throttle, brake, steer, shift up, shift down, neutral or exit" << std::endl;
-
-//     char input[25];
-//     std::cin.get(input, 25);
-//     std::cin.ignore(256, '\n');
-
-//     if (strcmp(input, "throttle") == 0) {
-//         std::cout << "Executing: " << input << std::endl;
-
-//         std::cout << "GIVE SPEED PERCENTAGE (BETWEEN 0-100) >" << std::endl;
-//         char speed[25];
-//         std::cin.get(speed, 25);
-//         std::cin.ignore(256, '\n');
-
-//         std::cout << "Speed is: " << speed << std::endl;
-//         std::cout << "Sending " << send_amount << " times" << std::endl;
-
-//         for(int i = 0; i < 100; i++) {
-//             float fspeed = atof(speed);
-//             assettocorsa2.actuators.throttlePercentage = fspeed;
-
-//             // This sleep is for debugging 
-//             sleep(2);
-
-//             assettocorsa2.forward();
-//             sleep(0.04);
-//         };
-//         recursive();
-//     } else if (strcmp(input, "brake")==0) {
-//         std::cout << "Executing: " << input << std::endl;
-
-//         std::cout << "GIVE BRAKE PERCENTAGE (BETWEEN 0-100) >" << std::endl;
-//         char brakePercentage[25];
-//         std::cin.get(brakePercentage, 25);
-//         std::cin.ignore(256, '\n');
-
-//         std::cout << "Brake percentage is: " << brakePercentage << std::endl;
-//         std::cout << "Sending " << send_amount << " times" << std::endl;
-
-//         for(int i = 0; i < 100; i++) {
-//             float fbrakePercentage = atof(brakePercentage);
-//             assettocorsa2.actuators.brakePercentage = fbrakePercentage;
-
-//             // This sleep is for debugging
-//             sleep(2);
-
-//             assettocorsa2.brake();
-//             sleep(0.04);
-//         };
-//         recursive();
-//     } else if (strcmp(input, "steer") == 0) {
-//         std::cout << "Executing: " << input << std::endl;
-
-//         std::cout << "GIVE STEERING AMOUNT (BETWEEN -1.0 AND 1.0) >" << std::endl;
-//         char steeringamount[25];
-//         std::cin.get(steeringamount, 25);  
-//         std::cin.ignore(256, '\n');
-
-//         std::cout << "Steering amount is: " << steeringamount << std::endl;
-//         std::cout << "Sending " << send_amount << " times" << std::endl;
-
-//         for(int i = 0; i < send_amount; i++) {
-//             float fsteeringamount = atof(steeringamount);
-//             assettocorsa2.actuators.steeringAngle = fsteeringamount;
-
-//             // This sleep is for debugging 
-//             sleep(2);
-            
-//             assettocorsa2.steer();
-//             sleep(0.04);
-//         };
-//         recursive();
-//     } else if (strcmp(input, "shift up") == 0) {
-//         std::cout << "Executing: " << input << std::endl;
-//         assettocorsa2.gearShiftUp();
-//         recursive();
-//     } else if (strcmp(input, "shift down") == 0) {
-//         std::cout << "Executing: " << input << std::endl;
-//         assettocorsa2.gearShiftDown();
-//         recursive();
-//     } else if (strcmp(input, "neutral") == 0) {
-//         std::cout << "Executing: " << input << std::endl;
-//         assettocorsa2.neutral();
-//         recursive();
+// int main( int argc, char** argv ){
+//     // --help Output, describing basic usage to the user
+//     if(argc==1){
+//         MediaCapture mediaCapture;
+//         mediaCapture.ProcessFeed(0,"");
+//         return 0;
 //     }
-//     else if (strcmp(input, "exit") == 0) {
-//         //CANController::closeCANController();
-//         std::cout << "Bye!" << std::endl;
-//     } else {
-//         std::cout << input << " is not a valid command." << std::endl;
-//         memset(input, 0, 25);
-//         recursive();
-//     };
-// };
+//     if(std::string(argv[1])=="-help" or std::string(argv[1])=="-h"){
+//         std::cout << "Usage: SPECIFY RESOURCE TO USE" << std::endl;
+//         std::cout << "-video -camera [CAMERA_ID]" << std::endl;
+//         std::cout << "-video -filename [FILE]" << std::endl;
+//         std::cout << "-image [FILE]" << std::endl;
+//         return -1;
+//     }else{
+//         // The user has told us he wants to use media feed
+//         if(std::string(argv[1])=="-video"){
+//             if(argc==2){
+//                 std::cout << "Usage:" << std::endl;
+//                 std::cout << "-video -camera [CAMERA_ID]" << std::endl;
+//                 std::cout << "-video -filename [FILE]" << std::endl;
+//                 return -1;
+//             }if(argc==3){
+//                 std::cout << "Usage:" << std::endl;
+//                 if(std::string(argv[2])=="-camera"){
+//                     std::cout << "-video -camera [CAMERA_ID]" << std::endl;
+//                     return -1;
+//                 }else if(std::string(argv[2])=="-filename"){
+//                     // No video file was provided to look for, so we are going to present a list of names
+//                     std::cout << "Available videos to load using -filename [FILE]" << std::endl;
+//                     std::string path = fs::current_path().string() + "/assets/videos/";
+//                     for (const auto & file : fs::directory_iterator(path))
+//                         std::cout << fs::path(file).filename().string() << std::endl;
+//                     return -1;
+//                 }
+//             }if(argc==4){
+//                 if(std::string(argv[2])=="-filename"){
+//                     std::string path = fs::current_path().string() + "/assets/videos/" + std::string(argv[3]);
+//                     if(!fs::exists(path)){
+//                         std::cout << "The requested file cannot be found in /assets/videos/!" << std::endl;
+//                         return -1;
+//                     }
+//                     MediaCapture mediaCapture;
+//                     mediaCapture.ProcessFeed(0,path);
+//                     return 0;
+//                 }else if(std::string(argv[2])=="-camera"){
+//                     MediaCapture mediaCapture;
+//                     mediaCapture.ProcessFeed(std::stoi(argv[3]),"");
+//                     return 0;
+//                 }else{
+//                     MediaCapture mediaCapture;
+//                     mediaCapture.ProcessFeed(0,"");
+//                     return 0;
+//                 }
+//             }
+//         }else if(std::string(argv[1])=="-image"){
+//             // An image was provided to look for
+//             if(argc==3){
+//                 MediaCapture mediaCapture;
+//                 cv::Mat img = mediaCapture.LoadImg(std::string(argv[2]));
+//                 mediaCapture.ProcessImage(img);
+//                 cv::waitKey(0);
+//                 return 0;
+//             }
 
-// int main() {
-//     recursive();
-// };
+//             // No image was provided to look for, so we are going to present a list of names
+//             std::cout << "Available images to load using -image [NAME]" << std::endl;
+//             std::string path = fs::current_path().string() + "/assets/images/";
+//             for (const auto & file : fs::directory_iterator(path))
+//                 std::cout << fs::path(file).filename().string() << std::endl;
+//             return -1;
+//         }
+//             // The parameter that the user provided is not compatible with our program | Provide error + help message
+//         else{
+//             std::cout << "ERROR: " << std::string(argv[1]) << " is not recognised. Use -help for information" << std::endl;
+//             return -1;
+//         }
+//     }
+// }

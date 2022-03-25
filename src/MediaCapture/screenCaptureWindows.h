@@ -13,8 +13,7 @@ class ScreenCaptureWindows {
     public:
         int run();
     private:
-        // static cv::Mat getMat(HWND hWND);
+        cv::Mat getMat(HWND hwnd);
+        HMONITOR GetPrimaryMonitorHandle();
 };
-
-
 #endif
