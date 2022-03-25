@@ -15,8 +15,8 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
     if (cameraID != 0)
     {
         capture = new cv::VideoCapture(cameraID);
-        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
-        capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
     }
     else if (filename != "")
     {
@@ -26,6 +26,8 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
     else
     {
         capture = new cv::VideoCapture(0);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
 
         // Camera detection check
         if (!capture->isOpened())
