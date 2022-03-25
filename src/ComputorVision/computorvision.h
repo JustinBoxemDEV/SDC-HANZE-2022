@@ -20,7 +20,6 @@ class ComputorVision{
         int vMin = 0;
         int vMax = 255;
 
-
         cv::Mat masked;
         cv::Mat mask;
         cv::Mat edgeMap;
@@ -38,7 +37,6 @@ class ComputorVision{
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
     public:
-
         ComputorVision(){
             cv::namedWindow("Trackbars", 0); 
             cv::createTrackbar("Hue min", "Trackbars", &hMin, hMax);

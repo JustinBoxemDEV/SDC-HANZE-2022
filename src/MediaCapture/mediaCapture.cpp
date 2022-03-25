@@ -103,7 +103,7 @@ void MediaCapture::ProcessImage(cv::Mat src)
     cv::Mat binaryImage = cVision.CreateBinaryImage(src);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
-    std::vector<cv::Vec4i> averagedLines ;//= cVision.GenerateLines(maskedImage);
+    std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
 
     double laneOffset = cVision.getLaneOffset();
     double normalisedLaneOffset = cVision.getNormalisedLaneOffset();
