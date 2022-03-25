@@ -28,7 +28,7 @@ int cameraCaptureCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
-        //return screenCaptureCommand(argc, argv);
+        // return screenCaptureCommand(argc, argv);
         return cameraCaptureCommand(argc, argv);
     } 
 }
