@@ -15,8 +15,8 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
     if (cameraID != 0)
     {
         capture = new cv::VideoCapture(cameraID);
-        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
-        capture->set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
     }
     else if (filename != "")
     {
@@ -26,6 +26,8 @@ void MediaCapture::ProcessFeed(int cameraID, std::string filename)
     else
     {
         capture = new cv::VideoCapture(0);
+        capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+        capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
 
         // Camera detection check
         if (!capture->isOpened())
@@ -76,7 +78,7 @@ void MediaCapture::execute(){
     std::cout << "Estimated frames per second : " << fps << std::endl;
 }
 
-cv::Mat MediaCapture::LoadImage(std::string filepath)
+cv::Mat MediaCapture::LoadTestImage(std::string filepath)
 {
     std::string path = fs::current_path().string() + "/assets/images/" + std::string(filepath);
     cv::Mat img = imread(path, cv::IMREAD_COLOR);

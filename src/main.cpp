@@ -29,7 +29,7 @@ int main( int argc, char** argv ){
         // The user has told us he wants to use media feed
         if(std::string(argv[1])=="-video"){
             if(argc==2){
-                std::cout << "Usage:" << std::endl; 
+                std::cout << "Usage:" << std::endl;
                 std::cout << "-video -camera [CAMERA_ID]" << std::endl;
                 std::cout << "-video -filename [FILE]" << std::endl;
                 return -1;
@@ -46,7 +46,7 @@ int main( int argc, char** argv ){
                         std::cout << fs::path(file).filename().string() << std::endl;
                     return -1;
                 }
-            }if(argc==4){   
+            }if(argc==4){
                 if(std::string(argv[2])=="-filename"){
                     std::string path = fs::current_path().string() + "/assets/videos/" + std::string(argv[3]);
                     if(!fs::exists(path)){
@@ -70,7 +70,7 @@ int main( int argc, char** argv ){
             // An image was provided to look for
             if(argc==3){
                 MediaCapture mediaCapture;
-                cv::Mat img = mediaCapture.LoadImage(std::string(argv[2]));
+                cv::Mat img = mediaCapture.LoadTestImage(std::string(argv[2]));
                 mediaCapture.ProcessImage(img);
                 cv::waitKey(0);
                 return 0;
@@ -83,7 +83,7 @@ int main( int argc, char** argv ){
                 std::cout << fs::path(file).filename().string() << std::endl;
             return -1;
         }
-        // The parameter that the user provided is not compatible with our program | Provide error + help message
+            // The parameter that the user provided is not compatible with our program | Provide error + help message
         else{
             std::cout << "ERROR: " << std::string(argv[1]) << " is not recognised. Use -help for information" << std::endl;
             return -1;
