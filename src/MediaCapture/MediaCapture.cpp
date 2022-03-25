@@ -20,10 +20,8 @@ void MediaCapture::ProcessFeed(bool screenCapture, int cameraID, std::string fil
             vidcapture.run(filepath);
         }
     } else{
-        #ifdef linux
         CameraCapture cameraCapture;
         cameraCapture.run(cameraID);
-        #endif
     }
 }
 

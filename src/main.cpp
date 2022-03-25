@@ -1,4 +1,3 @@
-// THIS CURRENT MAIN IS A MESS THAT JUST TESTS THE SCHEDULER I APOLOGISE
 #include "VehicleControl/strategies/canstrategy.h"
 #include <iostream>
 #include <string.h>
@@ -28,40 +27,34 @@ int videoCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
-        // return screenCaptureCommand(argc, argv);
-        return cameraCaptureCommand(argc, argv);
-        // return videoCommand(argc, argv);
+        return screenCaptureCommand(argc, argv); // AC
+        // return cameraCaptureCommand(argc, argv); // Kart
+        // return videoCommand(argc, argv); // Tests
     } 
 }
-// TEST AC
+// TEST AC (Virtual environment, AC)
 int screenCaptureCommand(int argc, char** argv) {
     #ifdef __WIN32__
     MediaCapture mediacapture;
-    mediacapture.ProcessFeed(true); // screenCapture=true
+    mediacapture.ProcessFeed(true); // screenCapture=true, the rest can be left on default
     return 0;
     #else
-    cout << "ERROR: screen capture is currently not working for linux!" << endl;
+    cout << "ERROR: Screen capture is currently not working for linux!" << endl;
     return -1;
     #endif
 }
 
-// TEST CANBUS
+// TEST CAMERA (Physical environment, CANBus)
 int cameraCaptureCommand(int argc, char** argv) {
-    #ifdef linux
     MediaCapture mediacapture;
     mediacapture.ProcessFeed(false, 0); // cameraID=4 for webcam, cameraID=0 for built in laptop cam
-
     return 0;
-    #else
-    cout << "ERROR: This camera capture does not work for windows!" << endl;
-    return -1;
-    #endif
 }
 
 // TEST VIDEO
 int videoCommand(int argc, char** argv) {
     MediaCapture mediacapture;
-    mediacapture.ProcessFeed(false, 0, "../assets/videos/testvid.mp4"); // give file path
+    mediacapture.ProcessFeed(false, 0, "../assets/videos/testvid.mp4"); // give file path (If it can't find the path maybe try copying the entire path)
     return 0;
 }
 

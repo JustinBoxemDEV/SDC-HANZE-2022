@@ -1,7 +1,11 @@
-#ifdef linux
 #include "CameraCapture.h"
 
-CANStrategy canStrategy;
+#ifdef linux
+CANStrategy camerastrategy;
+#else
+// scuffed
+ACStrategy camerastrategy;
+#endif
 
 void CameraCapture::getCamera(int cameraID){
     capture = new cv::VideoCapture(cameraID);
@@ -19,20 +23,22 @@ void CameraCapture::getCamera(int cameraID){
 }
 
 // Scuffed fix for scheduler
-void steer2(){
-    canStrategy.steer();
+void cam_steer(){
+    camerastrategy.steer();
 }
 
-void brake2(){
-    canStrategy.brake();
+void cam_brake(){
+    camerastrategy.brake();
 }
 
-void forward2(){
-    canStrategy.forward();
+void cam_forward(){
+    camerastrategy.forward();
 }
 
-void read2() {
-    canStrategy.readCANMessages();
+void cam_read() {
+    #ifdef linux
+    camerastrategy.readCANMessages();
+    #endif
 }
 
 int CameraCapture::run(int cameraID) {
@@ -47,20 +53,20 @@ int CameraCapture::run(int cameraID) {
     time_t start, end;
     time(&start);
 
-    MediaCapture mediacapture(&canStrategy);
+    MediaCapture mediacapture(&camerastrategy);
     mediacapture.pid.PIDController_Init();
 
-    // canStrategy.taskScheduler.SCH_Add_Task(brake, 0, 0.04);  // zelfs wanneer het bericht de instructie bevat om niet te remmen, zal de motorcontroller tijdelijk worden uitgeschakeld als een soort failsafe
-    canStrategy.taskScheduler.SCH_Add_Task(forward2, 0, 0.04);
-    canStrategy.taskScheduler.SCH_Add_Task(steer2, 0.02, 0.04);
-    // canStrategy.taskScheduler.SCH_Add_Task(read, 0, 0.04);
-    canStrategy.taskScheduler.SCH_Start();
+    // canStrategy.taskScheduler.SCH_Add_Task(cam_brake, 0, 0.04);  // zelfs wanneer het bericht de instructie bevat om niet te remmen, zal de motorcontroller tijdelijk worden uitgeschakeld als een soort failsafe
+    camerastrategy.taskScheduler.SCH_Add_Task(cam_forward, 0, 0.04);
+    camerastrategy.taskScheduler.SCH_Add_Task(cam_steer, 0.02, 0.04);
+    // canStrategy.taskScheduler.SCH_Add_Task(cam_read, 0, 0.04);
+    camerastrategy.taskScheduler.SCH_Start();
 
     while (capture->read(frame)){
         totalFrames++;
         mediacapture.ProcessImage(frame);
 
-        canStrategy.taskScheduler.SCH_Dispatch_Tasks();
+        camerastrategy.taskScheduler.SCH_Dispatch_Tasks();
         
         if (cv::waitKey(100/60)>0){
             break;
@@ -80,5 +86,3 @@ int CameraCapture::run(int cameraID) {
 
 	return 0;
 }
-
-#endif

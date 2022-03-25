@@ -1,23 +1,28 @@
-#ifdef linux
 #include "VidCapture.h"
-CANStrategy canStrategy2;
+#ifdef linux
+CANStrategy vidstrategy;
+#else
+ACStrategy vidstrategy;
+#endif
 
 // Scuffed fix for scheduler
-void steer(){
-    canStrategy2.steer();
+void vid_steer(){
+    vidstrategy.steer();
 }
 
-void brake(){
-    canStrategy2.brake();
+void vid_brake(){
+    vidstrategy.brake();
 }
 
-void forward(){
-    canStrategy2.forward();
+void vid_forward(){
+    vidstrategy.forward();
 }
 
-void read() {
-    canStrategy2.readCANMessages();
+#ifdef linux
+void vid_read() {
+    vidstrategy.readCANMessages();
 }
+#endif
 
 int VidCapture::run(std::string filename) {
     capture = new cv::VideoCapture(filename);
@@ -36,14 +41,18 @@ int VidCapture::run(std::string filename) {
     time_t start, end;
     time(&start);
 
-    MediaCapture mediacapture(&canStrategy2);
+    MediaCapture mediacapture(&vidstrategy);
     mediacapture.pid.PIDController_Init();
 
     // canStrategy.taskScheduler.SCH_Add_Task(brake, 0, 0.04);  // zelfs wanneer het bericht de instructie bevat om niet te remmen, zal de motorcontroller tijdelijk worden uitgeschakeld als een soort failsafe
-    canStrategy2.taskScheduler.SCH_Add_Task(forward, 0, 0.04);
-    canStrategy2.taskScheduler.SCH_Add_Task(steer, 0.02, 0.04);
-    // canStrategy.taskScheduler.SCH_Add_Task(read, 0, 0.04);
-    canStrategy2.taskScheduler.SCH_Start();
+    vidstrategy.taskScheduler.SCH_Add_Task(vid_forward, 0, 0.04);
+    vidstrategy.taskScheduler.SCH_Add_Task(vid_steer, 0.02, 0.04);
+
+    #ifdef linux
+    // canStrategy.taskScheduler.SCH_Add_Task(vid_read, 0, 0.04);
+    #endif
+
+    vidstrategy.taskScheduler.SCH_Start();
     std::cout << "HELLO" << std::endl;
     while (capture->read(frame)){
         std::cout << "DO WE GET HERE " << std::endl;
@@ -51,7 +60,7 @@ int VidCapture::run(std::string filename) {
         // std::cout << "Frame : " << frame << std::endl;
         mediacapture.ProcessImage(frame);
 
-        canStrategy2.taskScheduler.SCH_Dispatch_Tasks();
+        vidstrategy.taskScheduler.SCH_Dispatch_Tasks();
         
         if (cv::waitKey(100/60)>0){
             break;
@@ -71,6 +80,3 @@ int VidCapture::run(std::string filename) {
 
 	return 0;
 }
-#else
-std::cout << "Please use linux or change the strategy in vidcapture.cpp to ACStrategy" << std::endl;
-#endif

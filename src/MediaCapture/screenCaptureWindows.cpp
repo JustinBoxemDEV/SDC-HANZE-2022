@@ -5,12 +5,12 @@
 #include "screenCaptureWindows.h"
 #include "mediaCapture.h"
 
-HMONITOR GetPrimaryMonitorHandle() {
+HMONITOR ScreenCaptureWindows::GetPrimaryMonitorHandle() {
 	const POINT ptZero = { 0, 0 };
 	return MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
 }
 
-cv::Mat ScreenCapture::getMat(HWND hwnd) {
+cv::Mat ScreenCaptureWindows::getMat(HWND hwnd) {
     MONITORINFO target;
 	target.cbSize = sizeof(MONITORINFO);
 	HMONITOR pHM = GetPrimaryMonitorHandle();
@@ -42,15 +42,15 @@ cv::Mat ScreenCapture::getMat(HWND hwnd) {
 ACStrategy assettocorsa;
 
 // Scuffed fix for scheduler
-void steer(){
+void sc_steer(){
     assettocorsa.steer();
 }
 
-void brake(){
+void sc_brake(){
     assettocorsa.brake();
 }
 
-void forward(){
+void sc_forward(){
     assettocorsa.forward();
 }
 
@@ -68,8 +68,8 @@ int ScreenCaptureWindows::run() {
     assettocorsa.gearShiftUp();
 
     assettocorsa.actuators.throttlePercentage = 80;
-    assettocorsa.taskScheduler.SCH_Add_Task(forward, 0, 0.04);
-    assettocorsa.taskScheduler.SCH_Add_Task(steer, 0.02, 0.04);
+    assettocorsa.taskScheduler.SCH_Add_Task(sc_forward, 0, 0.04);
+    assettocorsa.taskScheduler.SCH_Add_Task(sc_steer, 0.02, 0.04);
     assettocorsa.taskScheduler.SCH_Start();
     
     while (key != 27) {
