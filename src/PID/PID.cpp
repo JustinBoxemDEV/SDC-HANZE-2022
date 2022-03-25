@@ -16,13 +16,12 @@ void PIDController::PIDController_Init() {
 
 double PIDController::PIDController_update(double error) {
 
-	if ((error < 0.0 && prevError > 0.0) || (error > 0.0 && prevError < 0.0) || (error == 0.0)) {
-		time = 0.03333333333;
-	}
+
 	proportional = gp * error;	
-	differentiator = gd * (error - prevError)/0.03333333333;	
-	integrator = integrator + 0.5 * gi * time * (error + prevError);
-	output = proportional + integrator - differentiator;
+	differentiator = gd * (error - prevError)/time;	
+	//integrator = integrator + 0.5 * gi * time * (error + prevError);
+	integrator = gi *(integrator + error * time);
+	output = proportional + integrator + differentiator;
 
 	if (integrator > maxLimitI) {
 
@@ -39,7 +38,6 @@ double PIDController::PIDController_update(double error) {
 	else if (output < minOutputLimit) {
 		output = minOutputLimit;
 	}
-	time = time + 0.03333333333;
 	prevError = error;
 	return output;
 }
