@@ -8,10 +8,9 @@
 #include "../VehicleControl/strategies/canstrategy.h"
 #include "MediaCapture.h"
 
-class CameraCapture {
+class VidCapture {
     public:
-        int run(int cameraID);
+        int run(std::string filename);
     private:
         cv::VideoCapture *capture; 
-        void getCamera(int cameraID);
 };

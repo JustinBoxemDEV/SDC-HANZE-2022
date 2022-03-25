@@ -23,7 +23,7 @@
 class MediaCapture {
     private:
         ComputorVision cVision;
-        // cv::VideoCapture *capture; 
+        cv::VideoCapture *capture; 
         CommunicationStrategy* strategy;
     public:
         MediaCapture(){}
@@ -33,7 +33,7 @@ class MediaCapture {
 
         void execute();
         PIDController pid{0.6, 1.2, 2};
-        void ProcessFeed(bool screenCapture = false, int cameraID = 0, std::string filename = "");
+        void ProcessFeed(bool screenCapture = false, int cameraID = 0, std::string filepath = "");
         cv::Mat LoadImg(std::string filename);
         void ProcessImage(cv::Mat src);
 };

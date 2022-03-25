@@ -1,8 +1,9 @@
-#include "mediaCapture.h"
+#include "MediaCapture.h"
+#include "../MediaCapture/VidCapture.h"
 
 namespace fs = std::filesystem;
 
-void MediaCapture::ProcessFeed(bool screenCapture, int cameraID, std::string filename){
+void MediaCapture::ProcessFeed(bool screenCapture, int cameraID, std::string filepath){
     if (screenCapture){
         #ifdef __WIN32__
         ScreenCaptureWindows screenCaptureWindows;
@@ -10,18 +11,19 @@ void MediaCapture::ProcessFeed(bool screenCapture, int cameraID, std::string fil
         #else
         std::cout << "Screen capture currently not available on linux!" << std::endl;
         #endif
-    } else if (filename != ""){
-        std::cout << filename << std::endl;
-        // capture = new cv::VideoCapture(filename);
+    } else if (filepath != ""){
+        if(!fs::exists(filepath)){
+            std::cout << "Cant find file in path: " << filepath << std::endl;
+        }else{
+            std::cout << "File found: " << filepath << std::endl;
+            VidCapture vidcapture;
+            vidcapture.run(filepath);
+        }
     } else{
         #ifdef linux
         CameraCapture cameraCapture;
         cameraCapture.run(cameraID);
         #endif
-
-        // pid.PIDController_Init();
-        // std::thread tr([&](){ execute();});
-        // tr.join(); 
     }
 }
 
@@ -47,14 +49,14 @@ void MediaCapture::ProcessImage(cv::Mat src){
     if(strategy != nullptr && !isnan(pidout)){
         strategy->actuators.steeringAngle = pidout;
         std::cout << "Steering with: " << pidout << std::endl;
-
-        cVision.PredictTurn(maskedImage, averagedLines);
-        
-        double curveRadiusR = cVision.getRightEdgeCurvature();
-        double curveRadiusL = cVision.getLeftEdgeCurvature();
-        cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
-        cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
     }
+    
+    cVision.PredictTurn(maskedImage, averagedLines);
+    double curveRadiusR = cVision.getRightEdgeCurvature();
+    double curveRadiusL = cVision.getLeftEdgeCurvature();
+    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
+
 }
 
 // WE DONT USE ANYTHING BELOW THIS RIGHT NOW

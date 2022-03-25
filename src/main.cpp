@@ -1,5 +1,4 @@
 // THIS CURRENT MAIN IS A MESS THAT JUST TESTS THE SCHEDULER I APOLOGISE
-
 #include "VehicleControl/strategies/canstrategy.h"
 #include <iostream>
 #include <string.h>
@@ -13,7 +12,7 @@
 #include "opencv2/imgproc.hpp"
 #include <filesystem>
 #include <string>
-#include "MediaCapture/mediaCapture.h"
+#include "MediaCapture/MediaCapture.h"
 #ifdef __WIN32__
 #include "MediaCapture/screenCaptureWindows.h"
 #else
@@ -25,11 +24,13 @@ using namespace std;
 
 int screenCaptureCommand(int argc, char** argv);
 int cameraCaptureCommand(int argc, char** argv);
+int videoCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
         // return screenCaptureCommand(argc, argv);
         return cameraCaptureCommand(argc, argv);
+        // return videoCommand(argc, argv);
     } 
 }
 // TEST AC
@@ -48,7 +49,7 @@ int screenCaptureCommand(int argc, char** argv) {
 int cameraCaptureCommand(int argc, char** argv) {
     #ifdef linux
     MediaCapture mediacapture;
-    mediacapture.ProcessFeed(false, 4); // cameraID=4 for webcam, cameraID=0 for built in laptop cam
+    mediacapture.ProcessFeed(false, 0); // cameraID=4 for webcam, cameraID=0 for built in laptop cam
 
     return 0;
     #else
@@ -56,6 +57,14 @@ int cameraCaptureCommand(int argc, char** argv) {
     return -1;
     #endif
 }
+
+// TEST VIDEO
+int videoCommand(int argc, char** argv) {
+    MediaCapture mediacapture;
+    mediacapture.ProcessFeed(false, 0, "../assets/videos/testvid.mp4"); // give file path
+    return 0;
+}
+
 
 // int main( int argc, char** argv ){
 //     // --help Output, describing basic usage to the user
