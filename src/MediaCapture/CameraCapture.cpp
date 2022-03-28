@@ -7,9 +7,9 @@ CameraCapture::CameraCapture(int cameraID){
 void CameraCapture::getCamera(int cameraID){
     capture = new cv::VideoCapture(cameraID);
 
-    // Comment this out when not using the extended camera (CameraID 4)
-    // capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-    // capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
+    // Setting live feed resolution to 480p
+    capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    capture->set(cv::CAP_PROP_FRAME_WIDTH, 848);
     
     // Camera detection check
     if (!capture->isOpened()){
