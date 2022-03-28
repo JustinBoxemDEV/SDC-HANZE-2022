@@ -180,23 +180,24 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // cv::dilate(hsvFilter, hsvFilter, structuringElement);
     // cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    // cv::Mat sobelx;
+    cv::Mat sobelx;
     cv::Mat sobely;
-    // cv::Mat sobelxy;
+    cv::Mat sobelxy;
 
     cv::Mat gray;
     cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
-    // Sobel(gray, sobelx, CV_64F, 1, 0);
+    Sobel(gray, sobelx, CV_64F, 1, 0);
     Sobel(gray, sobely, CV_64F, 0, 1);
-    // Sobel(gray, sobelxy, CV_64F, 1, 1);
+    Sobel(gray, sobelxy, CV_64F, 1, 1);
     cv::inRange(sobely, 75,255, sobely);
-    // imshow("soby'", sobely);
+    cv::inRange(sobelx, 20,70, sobelx);
+    imshow("soby'", sobely);
+    imshow("sobx'", sobelx);
 
-    // convertScaleAbs(sobelx, sobelx);
+    convertScaleAbs(sobelx, sobelx);
     convertScaleAbs(sobely, sobely);
-    // convertScaleAbs(sobelxy, sobelxy);
-    // imshow("sobx'", sobelx);
-    // imshow("sobxy'", sobelxy);
+    convertScaleAbs(sobelxy, sobelxy);
+    imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
     // cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
@@ -249,7 +250,6 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
-
     cv::inRange(hsvChannels[1], 105,255, hsvChannels[1]);
     cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
     cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
@@ -262,15 +262,17 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // imshow("hls s'", hlsChannels[2]);
 
     cv::inRange(hlsChannels[1], 155,255, hlsChannels[1]);
-    imshow("hls l'", hlsChannels[1]);
+    // imshow("hls l'", hlsChannels[1]);
 
     cv::Mat mask;
     cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
     cv::bitwise_or(mask, hsvChannels[1], mask);
+    cv::bitwise_or(sobely, sobelx, sobely);
+    cv::bitwise_and(mask, sobely, mask);
 
-    // imshow("hsvfilter", hsvFilter);
-    cv::bitwise_or(mask, sobely, mask);
-    binaryImage = DetectEdges(mask);
+    cv::Mat edges = DetectEdges(mask);
+    cv::bitwise_or(edges, mask, binaryImage);
+
     imshow("binary", binaryImage);
 
     return binaryImage;
@@ -288,9 +290,9 @@ std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
 }
 
 void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
-    cv::Point2f srcP[4] = { //NOTE: This could be hard coded using markers during a test day
-        cv::Point2f(src.cols * 0.25, src.rows * 0.6),
-        cv::Point2f(src.cols * 0.75, src.rows * 0.6),
+    cv::Point2f srcP[4] = { 
+        cv::Point2f(src.cols * 0.35, src.rows * 0.6),
+        cv::Point2f(src.cols * 0.85, src.rows * 0.6),
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
@@ -300,15 +302,16 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     invert(homography, invertedPerspectiveMatrix);
 
     cv::warpPerspective(src, warped, homography, cv::Size(src.cols, src.rows));
+
     int rectHeight = 80;
     int rectwidth = 30;
     int rectY = src.rows - rectHeight;
 
     std::vector<int> histogram = Histogram(warped);
-    std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.33);
-    std::vector<int> rightHist(histogram.begin() + src.cols * 0.66, histogram.end());
+    std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.5);
+    std::vector<int> rightHist(histogram.begin() + src.cols * 0.5, histogram.end());
     int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
-    int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.66;
+    int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
 
     std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX - rectHeight, rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX - rectHeight, rectY, rectHeight, rectwidth));
@@ -336,7 +339,6 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
         position.y = (fitL[2] * pow(pts.x, 2) + (fitL[1] * pts.x) + fitL[0]);
         leftLanePoints.push_back(position);
     }
-
 
     curveRadiusR = Polynomial::Curvature(fitR, src.rows * 0.7);
     curveRadiusL = Polynomial::Curvature(fitL, src.rows * 0.7);
