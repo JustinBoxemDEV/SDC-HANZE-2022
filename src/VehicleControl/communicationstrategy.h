@@ -8,7 +8,7 @@ class CommunicationStrategy {
         virtual void forward() = 0;
         virtual void neutral() = 0;
         virtual void stop() = 0;
-        // TaskScheduler TaskScheduler;
+        TaskScheduler taskScheduler;
         struct Actuators {
             float steeringAngle = 0;
             int throttlePercentage = 0;

@@ -18,7 +18,6 @@ class ACStrategy : public CommunicationStrategy {
         void stop();
         void gearShiftUp();
         void gearShiftDown();
-        TaskScheduler taskScheduler;
      private:
         template<class T>
         const char* merge(short arbitration_id, T & data) {

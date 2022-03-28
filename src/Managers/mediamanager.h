@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <stdint.h>
@@ -19,21 +18,21 @@
 #include "../Math/Polynomial.h"
 #include "../MediaCapture/screenCaptureWindows.h"
 #include "../MediaCapture/CameraCapture.h"
+#include "../VehicleControl/strategies/canstrategy.h"
 
-class MediaCapture {
+class MediaManager {
     private:
         ComputorVision cVision;
         cv::VideoCapture *capture; 
         CommunicationStrategy* strategy;
     public:
-        MediaCapture(){}
-        MediaCapture(CommunicationStrategy *strategy){
+        MediaManager(){};
+        MediaManager(CommunicationStrategy *strategy) {
             this->strategy = strategy;
-        }
-
+        };
         void execute();
         PIDController pid{0.6, 1.2, 2};
-        void ProcessFeed(bool screenCapture = false, int cameraID = 0, std::string filepath = "");
+        void ProcessFeed(CANStrategy *canStrategy, bool screenCapture = false, int cameraID = 0, std::string filepath = "");
         cv::Mat LoadImg(std::string filename);
         void ProcessImage(cv::Mat src);
 };

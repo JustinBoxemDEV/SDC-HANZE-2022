@@ -5,6 +5,8 @@
 #include "screenCaptureWindows.h"
 #include "mediaCapture.h"
 
+ACStrategy assettocorsa;
+
 HMONITOR ScreenCaptureWindows::GetPrimaryMonitorHandle() {
 	const POINT ptZero = { 0, 0 };
 	return MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
@@ -39,7 +41,6 @@ cv::Mat ScreenCaptureWindows::getMat(HWND hwnd) {
 
     return src;
 }
-ACStrategy assettocorsa;
 
 // Scuffed fix for scheduler
 void sc_steer(){
