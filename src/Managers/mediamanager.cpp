@@ -1,5 +1,4 @@
 #include "mediamanager.h"
-#include "../MediaCapture/VidCapture.h"
 
 namespace fs = std::filesystem;
 
