@@ -20,8 +20,7 @@ double PIDController::PIDController_update(double error) {
 	proportional = gp * error;	
 	differentiator = gd * (error - prevError)/time;	
 	integrator = gi *(integrator + error * time);
-	output = proportional + integrator + differentiator;
-
+	
 	if (integrator > maxLimitI) {
 
 		integrator = maxLimitI;
@@ -30,6 +29,7 @@ double PIDController::PIDController_update(double error) {
 
 		integrator = maxLimitI;
 	}
+	output = proportional + integrator + differentiator;
 	if (output > maxOutputLimit) {
 		output = maxOutputLimit;
 	}
@@ -37,6 +37,7 @@ double PIDController::PIDController_update(double error) {
 		output = minOutputLimit;
 	}
 	prevError = error;
+	
 	return output;
 }
 
