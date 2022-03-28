@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
         return videoCommand(argc, argv); // Tests
     } 
 }
-// TEST AC (Virtual environment, AC)
+// TEST AC (Virtual environment, AC, ONLY FOR WINDOWS)
 int screenCaptureCommand(int argc, char** argv) {
     #ifdef __WIN32__
     MediaManager mediamanager;
@@ -44,7 +44,7 @@ int screenCaptureCommand(int argc, char** argv) {
     #endif
 }
 
-// TEST CAMERA (Physical environment, CANBus)
+// TEST CAMERA (Physical environment, CANBus, ONLY FOR LINUX)
 int cameraCaptureCommand(int argc, char** argv) {
     #ifdef linux
     MediaManager mediamanager;
@@ -56,7 +56,7 @@ int cameraCaptureCommand(int argc, char** argv) {
     #endif
 }
 
-// TEST VIDEO
+// TEST VIDEO (WINDOWS AND LINUX)
 int videoCommand(int argc, char** argv) {
     MediaManager mediamanager;
     std::string path = fs::current_path().string() + "/../assets/videos/highway.mp4";
