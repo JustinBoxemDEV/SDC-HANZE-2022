@@ -5,6 +5,7 @@
 #include "../ComputorVision/computorvision.h"
 #include "../MediaCapture/CameraCapture.h"
 #include "../MediaCapture/VidCapture.h"
+#include "../MediaCapture/screenCaptureWindows.h"
 
 class MediaManager {
     private:
