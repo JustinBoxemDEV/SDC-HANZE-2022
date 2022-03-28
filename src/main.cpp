@@ -59,7 +59,9 @@ int cameraCaptureCommand(int argc, char** argv) {
 // TEST VIDEO
 int videoCommand(int argc, char** argv) {
     MediaManager mediamanager;
-    mediamanager.ProcessFeed(false, 0, "../assets/videos/testvid.mp4"); // give file path (If it can't find the path maybe try copying the entire path)
+    std::string path = fs::current_path().string() + "/../assets/videos/highway.mp4";
+    std::cout << path << std::endl;
+    mediamanager.ProcessFeed(false, 0, path); // give file path (If it can't find the path maybe try copying the entire path)
     return 0;
 }
 
