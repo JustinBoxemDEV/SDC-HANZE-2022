@@ -21,8 +21,6 @@
 namespace fs = std::filesystem;
 using namespace std;
 
-CANStrategy *canStrategy = new CANStrategy();
-
 int screenCaptureCommand(int argc, char** argv);
 int cameraCaptureCommand(int argc, char** argv);
 int videoCommand(int argc, char** argv);
@@ -48,15 +46,20 @@ int screenCaptureCommand(int argc, char** argv) {
 
 // TEST CAMERA (Physical environment, CANBus)
 int cameraCaptureCommand(int argc, char** argv) {
+    #ifdef linux
     MediaManager mediamanager;
-    mediamanager.ProcessFeed(canStrategy, false, 0); // cameraID=4 for webcam, cameraID=0 for built in laptop cam
+    mediamanager.ProcessFeed(false, 0); // cameraID=4 for webcam, cameraID=0 for built in laptop cam
     return 0;
+    #else
+        cout << "ERROR: Camera capture is currently not working for windows!" << endl;
+    return -1;
+    #endif
 }
 
 // TEST VIDEO
 int videoCommand(int argc, char** argv) {
     MediaManager mediamanager;
-    mediamanager.ProcessFeed(canStrategy, false, 0, "../assets/videos/testvid.mp4"); // give file path (If it can't find the path maybe try copying the entire path)
+    mediamanager.ProcessFeed(false, 0, "../assets/videos/testvid.mp4"); // give file path (If it can't find the path maybe try copying the entire path)
     return 0;
 }
 

@@ -3,7 +3,7 @@
 
 namespace fs = std::filesystem;
 
-void MediaManager::ProcessFeed(CANStrategy *canStrategy, bool screenCapture, int cameraID, std::string filepath){
+void MediaManager::ProcessFeed(bool screenCapture, int cameraID, std::string filepath){
     if (screenCapture){
         #ifdef __WIN32__
         ScreenCaptureWindows screenCaptureWindows;
@@ -17,11 +17,19 @@ void MediaManager::ProcessFeed(CANStrategy *canStrategy, bool screenCapture, int
         } else {
             std::cout << "File found: " << filepath << std::endl;
             VidCapture vidcapture(filepath);
+            
+            #ifdef linux
             vidcapture.run(new CANStrategy());
+            #else
+            vidcapture.run(new ACStrategy());
+            #endif
+
         };
     } else{
+        #ifdef linux
         CameraCapture cameraCapture(cameraID);
         cameraCapture.run(new CANStrategy());
+        #endif
     };
 };
 

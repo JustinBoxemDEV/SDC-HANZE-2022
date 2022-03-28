@@ -3,7 +3,7 @@
 #include "../VehicleControl/strategies/ACStrategy.h"
 
 #include "screenCaptureWindows.h"
-#include "mediaCapture.h"
+#include "../Managers/mediamanager.h"
 
 ACStrategy assettocorsa;
 
@@ -61,8 +61,8 @@ int ScreenCaptureWindows::run() {
     int key = 0;
     cv::Mat src;
 
-    MediaCapture mediacapture(&assettocorsa);
-    mediacapture.pid.PIDController_Init();
+    MediaManager mediamanager(&assettocorsa);
+    mediamanager.pid.PIDController_Init();
 
     // Wait 2 seconds so you can tab back into the game
     Sleep(2000);
@@ -76,7 +76,7 @@ int ScreenCaptureWindows::run() {
     while (key != 27) {
         src = getMat(hwndDesktop);
 
-        mediacapture.ProcessImage(src);
+        mediamanager.ProcessImage(src);
 
         assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
 
