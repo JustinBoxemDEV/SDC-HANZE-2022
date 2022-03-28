@@ -1,16 +1,12 @@
 #ifdef linux
 #pragma once
 #include "../communicationstrategy.h"
-#include "../../utils/TaskScheduler/TaskScheduler.h"
-#include <iostream>
 #include <string.h>
-#include <sys/socket.h>
 #include <linux/can.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
 #include "../../Logger/logger.h"
-#include "../../utils/Time/time.h"
 
 class CANStrategy : public CommunicationStrategy {
     public:

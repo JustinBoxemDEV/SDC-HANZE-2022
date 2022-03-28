@@ -1,9 +1,9 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
 #pragma once
+#include "../CommunicationStrategy.h"
 #include <stdio.h>
 #include <winsock2.h>
 #include <iostream>
-#include "../CommunicationStrategy.h"
 #include "../../utils/TaskScheduler/TaskScheduler.h"
 #include "../../utils/TaskScheduler/MessageTask.h"
 

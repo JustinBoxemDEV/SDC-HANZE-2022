@@ -1,16 +1,3 @@
-#include "VehicleControl/strategies/canstrategy.h"
-#include <iostream>
-#include <string.h>
-#include <unistd.h>
-
-#include "opencv2/opencv.hpp"
-#include <opencv2/imgproc.hpp>
-#include "ComputorVision/computorvision.h"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
-#include <filesystem>
-#include <string>
 #include "Managers/mediamanager.h"
 #ifdef __WIN32__
 #include "MediaCapture/screenCaptureWindows.h"
@@ -64,3 +51,4 @@ int videoCommand(int argc, char** argv) {
     mediamanager.ProcessFeed(false, 0, path);
     return 0;
 }
+
