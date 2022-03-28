@@ -1,33 +1,31 @@
-#include "MediaCapture.h"
+#include "mediamanager.h"
 #include "../MediaCapture/VidCapture.h"
 
 namespace fs = std::filesystem;
 
-void MediaCapture::ProcessFeed(bool screenCapture, int cameraID, std::string filepath){
+void MediaManager::ProcessFeed(CANStrategy *canStrategy, bool screenCapture, int cameraID, std::string filepath){
     if (screenCapture){
         #ifdef __WIN32__
         ScreenCaptureWindows screenCaptureWindows;
-        screenCaptureWindows.run();
+        screenCaptureWindows.run(); // new ACStrategy()
         #else
         std::cout << "Screen capture currently not available on linux!" << std::endl;
         #endif
     } else if (filepath != ""){
         if(!fs::exists(filepath)){
             std::cout << "Cant find file in path: " << filepath << std::endl;
-        }else{
+        } else {
             std::cout << "File found: " << filepath << std::endl;
-            VidCapture vidcapture;
-            vidcapture.run(filepath);
-        }
+            VidCapture vidcapture(filepath);
+            vidcapture.run(new CANStrategy());
+        };
     } else{
-        #ifdef linux
-        CameraCapture cameraCapture;
-        cameraCapture.run(cameraID);
-        #endif
-    }
-}
+        CameraCapture cameraCapture(cameraID);
+        cameraCapture.run(new CANStrategy());
+    };
+};
 
-void MediaCapture::ProcessImage(cv::Mat src){
+void MediaManager::ProcessImage(cv::Mat src){
     cVision.SetFrame(src);
     // cv::Mat wipImage;
     // src.copyTo(wipImage);
@@ -49,18 +47,17 @@ void MediaCapture::ProcessImage(cv::Mat src){
     if(strategy != nullptr && !isnan(pidout)){
         strategy->actuators.steeringAngle = pidout;
         std::cout << "Steering with: " << pidout << std::endl;
-    }
+    };
     
     cVision.PredictTurn(maskedImage, averagedLines);
     double curveRadiusR = cVision.getRightEdgeCurvature();
     double curveRadiusL = cVision.getLeftEdgeCurvature();
     cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
     cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
-
-}
+};
 
 // WE DONT USE ANYTHING BELOW THIS RIGHT NOW
-void MediaCapture::execute(){
+void MediaManager::execute() {
     // std::cout << "EXECUTING " << std::endl;
     // cv::Mat frame;
 
@@ -90,20 +87,19 @@ void MediaCapture::execute(){
     // // Estimate the FPS based on frames / elapsed time in seconds
     // int fps = totalFrames / seconds;
     // std::cout << "Estimated frames per second : " << fps << std::endl;
-}
+};
 
-cv::Mat MediaCapture::LoadImg(std::string filepath){
+cv::Mat MediaManager::LoadImg(std::string filepath){
     std::string path = fs::current_path().string() + "/assets/images/" + std::string(filepath);
     cv::Mat img = imread(path, cv::IMREAD_COLOR);
     if (!fs::exists(path)){
         std::cout << "The requested file cannot be found in /assets/images/!" << std::endl;
         return img;
-    }
-
+    };
     if (img.empty())
     {
         std::cout << "Could not read the image: " << path << std::endl;
         return img;
-    }
+    };
     return img;
-}
+};

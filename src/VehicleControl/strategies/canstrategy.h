@@ -26,7 +26,6 @@ class CANStrategy : public CommunicationStrategy {
     
         void backward();
         void init(const char* canType);
-        TaskScheduler taskScheduler;
         
         template <class T>
         struct frame {

@@ -6,11 +6,11 @@
 #include "../PID/PID.h"
 #include "../VehicleControl/communicationstrategy.h"
 #include "../VehicleControl/strategies/canstrategy.h"
-#include "MediaCapture.h"
+#include "../Managers/mediamanager.h"
+#include "mediacapture.h"
 
-class VidCapture {
+class VidCapture : public MediaCapture {
     public:
-        int run(std::string filename);
+        VidCapture(std::string filepath);
     private:
-        cv::VideoCapture *capture; 
 };
