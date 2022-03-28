@@ -1,7 +1,7 @@
 #include "logger.h"
 #include <fstream>
 #include <filesystem>
-// #include <unistd.h>
+#include <unistd.h>
 
 std::string Logger::activeFile;
 namespace fs = std::filesystem;
@@ -36,7 +36,7 @@ void Logger::createFile(std::string fileName) {
         std::ofstream file(path);
         file.flush();
         file.close();
-        Logger::success("File \033[1;37m"+fileName+"\033[0m successfully created!");
+        //Logger::success("File \033[1;37m"+fileName+"\033[0m successfully created!");
         activeFile = fileName;
     };
 };
@@ -50,7 +50,7 @@ void Logger::writeToFile(std::string data, std::string fileName) {
 
 void Logger::setActiveFile(std::string fileName) {
     if(existsFile(fileName)) {
-        Logger::success("File \033[1;37m"+fileName+"\033[0m is active!");
+        //Logger::success("File \033[1;37m"+fileName+"\033[0m is active!");
         activeFile = fileName;
     } else {
         Logger::error("File \033[1;37m"+fileName+"\033[0m does not exist!");

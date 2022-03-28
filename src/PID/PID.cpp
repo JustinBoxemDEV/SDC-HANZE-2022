@@ -30,7 +30,6 @@ double PIDController::PIDController_update(double error) {
 
 		integrator = maxLimitI;
 	}
-
 	if (output > maxOutputLimit) {
 		output = maxOutputLimit;
 	}
