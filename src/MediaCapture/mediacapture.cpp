@@ -17,11 +17,14 @@ void forward(){
     communicationStrategy->forward();
 };
 
+// Only for CAN Strategy
 void read() {
     #ifdef linux
-    // strategy->readCANMessages();
+    // CAN ONLY EXECUTE IF COMMUNICATIONSTRATEGY IS CANSTRATEGY
+    // communicationStrategy->readCANMessages();
     #endif
 };
+
 
 int MediaCapture::run(CommunicationStrategy *strategy) {
     communicationStrategy = strategy;
@@ -38,10 +41,15 @@ int MediaCapture::run(CommunicationStrategy *strategy) {
     MediaManager mediamanager(strategy);
     mediamanager.pid.PIDController_Init();
 
-    // communicationStrategy->taskScheduler.SCH_Add_Task(brake, 0, 0.04);  // zelfs wanneer het bericht de instructie bevat om niet te remmen, zal de motorcontroller tijdelijk worden uitgeschakeld als een soort failsafe
-    communicationStrategy->taskScheduler.SCH_Add_Task(brake, 0, 0.04);
-    communicationStrategy->taskScheduler.SCH_Add_Task(steer, 0.02, 0.04);
+    communicationStrategy->actuators.throttlePercentage = 30; // Start throttling when testing PID
+    
+    #ifdef linux
     // communicationStrategy->taskScheduler.SCH_Add_Task(read, 0, 0.04);
+    #endif
+
+    communicationStrategy->taskScheduler.SCH_Add_Task(forward, 0, 0.04);
+    communicationStrategy->taskScheduler.SCH_Add_Task(steer, 0.02, 0.04);
+    // communicationStrategy->taskScheduler.SCH_Add_Task(brake, 0, 0.04);  // zelfs wanneer het bericht de instructie bevat om niet te remmen, zal de motorcontroller tijdelijk worden uitgeschakeld als een soort failsafe
     communicationStrategy->taskScheduler.SCH_Start();
 
     while (capture->read(frame)){

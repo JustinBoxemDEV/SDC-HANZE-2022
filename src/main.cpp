@@ -17,6 +17,12 @@ int main(int argc, char** argv) {
         // return screenCaptureCommand(argc, argv); // AC
         return cameraCaptureCommand(argc, argv); // Kart
         // return videoCommand(argc, argv); // Tests
+
+        // TEST Receive log (steering angle)
+        // CANStrategy canstrategy;
+        // while(true){
+        //     canstrategy.readCANMessages();
+        // }
     } 
 }
 // TEST AC (Virtual environment, AC, ONLY FOR WINDOWS)
