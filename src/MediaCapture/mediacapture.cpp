@@ -1,6 +1,7 @@
 #include "mediacapture.h"
 #include "../Managers/mediamanager.h"
 
+// This should be a class variable in the future but it is currently not possible due to the scheduler fix
 CommunicationStrategy *communicationStrategy;
 
 // Scuffed fix for scheduler

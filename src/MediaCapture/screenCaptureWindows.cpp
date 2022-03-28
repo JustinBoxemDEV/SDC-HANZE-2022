@@ -1,3 +1,5 @@
+// NOTE: This class currently does not inherit from mediacapture due to CommunicationStrategy complications, 
+// in the future it should as it is also a form of media capture.
 #ifdef __WIN32__
 
 #include "../VehicleControl/strategies/ACStrategy.h"

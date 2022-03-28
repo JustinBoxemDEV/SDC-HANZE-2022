@@ -6,6 +6,6 @@ VidCapture::VidCapture(std::string filepath) {
     if (!capture->isOpened()){
         std::cout << "NO File detected!" << std::endl;
     }else{
-        std::cout << "File selected: " << std::endl;
+        std::cout << "File selected: " << filepath << std::endl;
     };
 };

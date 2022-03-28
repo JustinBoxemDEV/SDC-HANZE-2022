@@ -28,8 +28,8 @@ int videoCommand(int argc, char** argv);
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
         // return screenCaptureCommand(argc, argv); // AC
-        // return cameraCaptureCommand(argc, argv); // Kart
-        return videoCommand(argc, argv); // Tests
+        return cameraCaptureCommand(argc, argv); // Kart
+        // return videoCommand(argc, argv); // Tests
     } 
 }
 // TEST AC (Virtual environment, AC, ONLY FOR WINDOWS)
@@ -61,6 +61,6 @@ int videoCommand(int argc, char** argv) {
     MediaManager mediamanager;
     std::string path = fs::current_path().string() + "/../assets/videos/highway.mp4";
     std::cout << path << std::endl;
-    mediamanager.ProcessFeed(false, 0, path); // give file path (If it can't find the path maybe try copying the entire path)
+    mediamanager.ProcessFeed(false, 0, path);
     return 0;
 }
