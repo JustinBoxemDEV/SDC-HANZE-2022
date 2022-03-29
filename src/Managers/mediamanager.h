@@ -6,6 +6,8 @@
 #include "../MediaCapture/CameraCapture.h"
 #include "../MediaCapture/VidCapture.h"
 #include "../MediaCapture/screenCaptureWindows.h"
+#include "../VehicleControl/strategies/acstrategy.h"
+#include "../VehicleControl/strategies/canstrategy.h"
 
 class MediaManager {
     private:
