@@ -25,7 +25,6 @@ void read() {
     #endif
 };
 
-
 int MediaCapture::run(CommunicationStrategy *strategy) {
     communicationStrategy = strategy;
 

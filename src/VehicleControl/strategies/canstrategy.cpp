@@ -49,17 +49,25 @@ void CANStrategy::init(const char* canType) {
     if(bind(CANStrategy::cansocket, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         perror("Bind");
     };
+   
+    // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
+    actuators.throttlePercentage = 80;
+    CANStrategy::forward();
 
-    // When starting the kart
-    sleep(5);
-    // Wait 15 seconds after kart is turned on, set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
-    actuators.throttlePercentage = 0;
+    sleep(0.1);
 
     // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
     actuators.brakePercentage = 0;
+    CANStrategy::brake();
 
     // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
-    actuators.steeringAngle = 0;
+    CANStrategy::homing();
+
+    // When starting the kart 
+    // Wait 20 seconds after kart is turned on
+    sleep(20);
+
+    // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
 };
 
 void CANStrategy::throttle(int amount, int direction) {
@@ -78,7 +86,7 @@ void CANStrategy::throttle(int amount, int direction) {
     Logger::setActiveFile("send " + timestamp);
     Logger::info("Throttle : speed = " + std::to_string(amount) + " : direction = " + std::to_string(direction));
 
-    CANStrategy::sendCanMessage(canMessage);
+    CANStrategy::sendCanMessage<throttleFrame>(canMessage);
 };
 
 void CANStrategy::steer() {
@@ -113,11 +121,30 @@ void CANStrategy::brake() {
     Logger::setActiveFile("send " + timestamp);
     Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage));
 
-    CANStrategy::sendCanMessage(canMessage);
+    CANStrategy::sendCanMessage<brakeFrame>(canMessage);
 };
 
 void CANStrategy::forward() {
     CANStrategy::throttle(actuators.throttlePercentage, 1);
+};
+
+void CANStrategy::homing() {
+    typedef CANStrategy::frame<std::byte[4]> homingFrame;
+
+    homingFrame canMessage;
+
+    canMessage.can_id = 0x6f1;
+    canMessage.can_dlc = 8;
+    canMessage.data[0] = (std::byte) 0x00;
+    canMessage.data[1] = (std::byte) 0x00;
+    canMessage.data[2] = (std::byte) 0x00;
+    canMessage.data[3] = (std::byte) 0x00;
+    canMessage.trailer =  0x00000000;
+
+    Logger::setActiveFile("send " + timestamp);
+    Logger::info("Homing");
+
+    CANStrategy::sendCanMessage<homingFrame>(canMessage);
 };
 
 void CANStrategy::backward() {

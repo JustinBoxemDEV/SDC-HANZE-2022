@@ -1,7 +1,4 @@
 #include "logger.h"
-#include <fstream>
-#include <filesystem>
-#include <unistd.h>
 
 std::string Logger::activeFile;
 namespace fs = std::filesystem;
