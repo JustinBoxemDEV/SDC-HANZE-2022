@@ -19,7 +19,7 @@ class CANStrategy : public CommunicationStrategy {
         void neutral();
         void stop();
         void readCANMessages();
-    
+        void homing();
         void backward();
         void init(const char* canType);
         

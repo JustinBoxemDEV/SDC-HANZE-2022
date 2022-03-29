@@ -2,6 +2,7 @@
 #include "../VehicleControl/communicationstrategy.h"
 #include "opencv2/opencv.hpp"
 #include "../PID/PID.h"
+#include <iostream>
 
 class MediaCapture{
     public:
