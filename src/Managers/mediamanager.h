@@ -2,6 +2,7 @@
 
 #include <filesystem>
 
+#include <winsock2.h>
 #include "../ComputorVision/computorvision.h"
 #include "../MediaCapture/CameraCapture.h"
 #include "../MediaCapture/VidCapture.h"

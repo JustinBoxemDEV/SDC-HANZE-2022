@@ -3,6 +3,7 @@
 #include "../CommunicationStrategy.h"
 #include <stdio.h>
 #include <winsock2.h>
+#include <winsock.h>
 #include <iostream>
 #include "../../utils/TaskScheduler/TaskScheduler.h"
 #include "../../utils/TaskScheduler/MessageTask.h"
@@ -18,6 +19,7 @@ class ACStrategy : public CommunicationStrategy {
         void stop();
         void gearShiftUp();
         void gearShiftDown();
+        void reset();
      private:
         template<class T>
         const char* merge(short arbitration_id, T & data) {

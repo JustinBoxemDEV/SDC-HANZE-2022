@@ -61,6 +61,69 @@ void ACStrategy::stop() {
     neutral();
 };
 
+void ACStrategy::reset() {
+    //Sleep(5000);
+    INPUT controlAndODown[2] = {};
+    ZeroMemory(controlAndODown, sizeof(controlAndODown));
+
+    // std::cout << "Control has been pressed" << std::endl;
+
+    controlAndODown[0].type = INPUT_KEYBOARD;
+    controlAndODown[0].ki.wVk = 0x11;
+
+    controlAndODown[1].type = INPUT_KEYBOARD;
+    controlAndODown[1].ki.wVk = 0x4f;
+
+    // std::cout << "O has been pressed" << std::endl;
+
+    SendInput(ARRAYSIZE(controlAndODown), controlAndODown, sizeof(INPUT));
+
+    Sleep(1);
+
+    INPUT controlAndOUp[2] = {};
+    ZeroMemory(controlAndOUp, sizeof(controlAndOUp));
+
+    controlAndOUp[0].type = INPUT_KEYBOARD;
+    controlAndOUp[0].ki.wVk = 0x11;
+    controlAndOUp[0].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    controlAndOUp[1].type = INPUT_KEYBOARD;
+    controlAndOUp[1].ki.wVk = 0x4f;
+    controlAndOUp[1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(ARRAYSIZE(controlAndOUp), controlAndOUp, sizeof(INPUT));
+
+    INPUT controlAndYDown[2] = {};
+    ZeroMemory(controlAndYDown, sizeof(controlAndYDown));
+
+    controlAndYDown[0].type = INPUT_KEYBOARD;
+    controlAndYDown[0].ki.wVk = 0x11;
+
+    // std::cout << "Control has been pressed" << std::endl;
+
+    controlAndYDown[1].type = INPUT_KEYBOARD;
+    controlAndYDown[1].ki.wVk = 0x59;
+
+    // std::cout << "Y has been pressed" << std::endl;
+
+    SendInput(ARRAYSIZE(controlAndYDown), controlAndYDown, sizeof(INPUT));
+
+    Sleep(1);
+
+    INPUT controlAndYUp[2] = {};
+    ZeroMemory(controlAndYUp, sizeof(controlAndYUp));
+
+    controlAndYUp[0].type = INPUT_KEYBOARD;
+    controlAndYUp[0].ki.wVk = 0x11;
+    controlAndYUp[0].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    controlAndYUp[1].type = INPUT_KEYBOARD;
+    controlAndYUp[1].ki.wVk = 0x59;
+    controlAndYUp[1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(ARRAYSIZE(controlAndYUp), controlAndYUp, sizeof(INPUT));
+};
+
 void ACStrategy::gearShiftUp() {
     int dummy = 0;
     const char* data = ACStrategy::merge(__builtin_bswap16(0x121), dummy);
