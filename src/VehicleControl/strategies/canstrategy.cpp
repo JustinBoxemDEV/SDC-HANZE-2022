@@ -50,24 +50,24 @@ void CANStrategy::init(const char* canType) {
         perror("Bind");
     };
    
-    // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
-    actuators.throttlePercentage = 80;
-    CANStrategy::forward();
+    // // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
+    // actuators.throttlePercentage = 80;
+    // CANStrategy::forward();
 
-    sleep(0.1);
+    // sleep(0.1);
 
-    // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
-    actuators.brakePercentage = 0;
-    CANStrategy::brake();
+    // // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
+    // actuators.brakePercentage = 0;
+    // CANStrategy::brake();
 
-    // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
-    CANStrategy::homing();
+    // // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
+    // CANStrategy::homing();
 
-    // When starting the kart 
-    // Wait 20 seconds after kart is turned on
-    sleep(20);
+    // // When starting the kart 
+    // // Wait 20 seconds after kart is turned on
+    // sleep(20);
 
-    // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
+    // // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
 };
 
 void CANStrategy::throttle(int amount, int direction) {
