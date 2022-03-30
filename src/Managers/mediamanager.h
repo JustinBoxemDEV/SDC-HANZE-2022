@@ -2,7 +2,9 @@
 
 #include <filesystem>
 
+#ifdef __WIN32__
 #include <winsock2.h>
+#endif
 #include "../ComputorVision/computorvision.h"
 #include "../MediaCapture/CameraCapture.h"
 #include "../MediaCapture/VidCapture.h"
