@@ -22,7 +22,7 @@ class MediaManager {
             this->strategy = strategy;
         };
         void execute();
-        PIDController pid{0.6, 1.2, 2};
+        PIDController pid{1.0, 0.1, 0.1};
         void ProcessFeed(bool screenCapture = false, int cameraID = 0, std::string filepath = "");
         cv::Mat LoadImg(std::string filename);
         void ProcessImage(cv::Mat src);
