@@ -38,6 +38,6 @@ double PIDController::PIDController_update(double error) {
 	}
 	prevError = error;
 	
-	return -output;
+	return output;
 }
 
