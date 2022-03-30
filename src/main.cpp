@@ -25,6 +25,7 @@ int main(int argc, char** argv) {
         // }
     } 
 }
+
 // TEST AC (Virtual environment, AC, ONLY FOR WINDOWS)
 int screenCaptureCommand(int argc, char** argv) {
     #ifdef __WIN32__
