@@ -15,6 +15,21 @@ cv::Mat ComputorVision::BlurImage(cv::Mat src){
     return blurred;
 }
 
+cv::Mat ComputorVision::GammaCorrection(const cv::Mat src, const float gamma)
+{
+    cv::Mat result;
+    float invGamma = 1 / gamma;
+
+    cv::Mat table(1, 256, CV_8U);
+    uchar *p = table.ptr();
+    for (int i = 0; i < 256; ++i) {
+        p[i] = (uchar) (pow(i / 255.0, invGamma) * 255);
+    }
+
+    LUT(src, table, result);
+    return result;
+}
+
 cv::Mat ComputorVision::DetectEdges(cv::Mat src){
     cv::Canny(src, edgeMap, 100, 3*3, 3 );
     return edgeMap;
@@ -24,8 +39,8 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.8),
-        cv::Point(0, src.rows * 0.6),
-        cv::Point(src.cols, src.rows * 0.6),
+        cv::Point(0, src.rows * 0.5),
+        cv::Point(src.cols, src.rows * 0.5),
         cv::Point(src.cols, src.rows * 0.8),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -95,7 +110,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.6); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.5); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
@@ -291,8 +306,8 @@ std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
 
 void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     cv::Point2f srcP[4] = { 
-        cv::Point2f(src.cols * 0.35, src.rows * 0.6),
-        cv::Point2f(src.cols * 0.85, src.rows * 0.6),
+        cv::Point2f(src.cols * 0.15, src.rows * 0.5),
+        cv::Point2f(src.cols * 0.85, src.rows * 0.5),
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };

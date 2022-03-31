@@ -37,6 +37,7 @@ class ComputorVision{
         double getLaneOffset(){ return laneOffset; }
         double getRightEdgeCurvature(){ return curveRadiusR; }
         double getLeftEdgeCurvature(){ return curveRadiusL; }
+        cv::Mat GammaCorrection(const cv::Mat src, const float gamma);
 
         void SetFrame(cv::Mat src);
         cv::Mat BlurImage(cv::Mat src);

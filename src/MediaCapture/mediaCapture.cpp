@@ -9,7 +9,6 @@
 #include "../Math/Polynomial.h"
 #include <thread>
 namespace fs = std::filesystem;
-
 void MediaCapture::ProcessFeed(int cameraID, std::string filename)
 {
     if (cameraID != 0)
@@ -98,11 +97,14 @@ cv::Mat MediaCapture::LoadTestImage(std::string filepath)
 
 void MediaCapture::ProcessImage(cv::Mat src)
 {
-    cVision.SetFrame(src);
+    cv::setTrackbarPos("gamma", "Control", gamma);
+
+    cv::Mat gammaCorrected = cVision.GammaCorrection(src, gamma );
+    cVision.SetFrame(gammaCorrected);
     // cv::Mat wipImage;
     // src.copyTo(wipImage);
 
-    cv::Mat binaryImage = cVision.CreateBinaryImage(src);
+    cv::Mat binaryImage = cVision.CreateBinaryImage(gammaCorrected);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
     std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);

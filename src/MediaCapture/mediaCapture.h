@@ -15,6 +15,11 @@ class MediaCapture
         void execute();
         cv::VideoCapture *capture; 
     public:
+        float gamma = 2; 
+
+        MediaCapture(){
+            // cv::createTrackbar("gamma", "Turn", &gamma, 5);
+        };
         void ProcessFeed(int cameraID=0, std::string filename="");
         cv::Mat LoadTestImage(std::string filename);
         void ProcessImage(cv::Mat src);
