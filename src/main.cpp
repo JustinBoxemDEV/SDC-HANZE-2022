@@ -15,8 +15,8 @@ int videoCommand(int argc, char** argv);
 int main(int argc, char** argv) {
     if (argv[1] == NULL) {
         // return screenCaptureCommand(argc, argv); // AC
-        return cameraCaptureCommand(argc, argv); // Kart
-        // return videoCommand(argc, argv); // Tests
+        // return cameraCaptureCommand(argc, argv); // Kart
+        return videoCommand(argc, argv); // Tests
 
         // TEST Receive log (steering angle)
         // CANStrategy canstrategy;
@@ -53,7 +53,7 @@ int cameraCaptureCommand(int argc, char** argv) {
 // TEST VIDEO (WINDOWS AND LINUX)
 int videoCommand(int argc, char** argv) {
     MediaManager mediamanager;
-    std::string path = fs::current_path().string() + "/../assets/videos/highway.mp4";
+    std::string path = fs::current_path().string() + "/../assets/videos/outpy.mp4";
     std::cout << path << std::endl;
     mediamanager.ProcessFeed(false, 0, path);
     return 0;
