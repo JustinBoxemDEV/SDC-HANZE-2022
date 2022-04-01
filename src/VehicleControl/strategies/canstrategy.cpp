@@ -54,7 +54,11 @@ void CANStrategy::init(const char* canType) {
     actuators.throttlePercentage = 0;
     CANStrategy::forward();
 
-    sleep(0.1);
+    float delay = 0.1;
+    delay *= CLOCKS_PER_SEC;
+    std::cout << delay << std::endl;
+    clock_t now = clock();
+    while(clock() - now < delay);
 
     // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
     actuators.brakePercentage = 0;
@@ -63,9 +67,9 @@ void CANStrategy::init(const char* canType) {
     // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
     CANStrategy::homing();
 
-    int delay = 15;
+    delay = 15;
     delay *= CLOCKS_PER_SEC;
-    clock_t now = clock();
+    now = clock();
     while(clock() - now < delay);
     std::cout << "Startup Sequence Done" << std::endl;
     // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages

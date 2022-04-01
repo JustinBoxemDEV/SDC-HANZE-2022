@@ -67,7 +67,10 @@ int ScreenCaptureWindows::run() {
     mediamanager.pid.PIDController_Init();
 
     // Wait 2 seconds so you can tab back into the game
-    Sleep(2000);
+    float delay = 2;
+    delay *= CLOCKS_PER_SEC;
+    clock_t now = clock();
+    while(clock() - now < delay);
     assettocorsa.gearShiftUp();
 
     assettocorsa.actuators.throttlePercentage = 80;
