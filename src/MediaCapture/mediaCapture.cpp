@@ -59,7 +59,7 @@ void MediaCapture::execute(){
 
         ProcessImage(frame);
 
-        if (cv::waitKey(1000 / 60) >= 0)
+        if (cv::waitKey(1) >= 0)
         {
             break;
         }
