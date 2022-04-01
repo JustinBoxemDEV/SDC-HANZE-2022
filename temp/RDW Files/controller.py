@@ -131,7 +131,7 @@ def initialize_can():
 	#system("ip link set can0 type can bitrate 500000")
 	#system("ip link set can0 up")
 	
-	sudoPassword = 'Welkom01'
+	sudoPassword = 'wijgaanwinnen22'
 	command = 'sudo ip link set can0 type can bitrate 500000'
 	system('echo %s|sudo -S %s' % (sudoPassword, command))
 	command = 'sudo ip link set can0 up'

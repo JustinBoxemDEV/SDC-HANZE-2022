@@ -6,7 +6,6 @@ import can
 import os
 import threading
 import time
-import struct
 from datetime import datetime
 from typing import Optional
 from queue import Queue
@@ -21,14 +20,15 @@ class CanListener:
     _id_conversion = {
         0x12c: 'steering',
         0x120: 'throttle',
-        0x126: 'brake'
+        0x126: 'brake',
+        0x15e: 'speed_sensor'
     }
 
     def __init__(self, bus: can.Bus):
         self.bus = bus
         self.thread = threading.Thread(target = self._listen, args = (), daemon = True)
         self.running = False
-        self.data = {'steering': None, 'throttle': None, 'brake': None}
+        self.data = {'steering': None, 'throttle': None, 'brake': None, 'speed_sensor': None}
     
     def start_listening(self):
         self.running = True
@@ -97,10 +97,7 @@ class CanWorker:
     def _process(self):
         while True:
             timestamp, values = self.queue.get()
-            steering = str(struct.unpack("f", bytearray(values["steering"][:4]))[0]) if values["steering"] else 0.0
-            throttle = str(values["throttle"][0]/100) if values["throttle"] else 0.0
-            brake = str(values["brake"][0]/100) if values["brake"] else 0.0
-            print(f'{steering}|{throttle}|{brake}|\"' + self.folder_name + f'/{timestamp}.jpg\"', file=self.file_pointer)
+            print(f'\"{",".join(([str(x) for x in values["steering"] or []]))}\"|\"{",".join(([str(x) for x in values["throttle"] or []]))}\"|\"{",".join(([str(x) for x in values["brake"] or []]))}\"|\"{",".join(([str(x) for x in values["speed_sensor"] or []]))}\"|\"' + self.folder_name + f'/{timestamp}.png\"', file=self.file_pointer)
             self.queue.task_done()
 
 
@@ -146,7 +143,8 @@ def initialize_can() -> can.Bus:
     bus.set_filters([
         {'can_id': 0x12c, 'can_mask': 0xfff, 'extended': True}, # Steering
         {'can_id': 0x120, 'can_mask': 0xfff, 'extended': True}, # Throttle
-        {'can_id': 0x126, 'can_mask': 0xfff, 'extended': True} # Brake
+        {'can_id': 0x126, 'can_mask': 0xfff, 'extended': True}, # Brake
+        {'can_id': 0x15e, 'can_mask': 0xfff, 'extended': True}, # Speed sensor
     ])
     return bus
 

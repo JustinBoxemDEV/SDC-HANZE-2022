@@ -27,14 +27,8 @@ set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
+if(WIN32)
+  target_link_libraries(SDC wsock32 ws2_32)
+endif()
+
 target_link_libraries(SDC ${OpenCV_LIBS} )
-
-if (UNIX)
-    find_package(X11 REQUIRED)
-    include_directories(${X11_INCLUDE_DIRS})
-    # if above is not working
-    # include_directories(/usr/include/X11)
-
-    target_link_libraries(SDC libX11.so)
-    target_link_libraries(SDC libXext.so)
-endif (UNIX)

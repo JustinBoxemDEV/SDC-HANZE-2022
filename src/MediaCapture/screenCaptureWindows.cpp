@@ -1,15 +1,21 @@
+// NOTE: This class currently does not inherit from mediacapture due to CommunicationStrategy complications, 
+// in the future it should as it is also a form of media capture.
 #ifdef __WIN32__
 
-#include "screenCaptureWindows.h"
+#include "../VehicleControl/strategies/ACStrategy.h"
 
-HMONITOR ScreenCapture::GetPrimaryMonitorHandle() {
+#include "screenCaptureWindows.h"
+#include "../Managers/mediamanager.h"
+
+ACStrategy assettocorsa;
+
+HMONITOR ScreenCaptureWindows::GetPrimaryMonitorHandle() {
 	const POINT ptZero = { 0, 0 };
 	return MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
 }
 
-cv::Mat ScreenCapture::getMat(HWND hwnd) {
-	// get the screen size from your primary window
-	MONITORINFO target;
+cv::Mat ScreenCaptureWindows::getMat(HWND hwnd) {
+    MONITORINFO target;
 	target.cbSize = sizeof(MONITORINFO);
 	HMONITOR pHM = GetPrimaryMonitorHandle();
 	GetMonitorInfo(pHM, &target);
@@ -38,19 +44,47 @@ cv::Mat ScreenCapture::getMat(HWND hwnd) {
     return src;
 }
 
-int ScreenCapture::run() {
+// Scuffed fix for scheduler
+void sc_steer(){
+    assettocorsa.steer();
+}
+
+void sc_brake(){
+    assettocorsa.brake();
+}
+
+void sc_forward(){
+    assettocorsa.forward();
+}
+
+int ScreenCaptureWindows::run() {
     HWND hwndDesktop;
 	hwndDesktop = GetDesktopWindow();
     int key = 0;
     cv::Mat src;
-	MediaCapture mediaCapture;
 
+    MediaManager mediamanager(&assettocorsa);
+    mediamanager.pid.PIDController_Init();
+
+    // Wait 2 seconds so you can tab back into the game
+    Sleep(2000);
+    assettocorsa.gearShiftUp();
+
+    assettocorsa.actuators.throttlePercentage = 80;
+    assettocorsa.taskScheduler.SCH_Add_Task(sc_forward, 0, 0.04);
+    assettocorsa.taskScheduler.SCH_Add_Task(sc_steer, 0.02, 0.04);
+    assettocorsa.taskScheduler.SCH_Start();
+    
     while (key != 27) {
         src = getMat(hwndDesktop);
-		mediaCapture.ProcessImage(src);
+
+        mediamanager.ProcessImage(src);
+
+        assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
+
         key = cv::waitKey(1);
     }
+
 	return 0;
 }
-
 #endif

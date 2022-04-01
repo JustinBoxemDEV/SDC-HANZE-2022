@@ -8,7 +8,6 @@ class PIDController {
 		double gi;
 		double gd;
 		//waardes moeten nog gevonden worden
-		double lowPassFilter;
 		double minOutputLimit;//-1
 		double maxOutputLimit;//1
 		double minLimitI;
