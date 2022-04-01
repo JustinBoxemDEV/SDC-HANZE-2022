@@ -50,24 +50,25 @@ void CANStrategy::init(const char* canType) {
         perror("Bind");
     };
    
-    // // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
-    // actuators.throttlePercentage = 80;
-    // CANStrategy::forward();
+    // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
+    actuators.throttlePercentage = 0;
+    CANStrategy::forward();
 
-    // sleep(0.1);
+    sleep(0.1);
 
-    // // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
-    // actuators.brakePercentage = 0;
-    // CANStrategy::brake();
+    // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
+    actuators.brakePercentage = 0;
+    CANStrategy::brake();
 
-    // // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
-    // CANStrategy::homing();
+    // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
+    CANStrategy::homing();
 
-    // // When starting the kart 
-    // // Wait 20 seconds after kart is turned on
-    // sleep(20);
-
-    // // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
+    int delay = 15;
+    delay *= CLOCKS_PER_SEC;
+    clock_t now = clock();
+    while(clock() - now < delay);
+    std::cout << "Startup Sequence Done" << std::endl;
+    // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
 };
 
 void CANStrategy::throttle(int amount, int direction) {
@@ -106,22 +107,27 @@ void CANStrategy::steer() {
 };
 
 void CANStrategy::brake() {
-    typedef CANStrategy::frame<std::byte[4]> brakeFrame;
+    if(actuators.brakePercentage != -1) {
+        typedef CANStrategy::frame<std::byte[4]> brakeFrame;
 
-    brakeFrame canMessage;
+        brakeFrame canMessage;
 
-    canMessage.can_id = 0x126;
-    canMessage.can_dlc = 8;
-    canMessage.data[0] = (std::byte) actuators.brakePercentage;
-    canMessage.data[1] = (std::byte) 0x00;
-    canMessage.data[2] = (std::byte) 0x00;
-    canMessage.data[3] = (std::byte) 0x00;
-    canMessage.trailer =  0x00000000;
+        canMessage.can_id = 0x126;
+        canMessage.can_dlc = 8;
+        canMessage.data[0] = (std::byte) actuators.brakePercentage;
+        canMessage.data[1] = (std::byte) 0x00;
+        canMessage.data[2] = (std::byte) 0x00;
+        canMessage.data[3] = (std::byte) 0x00;
+        canMessage.trailer =  0x00000000;
 
-    Logger::setActiveFile("send " + timestamp);
-    Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage));
+        Logger::setActiveFile("send " + timestamp);
+        Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage));
 
-    CANStrategy::sendCanMessage<brakeFrame>(canMessage);
+        CANStrategy::sendCanMessage<brakeFrame>(canMessage);
+        if(actuators.brakePercentage == 0) {
+            actuators.brakePercentage = -1;
+        };
+    };
 };
 
 void CANStrategy::forward() {

@@ -7,6 +7,9 @@
 #include <net/if.h>
 #include <unistd.h>
 #include "../../Logger/logger.h"
+#include <cstdio>
+#include <iostream>
+#include <ctime>
 
 class CANStrategy : public CommunicationStrategy {
     public:
