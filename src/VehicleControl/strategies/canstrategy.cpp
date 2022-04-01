@@ -18,7 +18,7 @@ void CANStrategy::init(const char* canType) {
         system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
         system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
         system("echo wijgaanwinnen22 |sudo -S sudo ifconfig can0 txqueuelen 1000");
-    }else if (strcmp(canType, "vcan0") == 0) {
+    } else if (strcmp(canType, "vcan0") == 0) {
         std::cout << "Initializing virtual canbus" << std::endl;
         system("sudo ip link del dev vcan0 type vcan");
         system("sudo ip link add dev vcan0 type vcan");
@@ -111,26 +111,27 @@ void CANStrategy::steer() {
 };
 
 void CANStrategy::brake() {
-    if(actuators.brakePercentage != -1) {
-        typedef CANStrategy::frame<std::byte[4]> brakeFrame;
+    if(actuators.brakePercentage == -1) {
+        return;
+    }
+    typedef CANStrategy::frame<std::byte[4]> brakeFrame;
 
-        brakeFrame canMessage;
+    brakeFrame canMessage;
 
-        canMessage.can_id = 0x126;
-        canMessage.can_dlc = 8;
-        canMessage.data[0] = (std::byte) actuators.brakePercentage;
-        canMessage.data[1] = (std::byte) 0x00;
-        canMessage.data[2] = (std::byte) 0x00;
-        canMessage.data[3] = (std::byte) 0x00;
-        canMessage.trailer =  0x00000000;
+    canMessage.can_id = 0x126;
+    canMessage.can_dlc = 8;
+    canMessage.data[0] = (std::byte) actuators.brakePercentage;
+    canMessage.data[1] = (std::byte) 0x00;
+    canMessage.data[2] = (std::byte) 0x00;
+    canMessage.data[3] = (std::byte) 0x00;
+    canMessage.trailer =  0x00000000;
 
-        Logger::setActiveFile("send " + timestamp);
-        Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage));
+    Logger::setActiveFile("send " + timestamp);
+    Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage));
 
-        CANStrategy::sendCanMessage<brakeFrame>(canMessage);
-        if(actuators.brakePercentage == 0) {
-            actuators.brakePercentage = -1;
-        };
+    CANStrategy::sendCanMessage<brakeFrame>(canMessage);
+    if(actuators.brakePercentage == 0) {
+        actuators.brakePercentage = -1;
     };
 };
 
