@@ -18,7 +18,7 @@ void CANStrategy::init(const char* canType) {
         system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 type can bitrate 500000");
         system("echo wijgaanwinnen22 |sudo -S sudo ip link set can0 up");
         system("echo wijgaanwinnen22 |sudo -S sudo ifconfig can0 txqueuelen 1000");
-    }else if (strcmp(canType, "vcan0") == 0) {
+    } else if (strcmp(canType, "vcan0") == 0) {
         std::cout << "Initializing virtual canbus" << std::endl;
         system("sudo ip link del dev vcan0 type vcan");
         system("sudo ip link add dev vcan0 type vcan");
@@ -50,24 +50,29 @@ void CANStrategy::init(const char* canType) {
         perror("Bind");
     };
    
-    // // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
-    // actuators.throttlePercentage = 80;
-    // CANStrategy::forward();
+    // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
+    actuators.throttlePercentage = 0;
+    CANStrategy::forward();
 
-    // sleep(0.1);
+    float delay = 0.1;
+    delay *= CLOCKS_PER_SEC;
+    std::cout << delay << std::endl;
+    clock_t now = clock();
+    while(clock() - now < delay);
 
-    // // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
-    // actuators.brakePercentage = 0;
-    // CANStrategy::brake();
+    // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
+    actuators.brakePercentage = 0;
+    CANStrategy::brake();
 
-    // // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
-    // CANStrategy::homing();
+    // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
+    CANStrategy::homing();
 
-    // // When starting the kart 
-    // // Wait 20 seconds after kart is turned on
-    // sleep(20);
-
-    // // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
+    delay = 15;
+    delay *= CLOCKS_PER_SEC;
+    now = clock();
+    while(clock() - now < delay);
+    std::cout << "Startup Sequence Done" << std::endl;
+    // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
 };
 
 void CANStrategy::throttle(int amount, int direction) {
@@ -106,6 +111,9 @@ void CANStrategy::steer() {
 };
 
 void CANStrategy::brake() {
+    if(actuators.brakePercentage == -1) {
+        return;
+    }
     typedef CANStrategy::frame<std::byte[4]> brakeFrame;
 
     brakeFrame canMessage;
@@ -122,6 +130,9 @@ void CANStrategy::brake() {
     Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage));
 
     CANStrategy::sendCanMessage<brakeFrame>(canMessage);
+    if(actuators.brakePercentage == 0) {
+        actuators.brakePercentage = -1;
+    };
 };
 
 void CANStrategy::forward() {

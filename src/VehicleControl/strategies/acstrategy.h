@@ -15,8 +15,8 @@ class ACStrategy : public CommunicationStrategy {
         void steer() override;
         void brake() override;
         void forward() override;
-        void neutral();
-        void stop();
+        void neutral() override;
+        void stop() override;
         void gearShiftUp();
         void gearShiftDown();
         void reset();
