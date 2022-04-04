@@ -10,10 +10,12 @@
 #include <cstdio>
 #include <iostream>
 #include <ctime>
+#include <mutex>
 
 class CANStrategy : public CommunicationStrategy {
     public:
         int cansocket;
+        std::mutex loggerMutex;
         std::string timestamp;
         CANStrategy();
         void steer() override;
