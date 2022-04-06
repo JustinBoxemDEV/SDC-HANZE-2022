@@ -57,7 +57,7 @@ int MediaCapture::run(CommunicationStrategy *strategy) {
 
         communicationStrategy->taskScheduler.SCH_Dispatch_Tasks();
         
-        if (cv::waitKey(100/60)>0){
+        if (cv::waitKey(1)>0){
             break;
         };
     };

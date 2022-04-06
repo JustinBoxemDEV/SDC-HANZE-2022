@@ -1,5 +1,6 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-#pragma once
+#ifndef AC_STRATEGY_H
+#define AC_STRATEGY_H
 #include "../CommunicationStrategy.h"
 #include <stdio.h>
 #include <winsock2.h>
@@ -39,4 +40,5 @@ class ACStrategy : public CommunicationStrategy {
             puts("Sent can-message");
         };
 };
+#endif
 #endif

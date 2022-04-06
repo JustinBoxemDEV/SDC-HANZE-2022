@@ -4,6 +4,10 @@
 #else
 #include "MediaCapture/screenCaptureLinux.h"
 #endif
+#include "application.h"
+#include "canprocess.h"
+#include "cvprocess.h"
+#include "VehicleControl/strategies/canstrategy.h"
 
 namespace fs = std::filesystem;
 using namespace std;
@@ -13,17 +17,25 @@ int cameraCaptureCommand(int argc, char** argv);
 int videoCommand(int argc, char** argv);
 
 int main(int argc, char** argv) {
-    if (argv[1] == NULL) {
-        // return screenCaptureCommand(argc, argv); // AC
-        // return cameraCaptureCommand(argc, argv); // Kart
-        return videoCommand(argc, argv); // Tests
+    // if (argv[1] == NULL) {
+    //     // return screenCaptureCommand(argc, argv); // AC
+    //     // return cameraCaptureCommand(argc, argv); // Kart
+    //     return videoCommand(argc, argv); // Tests
 
-        // TEST Receive log (steering angle)
-        // CANStrategy canstrategy;
-        // while(true){
-        //     canstrategy.readCANMessages();
-        // }
-    } 
+    //     // TEST Receive log (steering angle)
+    //     // CANStrategy canstrategy;
+    //     // while(true){
+    //     //     canstrategy.readCANMessages();
+    //     // }
+    // } 
+    Process::MediaInput mediaInput;
+    mediaInput.mediaType = CVProcess::MediaSource::realtime;
+    mediaInput.filepath = "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/assets/videos/480p.mp4";
+    Application application(&mediaInput);
+    application.RegisterProcess(new CanProcess());
+    application.RegisterProcess(new CVProcess());
+
+    application.Run();
 }
 
 // TEST AC (Virtual environment, AC, ONLY FOR WINDOWS)

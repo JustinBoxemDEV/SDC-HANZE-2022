@@ -1,30 +1,24 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "cvprocess.h"
+#include "process.h"
 #include "cvprocess.h"
 #include "canprocess.h"
 #include <string>
+#include <vector>
 
 class Application
 {
-    private:
-        Process processes[] = { new CvProcess(), new CanProcess()};
-    public:
-        void Initialize(MediaInput input);
-        void Run();
-        
-    enum class MediaSource {
-        image,
-        video,
-        realtime
-    };
 
-    struct {
-        MediaSource mediaType = MediaSource::realtime;
-        int cameraID = 0;
-        std::string filepath = "";
-    } MediaInput;
+    private:
+        std::vector<Process*> processes;
+        Process::MediaInput* mediaInput;
+    public:
+        Application(Process::MediaInput* mediaInput):mediaInput(mediaInput){};
+        void RegisterProcess(Process *process);
+        void TerminateProcess(int processID);
+        void Run();
+
 };
 
 
