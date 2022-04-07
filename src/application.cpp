@@ -1,9 +1,7 @@
 #include "application.h"
 #include <iostream>
-#include <thread>
 
 void Application::RegisterProcess(Process *process){
-    process->Init(mediaInput);
     processes.push_back(process);
 }
 
@@ -17,6 +15,10 @@ void Application::TerminateProcess(int processID){
 
 void Application::Run(){
     for(Process *process : processes){
-        std::thread thread(&Process::Run, process);
+        threads.push_back(new std::thread(&Process::Run, process));
+    }
+
+    for(std::thread *thread : threads){
+        thread->join();
     }
 }

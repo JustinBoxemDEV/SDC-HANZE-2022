@@ -6,15 +6,15 @@
 #include "canprocess.h"
 #include <string>
 #include <vector>
+#include <thread>
 
 class Application
 {
 
     private:
         std::vector<Process*> processes;
-        Process::MediaInput* mediaInput;
+        std::vector<std::thread*> threads;
     public:
-        Application(Process::MediaInput* mediaInput):mediaInput(mediaInput){};
         void RegisterProcess(Process *process);
         void TerminateProcess(int processID);
         void Run();

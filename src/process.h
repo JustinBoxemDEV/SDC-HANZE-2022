@@ -17,7 +17,6 @@ class Process
             std::string filepath = "";
         } MediaInput;
         MediaInput* mediaInput;
-        virtual void Init(MediaInput *input){ mediaInput = input;};
         virtual void Run() = 0;
         virtual void Terminate() = 0;
 };

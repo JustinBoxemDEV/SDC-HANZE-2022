@@ -29,12 +29,11 @@ int main(int argc, char** argv) {
     //     // }
     // } 
     Process::MediaInput mediaInput;
-    mediaInput.mediaType = CVProcess::MediaSource::realtime;
-    mediaInput.filepath = "/home/robinvanwijk/Projects/SDC/SDC-HANZE-2022/assets/videos/480p.mp4";
-    Application application(&mediaInput);
-    application.RegisterProcess(new CanProcess());
-    application.RegisterProcess(new CVProcess());
-
+    mediaInput.mediaType = CVProcess::MediaSource::video;
+    mediaInput.filepath = "E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\videos\\480p.mp4";
+    Application application;
+    application.RegisterProcess(new CVProcess(&mediaInput));
+    application.RegisterProcess(new CanProcess(&mediaInput));
     application.Run();
 }
 

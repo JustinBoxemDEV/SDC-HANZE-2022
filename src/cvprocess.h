@@ -18,8 +18,8 @@ class CVProcess : public Process
         PIDController pid{1.0, 0.1, 0.1};
         void ProcessFrame(cv::Mat src);
     public:
+        CVProcess(MediaInput *input);
         float gamma = 2; 
-        void Init(MediaInput *input) override;
         void Run() override;
         void Terminate() override;
 };

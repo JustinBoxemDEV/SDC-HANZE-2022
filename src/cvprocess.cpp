@@ -2,15 +2,15 @@
 #include <iostream>
 
 
-void CVProcess::Init(MediaInput *input){
-    Process::Init(input);
-
+CVProcess::CVProcess(MediaInput *input){
+    mediaInput = input;
     pid.PIDController_Init();
 
     switch (input->mediaType)
     {
         case MediaSource::video:
             if(!fs::exists(input->filepath)){
+                std::cout << input->filepath << std::endl;
                 break;
             }
             capture = new cv::VideoCapture(input->filepath);
@@ -26,12 +26,13 @@ void CVProcess::Init(MediaInput *input){
 
 void CVProcess::Run(){
     cv::Mat frame;
+    std::cout << "Running cv " << mediaInput->filepath <<  std::endl;
 
     while (capture->read(frame)){
         std::cout << "Processing Frame" << std::endl;
 
         ProcessFrame(frame);
-        if (cv::waitKey(1)>0){
+        if (cv::waitKey(100/60)>0){
             break;
         };
     };

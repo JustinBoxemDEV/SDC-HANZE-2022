@@ -12,13 +12,13 @@ void TaskScheduler::SCH_Dispatch_Tasks(){
    lastTime = currentTime;
 
    // Dispatches (runs) the next task (if one is ready)
-   std::cout << "Dispatching tasks " << std::endl;
+//    std::cout << "Dispatching tasks " << std::endl;
    for(Index = 0; Index < SCH_MAX_TASKS; Index++){
-      std::cout << "Running task " << SCH_tasks_G[Index].pTask << std::endl;
+    //   std::cout << "Running task " << SCH_tasks_G[Index].pTask << std::endl;
       if((SCH_tasks_G[Index].pTask != 0)){
          if((SCH_tasks_G[Index].Delay < 0)) 
          {
-            std::cout << "Running task " << SCH_tasks_G[Index].pTask << std::endl;
+            // std::cout << "Running task " << SCH_tasks_G[Index].pTask << std::endl;
             SCH_tasks_G[Index].pTask();  // Run the task
          
             if(SCH_tasks_G[Index].Period != 0)

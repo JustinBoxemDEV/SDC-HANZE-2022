@@ -18,16 +18,18 @@ void Forward(){
     strategy->forward();
 };
 
-void CanProcess::Init(MediaInput *input){
-    Process::Init(input);
+CanProcess::CanProcess(MediaInput *input){
+    mediaInput = input;
     switch (input->mediaType)
     {
         case MediaSource::realtime:{
-            strategy = new CANStrategy();
+            #ifdef linux
+                strategy = new CANStrategy();
+            #endif
+
             break;
         }
         case MediaSource::assetto: case MediaSource::video:{
-
             #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
                 strategy = new ACStrategy();
             #endif
@@ -44,7 +46,10 @@ void CanProcess::Init(MediaInput *input){
 }
 
 void CanProcess::Run(){
+    std::cout << "Running can" <<std::endl;
+
     while(true){
+        std::cout << "Dispatching tasks" <<std::endl;
         taskScheduler.SCH_Dispatch_Tasks();
     }
 }
