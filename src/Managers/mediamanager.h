@@ -17,6 +17,7 @@ class MediaManager {
         ComputorVision cVision;
         CommunicationStrategy* strategy;
     public:
+        float gamma = 2; 
         MediaManager(){};
         MediaManager(CommunicationStrategy *strategy) {
             this->strategy = strategy;
