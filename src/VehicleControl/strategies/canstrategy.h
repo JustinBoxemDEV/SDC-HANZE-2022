@@ -7,6 +7,9 @@
 #include <net/if.h>
 #include <unistd.h>
 #include "../../Logger/logger.h"
+#include <cstdio>
+#include <iostream>
+#include <ctime>
 
 class CANStrategy : public CommunicationStrategy {
     public:
@@ -16,8 +19,8 @@ class CANStrategy : public CommunicationStrategy {
         void steer() override;
         void brake() override;
         void forward() override;
-        void neutral();
-        void stop();
+        void neutral() override;
+        void stop() override;
         void readCANMessages();
         void homing();
         void backward();

@@ -86,3 +86,6 @@ https://github.com/TigerVNC/tigervnc/issues/1106
 
 ### Github Webhooks --- Github Docs
 https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks
+
+### IEEE 802.11g / 802.11n --- WiFi 5G Femtocell specifications
+https://ieeexplore.ieee.org/document/4563871
