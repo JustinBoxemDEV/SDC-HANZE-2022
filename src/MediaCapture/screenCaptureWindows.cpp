@@ -7,7 +7,7 @@
 #include "screenCaptureWindows.h"
 #include "../Managers/mediamanager.h"
 
-ACStrategy assettocorsa;
+// ACStrategy assettocorsa;
 
 HMONITOR ScreenCaptureWindows::GetPrimaryMonitorHandle() {
 	const POINT ptZero = { 0, 0 };
@@ -46,15 +46,15 @@ cv::Mat ScreenCaptureWindows::getMat(HWND hwnd) {
 
 // Scuffed fix for scheduler
 void sc_steer(){
-    assettocorsa.steer();
+    // assettocorsa.steer();
 }
 
 void sc_brake(){
-    assettocorsa.brake();
+    // assettocorsa.brake();
 }
 
 void sc_forward(){
-    assettocorsa.forward();
+    // assettocorsa.forward();
 }
 
 int ScreenCaptureWindows::run() {
@@ -63,30 +63,30 @@ int ScreenCaptureWindows::run() {
     int key = 0;
     cv::Mat src;
 
-    MediaManager mediamanager(&assettocorsa);
-    mediamanager.pid.PIDController_Init();
+    // MediaManager mediamanager(&assettocorsa);
+    // mediamanager.pid.PIDController_Init();
 
-    // Wait 2 seconds so you can tab back into the game
-    float delay = 2;
-    delay *= CLOCKS_PER_SEC;
-    clock_t now = clock();
-    while(clock() - now < delay);
-    assettocorsa.gearShiftUp();
+    // // Wait 2 seconds so you can tab back into the game
+    // float delay = 2;
+    // delay *= CLOCKS_PER_SEC;
+    // clock_t now = clock();
+    // while(clock() - now < delay);
+    // assettocorsa.gearShiftUp();
 
-    assettocorsa.actuators.throttlePercentage = 80;
-    assettocorsa.taskScheduler.SCH_Add_Task(sc_forward, 0, 0.04);
-    assettocorsa.taskScheduler.SCH_Add_Task(sc_steer, 0.02, 0.04);
-    assettocorsa.taskScheduler.SCH_Start();
+    // assettocorsa.actuators.throttlePercentage = 80;
+    // assettocorsa.taskScheduler.SCH_Add_Task(sc_forward, 0, 0.04);
+    // assettocorsa.taskScheduler.SCH_Add_Task(sc_steer, 0.02, 0.04);
+    // assettocorsa.taskScheduler.SCH_Start();
     
-    while (key != 27) {
-        src = getMat(hwndDesktop);
+    // while (key != 27) {
+    //     src = getMat(hwndDesktop);
 
-        mediamanager.ProcessImage(src);
+    //     mediamanager.ProcessImage(src);
 
-        assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
+    //     assettocorsa.taskScheduler.SCH_Dispatch_Tasks();
 
-        key = cv::waitKey(1);
-    }
+    //     key = cv::waitKey(1);
+    // }
 
 	return 0;
 }

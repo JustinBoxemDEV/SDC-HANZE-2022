@@ -49,7 +49,7 @@ void CanProcess::Run(){
     std::cout << "Running can" <<std::endl;
 
     while(true){
-        std::cout << "Dispatching tasks" <<std::endl;
+        // std::cout << "Dispatching tasks" <<std::endl;
         taskScheduler.SCH_Dispatch_Tasks();
     }
 }

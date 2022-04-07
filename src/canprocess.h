@@ -9,7 +9,7 @@
 class CanProcess : public Process
 {
     private:
-        CommunicationStrategy* strategy;
+        // CommunicationStrategy* strategy;
         TaskScheduler taskScheduler;
         struct Actuators {
             float steeringAngle = 0;

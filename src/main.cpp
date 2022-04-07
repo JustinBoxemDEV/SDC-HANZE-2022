@@ -29,8 +29,9 @@ int main(int argc, char** argv) {
     //     // }
     // } 
     Process::MediaInput mediaInput;
-    mediaInput.mediaType = CVProcess::MediaSource::video;
+    mediaInput.mediaType = CVProcess::MediaSource::assetto;
     mediaInput.filepath = "E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\videos\\480p.mp4";
+
     Application application;
     application.RegisterProcess(new CVProcess(&mediaInput));
     application.RegisterProcess(new CanProcess(&mediaInput));
