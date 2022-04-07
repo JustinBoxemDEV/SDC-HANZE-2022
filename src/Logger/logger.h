@@ -24,41 +24,37 @@ class Logger {
         };
 
         template<class T>
-        static void log(const T & object, std::string type="", std::string ascii="", bool timeStamp=false, std::string tabs="", std::string filename="") {
+        static void log(const T & object, std::string type="", std::string ascii="", bool timeStamp=false, std::string tabs="", std::string filename=activeFile) {
             std::string time;
             if(!type.empty()) type = "["+type+"]";
             if(timeStamp) time = Time::currentDateTime()+"\t\t ";
             if(!ascii.empty()) ascii = "\033["+ascii+"m";
             std::cout << ascii+type+tabs+"\033[0m"+time+getSS(object).str() << std::endl;
-            if(strcmp(filename.c_str(), "") == 0) {
-                writeToFile(type+tabs+time+getSS(object).str(), activeFile);
-            } else {
-                writeToFile(type+tabs+time+getSS(object).str(), filename);
-            };
+            writeToFile(type+tabs+time+getSS(object).str(), filename);
         };
         
         template<class T>
-        static void warning(const T & object, std::string filename="") {
+        static void warning(const T & object, std::string filename=activeFile) {
             log(getSS(object).str(), "WARNING", "1;33", true, "\t", filename);
         };
 
         template<class T>
-        static void error(const T & object, std::string filename="") {
+        static void error(const T & object, std::string filename=activeFile) {
             log(getSS(object).str(), "ERROR", "1;31", true, "\t\t", filename);
         };
 
         template<class T>
-        static void success(const T & object, std::string filename="") {
+        static void success(const T & object, std::string filename=activeFile) {
             log(getSS(object).str(), "SUCCESS", "1;32", true, "\t", filename);
         };
 
         template<class T>
-        static void info(const T & object, std::string filename="") {
+        static void info(const T & object, std::string filename=activeFile) {
             log(getSS(object).str(), "INFO", "1;34", true, "\t\t", filename);
         };
 
         template<class T>
-        static void debug(const T & object, std::string filename="") {
+        static void debug(const T & object, std::string filename=activeFile) {
             log(getSS(object).str(), "DEBUG", "1;37", true, "\t\t", filename);
         };
     private:
