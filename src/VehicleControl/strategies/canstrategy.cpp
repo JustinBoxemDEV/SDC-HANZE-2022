@@ -66,7 +66,7 @@ void CANStrategy::init(const char* canType) {
 
     delay *= CLOCKS_PER_SEC;
     std::cout << delay << std::endl;
-    clock_t now = clock();
+    now = clock();
     while(clock() - now < delay);
 
     actuators.steeringAngle = 0.0;
