@@ -1,8 +1,6 @@
 #ifndef VIDEOSOURCE_H
 #define VIDEOSOURCE_H
 #include "streamsource.h"
-
-#include <Windows.h>
 #include <string>
 
 class VideoSource : public StreamSource
