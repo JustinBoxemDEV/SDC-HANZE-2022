@@ -1,11 +1,11 @@
 #ifdef __WIN32__
 #ifndef SCREENSOURCE_H
 #define SCREENSOURCE_H
-#include "mediastream.h"
+#include "mediasource.h"
 
 #include <Windows.h>
 
-class ScreenSource : public MediaStream
+class ScreenSource : public MediaSource
 {
     private:
         HMONITOR GetPrimaryMonitorHandle();

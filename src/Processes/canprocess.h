@@ -2,8 +2,8 @@
 #define CAN_PROCESS_H
 
 #include "process.h"
-#include "utils/TaskScheduler/TaskScheduler.h"
-#include "VehicleControl/communicationstrategy.h"
+#include "../utils/TaskScheduler/TaskScheduler.h"
+#include "../VehicleControl/communicationstrategy.h"
 
 
 class CanProcess : public Process

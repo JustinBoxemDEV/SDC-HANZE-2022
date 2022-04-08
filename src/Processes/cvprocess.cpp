@@ -1,7 +1,7 @@
 #include "cvprocess.h"
 #include <iostream>
-#include "screensource.h"
-#include "videosource.h"
+#include "../MediaSources/screensource.h"
+#include "../MediaSources/videosource.h"
 
 CVProcess::CVProcess(MediaInput *input){
     mediaInput = input;
@@ -14,24 +14,23 @@ CVProcess::CVProcess(MediaInput *input){
                 std::cout << input->filepath << std::endl;
                 break;
             }
-            mediaStream = new VideoSource(input->filepath);
+            mediaSource = new VideoSource(input->filepath);
             break;
         case MediaSource::realtime:
-            mediaStream = new VideoSource(input->cameraID);
+            mediaSource = new VideoSource(input->cameraID);
             break;
         case MediaSource::assetto:
-            mediaStream = new ScreenSource();
+            mediaSource = new ScreenSource();
             break;
     }
 }
 
 void CVProcess::Run(){
     cv::Mat frame;
-    std::cout << "Running cv " << mediaInput->filepath <<  std::endl;
 
     while (true){
         // std::cout << "Processing Frame" << std::endl;
-        frame = mediaStream->GetFrameMat();
+        frame = mediaSource->GetFrameMat();
         
         if(frame.empty()){
             break;

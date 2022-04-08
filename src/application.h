@@ -2,8 +2,8 @@
 #define APPLICATION_H
 
 #include "process.h"
-#include "cvprocess.h"
-#include "canprocess.h"
+#include "Processes/cvprocess.h"
+#include "Processes/canprocess.h"
 #include <string>
 #include <vector>
 #include <thread>

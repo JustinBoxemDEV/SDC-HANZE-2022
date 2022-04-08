@@ -3,10 +3,10 @@
 
 #include "process.h"
 #include "opencv2/opencv.hpp"
-#include "VehicleControl/communicationstrategy.h"
-#include "ComputorVision/computorvision.h"
-#include "PID/PID.h"
-#include "mediastream.h"
+#include "../VehicleControl/communicationstrategy.h"
+#include "../ComputorVision/computorvision.h"
+#include "../PID/PID.h"
+#include "../MediaSources/mediasource.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -15,7 +15,7 @@ class CVProcess : public Process
 {
     private:
         cv::VideoCapture *capture;
-        MediaStream *mediaStream;
+        MediaSource *mediaSource;
         ComputorVision cVision;
         PIDController pid{1.0, 0.1, 0.1};
         void ProcessFrame(cv::Mat src);
