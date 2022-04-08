@@ -23,8 +23,6 @@ ACStrategy::ACStrategy() {
         puts("Connect error");
     };
 
-    taskScheduler.SCH_Init();
-
     puts("Connected");    
 };
 
