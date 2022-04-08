@@ -1,4 +1,3 @@
-#ifdef __WIN32__
 #ifndef VIDEOSOURCE_H
 #define VIDEOSOURCE_H
 #include "streamsource.h"
@@ -9,8 +8,6 @@
 class VideoSource : public StreamSource
 {
     private:
-        HMONITOR GetPrimaryMonitorHandle();
-        HWND* hwndDesktop;
         cv::VideoCapture *capture;
         cv::Mat frame;
     public:
@@ -20,5 +17,4 @@ class VideoSource : public StreamSource
         cv::Mat GetFrameMat() override;
 };
 
-#endif
 #endif
