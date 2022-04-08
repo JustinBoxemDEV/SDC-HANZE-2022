@@ -6,7 +6,7 @@
 #include "../VehicleControl/communicationstrategy.h"
 #include "../ComputorVision/computorvision.h"
 #include "../PID/PID.h"
-#include "../MediaSources/mediasource.h"
+#include "../MediaSources/streamsource.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -15,7 +15,7 @@ class CVProcess : public Process
 {
     private:
         cv::VideoCapture *capture;
-        MediaSource *mediaSource;
+        StreamSource *streamSource;
         ComputorVision cVision;
         PIDController pid{1.0, 0.1, 0.1};
         void ProcessFrame(cv::Mat src);

@@ -1,12 +1,12 @@
 #ifdef __WIN32__
 #ifndef VIDEOSOURCE_H
 #define VIDEOSOURCE_H
-#include "mediasource.h"
+#include "streamsource.h"
 
 #include <Windows.h>
 #include <string>
 
-class VideoSource : public MediaSource
+class VideoSource : public StreamSource
 {
     private:
         HMONITOR GetPrimaryMonitorHandle();

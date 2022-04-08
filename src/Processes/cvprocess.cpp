@@ -14,13 +14,13 @@ CVProcess::CVProcess(MediaInput *input){
                 std::cout << input->filepath << std::endl;
                 break;
             }
-            mediaSource = new VideoSource(input->filepath);
+            streamSource = new VideoSource(input->filepath);
             break;
         case MediaSource::realtime:
-            mediaSource = new VideoSource(input->cameraID);
+            streamSource = new VideoSource(input->cameraID);
             break;
         case MediaSource::assetto:
-            mediaSource = new ScreenSource();
+            streamSource = new ScreenSource();
             break;
     }
 }
@@ -29,8 +29,7 @@ void CVProcess::Run(){
     cv::Mat frame;
 
     while (true){
-        // std::cout << "Processing Frame" << std::endl;
-        frame = mediaSource->GetFrameMat();
+        frame = streamSource->GetFrameMat();
         
         if(frame.empty()){
             break;

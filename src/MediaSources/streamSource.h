@@ -1,8 +1,8 @@
-#ifndef MEDIASOURCE_H
-#define MEDIASOURCE_H
+#ifndef STREAMSOURCE_H
+#define STREAMSOURCE_H
 #include <opencv2/opencv.hpp>
 
-class MediaSource
+class StreamSource
 {
     private:
     public:
