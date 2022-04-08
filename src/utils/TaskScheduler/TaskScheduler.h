@@ -1,4 +1,3 @@
-#include "MessageTask.h"
 #ifndef TASK_SCHEDULER_H
 #define TASK_SCHEDULER_H
 #define SCH_MAX_TASKS 10
