@@ -20,13 +20,20 @@ CVProcess::CVProcess(MediaInput *input){
             streamSource = new VideoSource(input->cameraID);
             break;
         case MediaSource::assetto:
-            streamSource = new ScreenSource();
+            #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+                streamSource = new ScreenSource();
+            #endif
             break;
     }
 }
 
 void CVProcess::Run(){
     cv::Mat frame;
+    
+    if(streamSource == nullptr){
+        std::cout << "Could not set stream source!" << std::endl;
+        return;
+    }
 
     while (true){
         frame = streamSource->GetFrameMat();
