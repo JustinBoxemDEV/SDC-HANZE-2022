@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "process.h"
+#include "Processes/process.h"
 #include "Processes/cvprocess.h"
 #include "Processes/canprocess.h"
 #include <string>
@@ -10,7 +10,6 @@
 
 class Application
 {
-
     private:
         std::vector<Process*> processes;
         std::vector<std::thread*> threads;
