@@ -1,3 +1,4 @@
+#ifdef __WIN32__
 #include "screensource.h"
 
 void ScreenSource::Setup(){
@@ -38,3 +39,5 @@ HMONITOR ScreenSource::GetPrimaryMonitorHandle(){
 	const POINT ptZero = { 0, 0 };
 	return MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
 }
+
+#endif
