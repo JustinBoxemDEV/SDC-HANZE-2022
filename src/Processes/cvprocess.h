@@ -6,7 +6,7 @@
 #include "../VehicleControl/communicationstrategy.h"
 #include "../ComputorVision/computorvision.h"
 #include "../PID/PID.h"
-#include "../MediaSources/streamSource.h"
+#include "../MediaSources/streamsource.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
