@@ -37,6 +37,7 @@ CanProcess::CanProcess(MediaInput *input){
             #ifdef linux
                 strategy = new CANStrategy();
                 readProcess->setStrategy(strategy);
+                strategy->actuators.throttlePercentage = 50;
             #endif
 
             break;
@@ -44,7 +45,6 @@ CanProcess::CanProcess(MediaInput *input){
         case MediaSource::assetto: case MediaSource::video:{
             #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
                 strategy = new ACStrategy();
-                std::cout << "test" << std::endl;
             #endif
             break;
         }
