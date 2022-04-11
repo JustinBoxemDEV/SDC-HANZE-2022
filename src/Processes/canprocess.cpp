@@ -41,7 +41,7 @@ CanProcess::CanProcess(MediaInput *input){
             #ifdef linux
                 strategy = new CANStrategy();
                 readProcess->setStrategy(strategy);
-                strategy->actuators.throttlePercentage = 50;
+                strategy->actuators.throttlePercentage = 30;
             #endif
 
             break;
@@ -66,6 +66,7 @@ CanProcess::CanProcess(MediaInput *input){
     }
     taskScheduler.SCH_Add_Task(Forward, 0, 0.04);
     taskScheduler.SCH_Add_Task(Steer, 0.02, 0.04);
+    taskScheduler.SCH_Add_Task(Brake, 0.04, 0.04);
     taskScheduler.SCH_Start();
 }
 

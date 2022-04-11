@@ -11,9 +11,14 @@ int main(int argc, char** argv) {
     Process::MediaInput mediaInput;
     Application application;
 
+    CanProcess *canprocess = new CanProcess(&mediaInput);
+
+    std::cout << "before while" << std::endl;
+
     while(cursor < argc){
         std::string arg = argv[cursor];
         if(arg == "-video"){
+            std::cout << "video" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::video;
             cursor++;
             std::string path = fs::current_path().string() + "/assets/videos/" + argv[cursor];
@@ -23,31 +28,31 @@ int main(int argc, char** argv) {
             }
             mediaInput.filepath = path;
         }else if(arg == "-realtime"){
+            std::cout << "realtime" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::realtime;
             CVProcess *cvprocess = new CVProcess(&mediaInput);
+            #ifdef linux
             application.RegisterProcess(cvprocess);
+            ReadProcess *readcan = new ReadProcess();
+            canprocess->setReadProcess(readcan);
+            application.RegisterProcess(readcan);
+            #endif
         }else if(arg == "-assetto"){
+            std::cout << "assetto" << std::endl;
             std::cout << arg << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::assetto;
         }else if(arg == "-terminal") {
+            std::cout << "terminal" << std::endl;
+            #ifdef linux
             mediaInput.mediaType = CVProcess::MediaSource::terminal;
+            TerminalProcess *terminal = new TerminalProcess();
+            canprocess->setTerminalProcess(terminal);
+            application.RegisterProcess(terminal);
+            #endif
         }
         cursor++;
     }
-
-    CanProcess *canprocess = new CanProcess(&mediaInput);
     
-    #ifdef linux
-    ReadProcess *readcan = new ReadProcess();
-    TerminalProcess *terminal = new TerminalProcess();
-
-    canprocess->setTerminalProcess(terminal);
-    canprocess->setReadProcess(readcan);
-    
-    application.RegisterProcess(readcan);
-    application.RegisterProcess(terminal);
-    #endif
-
     application.RegisterProcess(canprocess);
 
     application.Run();

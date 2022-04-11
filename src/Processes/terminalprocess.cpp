@@ -4,6 +4,7 @@
 CommunicationStrategy *terminalStrategy;
 
 void TerminalProcess::setStrategy(CommunicationStrategy *strategy) {
+    std::cout << "setting strategy" << std::endl;
     terminalStrategy = strategy;
 }
 
@@ -44,6 +45,7 @@ void TerminalProcess::terminal() {
 }
 
 void TerminalProcess::Run() {
+    std::cout << "Terminal is running" << std::endl;
     terminal();
 }
 
