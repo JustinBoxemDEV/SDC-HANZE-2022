@@ -1,5 +1,4 @@
-#ifndef READ_PROCESS_H
-#define READ_PROCESS_H
+#pragma once
 
 #include "process.h"
 #include "../utils/TaskScheduler/TaskScheduler.h"
@@ -14,5 +13,3 @@ class ReadProcess : public Process
         void Run() override;
         void Terminate() override;
 };
-
-#endif

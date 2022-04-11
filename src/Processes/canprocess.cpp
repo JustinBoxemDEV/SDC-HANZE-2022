@@ -1,10 +1,11 @@
+#include "canprocess.h"
 #include <iostream>
 #include "../VehicleControl/strategies/canstrategy.h"
 #include "../VehicleControl/strategies/acstrategy.h"
 
-CanProcess::Actuators CanProcess::actuators;
+// CanProcess::Actuators CanProcess::actuators;
 
-#if linux
+#ifdef linux
 ReadProcess* readProcess;
 
 void CanProcess::setReadProcess(ReadProcess *_readProcess) {

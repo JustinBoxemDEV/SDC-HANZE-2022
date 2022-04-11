@@ -69,9 +69,7 @@ void CVProcess::ProcessFrame(cv::Mat src){
     std::cout << "setting steering anlge" << std::endl;
     std::cout << pidout << std::endl;
 
-    CanProcess::actuators.steeringAngle = pidout;
-
-    
+    CommunicationStrategy::actuators.steeringAngle = pidout;
 
     // std::cout << canProcess->actuators.steeringAngle << std::endl;
 

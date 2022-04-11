@@ -7,6 +7,13 @@ class CommunicationStrategy {
         virtual void forward() = 0;
         virtual void neutral() = 0;
         virtual void stop() = 0;
+        struct Actuators {
+            float steeringAngle = 0;
+            int throttlePercentage = 0;
+            int brakePercentage = 0;
+            float steeringFeedback = 0;
+        };
+        static Actuators actuators;
     private:
         template<class T>
         void sendCanMessage(T & canMessage);

@@ -1,6 +1,8 @@
 #ifdef linux
 #include "canstrategy.h"
 
+CommunicationStrategy::Actuators CommunicationStrategy::actuators;
+
 CANStrategy::CANStrategy() {
     timestamp = Time::currentDateTime();
 
@@ -49,7 +51,7 @@ void CANStrategy::init(const char* canType) {
     };
    
     // set the kart to drive (forward) using message: can0 0x0000000120 50 00 01 00 00 00 00 00
-    CanProcess::actuators.throttlePercentage = 0;
+    actuators.throttlePercentage = 0;
     CANStrategy::forward();
 
     float delay = 0.1;
@@ -59,14 +61,14 @@ void CANStrategy::init(const char* canType) {
     while(clock() - now < delay);
 
     // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
-    CanProcess::actuators.brakePercentage = 0;
+      actuators.brakePercentage = 0;
     CANStrategy::brake();
 
     std::cout << delay << std::endl;
     now = clock();
     while(clock() - now < delay);
 
-    CanProcess::actuators.steeringAngle = 0.0;
+      actuators.steeringAngle = 0.0;
     CANStrategy::steer();
     std::cout << "Test steering" << std::endl;
 };
@@ -98,18 +100,18 @@ void CANStrategy::steer() {
 
     canMessage.can_id = 0x12c;
     canMessage.can_dlc = 8;
-    canMessage.data = CanProcess::actuators.steeringAngle;
+    canMessage.data = actuators.steeringAngle;
     canMessage.trailer = 0x00000000;
 
     std::unique_lock<std::mutex> locker(loggerMutex);
-    Logger::info("Steering : angle = " + std::to_string(CanProcess::actuators.steeringAngle), "send " + timestamp);
+    Logger::info("Steering : angle = " + std::to_string(actuators.steeringAngle), "send " + timestamp);
 
     CANStrategy::sendCanMessage<steerFrame>(canMessage);
     locker.unlock();
 };
 
 void CANStrategy::brake() {
-    if(CanProcess::actuators.brakePercentage == -1) {
+    if(actuators.brakePercentage == -1) {
         return;
     }
     typedef CANStrategy::frame<std::byte[4]> brakeFrame;
@@ -118,24 +120,24 @@ void CANStrategy::brake() {
 
     canMessage.can_id = 0x126;
     canMessage.can_dlc = 8;
-    canMessage.data[0] = (std::byte) CanProcess::actuators.brakePercentage;
+    canMessage.data[0] = (std::byte) actuators.brakePercentage;
     canMessage.data[1] = (std::byte) 0x00;
     canMessage.data[2] = (std::byte) 0x00;
     canMessage.data[3] = (std::byte) 0x00;
     canMessage.trailer =  0x00000000;
 
     std::unique_lock<std::mutex> locker(loggerMutex);
-    Logger::info("Brake : amount = " + std::to_string(CanProcess::actuators.brakePercentage), "send " + timestamp);
+    Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage), "send " + timestamp);
 
     CANStrategy::sendCanMessage<brakeFrame>(canMessage);
-    if(CanProcess::actuators.brakePercentage == 0) {
-        CanProcess::actuators.brakePercentage = -1;
+    if(actuators.brakePercentage == 0) {
+        actuators.brakePercentage = -1;
     };
     locker.unlock();
 };
 
 void CANStrategy::forward() {
-    CANStrategy::throttle(CanProcess::actuators.throttlePercentage, 1);
+    CANStrategy::throttle(actuators.throttlePercentage, 1);
 };
 
 void CANStrategy::homing() {
@@ -159,7 +161,7 @@ void CANStrategy::homing() {
 };
 
 void CANStrategy::backward() {
-    CANStrategy::throttle(CanProcess::actuators.throttlePercentage, 2);
+    CANStrategy::throttle(actuators.throttlePercentage, 2);
 };
 
 void CANStrategy::neutral() {

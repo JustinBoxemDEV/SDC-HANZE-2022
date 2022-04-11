@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 
     application.RegisterProcess(cvprocess);
 
-    #if linux
+    #ifdef linux
     ReadProcess *readcan = new ReadProcess();
     canprocess->setReadProcess(readcan);
     application.RegisterProcess(readcan);
