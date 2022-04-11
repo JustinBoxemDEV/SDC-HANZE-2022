@@ -8,6 +8,7 @@ namespace fs = std::filesystem;
 int main(int argc, char** argv) {
     int cursor = 1;
     Process::MediaInput mediaInput;
+    Application application;
 
     while(cursor < argc){
         std::string arg = argv[cursor];
@@ -22,20 +23,19 @@ int main(int argc, char** argv) {
             mediaInput.filepath = path;
         }else if(arg == "-realtime"){
             mediaInput.mediaType = CVProcess::MediaSource::realtime;
+            CVProcess *cvprocess = new CVProcess(&mediaInput);
+            application.RegisterProcess(cvprocess);
         }else if(arg == "-assetto"){
             std::cout << arg << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::assetto;
+        }else if(arg == "-terminal") {
+            mediaInput.mediaType = CVProcess::MediaSource::terminal;
         }
         cursor++;
     }
 
-    Application application;
-
     CanProcess *canprocess = new CanProcess(&mediaInput);
-    CVProcess *cvprocess = new CVProcess(&mediaInput);
-
-    application.RegisterProcess(cvprocess);
-
+    
     #ifdef linux
     ReadProcess *readcan = new ReadProcess();
     canprocess->setReadProcess(readcan);

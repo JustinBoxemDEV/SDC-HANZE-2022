@@ -7,10 +7,15 @@
 
 #ifdef linux
 ReadProcess* readProcess;
+TerminalProcess * terminalProcess;
 
 void CanProcess::setReadProcess(ReadProcess *_readProcess) {
     readProcess = _readProcess;
 };
+
+void CanProcess::setTerminalProcess(TerminalProcess *_terminalProcess) {
+    terminalProcess = _terminalProcess;
+}
 #endif
 
 CommunicationStrategy* strategy;
@@ -31,8 +36,7 @@ void Forward(){
 CanProcess::CanProcess(MediaInput *input){
     mediaInput = input;
 
-    switch (input->mediaType)
-    {
+    switch (input->mediaType){
         case MediaSource::realtime:{
             #ifdef linux
                 strategy = new CANStrategy();
@@ -45,6 +49,13 @@ CanProcess::CanProcess(MediaInput *input){
         case MediaSource::assetto: case MediaSource::video:{
             #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
                 strategy = new ACStrategy();
+            #endif
+            break;
+        }
+        case MediaSource::terminal: {
+            #ifdef linux
+                strategy = new ACStrategy();
+                terminalProcess->setStrategy(strategy);
             #endif
             break;
         }

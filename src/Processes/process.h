@@ -9,7 +9,8 @@ class Process
         enum class MediaSource {
             video,
             realtime,
-            assetto
+            assetto,
+            terminal
         };
         typedef struct {
             MediaSource mediaType = MediaSource::realtime;
