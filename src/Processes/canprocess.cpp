@@ -7,7 +7,7 @@
 
 #ifdef linux
 ReadProcess* readProcess;
-TerminalProcess * terminalProcess;
+TerminalProcess* terminalProcess;
 
 void CanProcess::setReadProcess(ReadProcess *_readProcess) {
     readProcess = _readProcess;
@@ -54,7 +54,7 @@ CanProcess::CanProcess(MediaInput *input){
         }
         case MediaSource::terminal: {
             #ifdef linux
-                strategy = new ACStrategy();
+                strategy = new CANStrategy();
                 terminalProcess->setStrategy(strategy);
             #endif
             break;

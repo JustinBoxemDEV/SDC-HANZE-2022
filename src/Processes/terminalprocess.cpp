@@ -1,3 +1,4 @@
+#ifdef linux
 #include "terminalprocess.h"
 
 CommunicationStrategy *terminalStrategy;
@@ -30,3 +31,5 @@ void TerminalProcess::Run() {
 void TerminalProcess::Terminate() {
 
 }
+
+#endif

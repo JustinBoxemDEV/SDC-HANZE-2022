@@ -1,16 +1,16 @@
 #ifdef linux
 #include "readprocess.h"
 
-CommunicationStrategy *strategy2;
+CommunicationStrategy *readStrategy;
 
 void ReadProcess::setStrategy(CommunicationStrategy *_strategy) {
-    strategy2 = _strategy;
+    readStrategy = _strategy;
 };
 
 void ReadProcess::Run() {
     std::cout << "Readprocess is running" << std::endl;
     while(true) {
-        ((CANStrategy*) strategy2)->readCANMessages();
+        ((CANStrategy*) readStrategy)->readCANMessages();
     };
 };
 
