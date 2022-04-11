@@ -16,7 +16,6 @@ int main(int argc, char** argv) {
     CanProcess *canprocess = new CanProcess(&mediaInput);
     CVProcess *cvprocess = new CVProcess(&mediaInput);
 
-    cvprocess->setCanProcess(canprocess);
     application.RegisterProcess(cvprocess);
 
     #if linux

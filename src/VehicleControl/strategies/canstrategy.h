@@ -11,6 +11,7 @@
 #include <iostream>
 #include <ctime>
 #include <mutex>
+#include "../../Processes/canprocess.h"
 
 class CANStrategy : public CommunicationStrategy {
     public:
