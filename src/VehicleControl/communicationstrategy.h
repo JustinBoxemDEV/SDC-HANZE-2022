@@ -10,7 +10,7 @@ class CommunicationStrategy {
         struct Actuators {
             float steeringAngle = 0;
             int throttlePercentage = 0;
-            int brakePercentage = 0;
+            int brakePercentage = -1;
             float steeringFeedback = 0;
         };
         static Actuators actuators;

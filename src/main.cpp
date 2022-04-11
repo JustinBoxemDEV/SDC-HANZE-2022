@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
         cursor++;
     }
     CanProcess *canprocess = new CanProcess(&mediaInput);
-        if(arg == "-realtime") {
+        if(arg == "-realtime" || arg == "") {
             CVProcess *cvprocess = new CVProcess(&mediaInput);
             application.RegisterProcess(cvprocess);
             #ifdef linux
