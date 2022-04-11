@@ -11,12 +11,10 @@ int main(int argc, char** argv) {
     Process::MediaInput mediaInput;
     Application application;
 
-    CanProcess *canprocess = new CanProcess(&mediaInput);
-
     std::cout << "before while" << std::endl;
-
+    std::string arg;
     while(cursor < argc){
-        std::string arg = argv[cursor];
+        arg = argv[cursor]; 
         if(arg == "-video"){
             std::cout << "video" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::video;
@@ -30,30 +28,36 @@ int main(int argc, char** argv) {
         }else if(arg == "-realtime"){
             std::cout << "realtime" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::realtime;
-            CVProcess *cvprocess = new CVProcess(&mediaInput);
-            #ifdef linux
-            application.RegisterProcess(cvprocess);
-            ReadProcess *readcan = new ReadProcess();
-            canprocess->setReadProcess(readcan);
-            application.RegisterProcess(readcan);
-            #endif
         }else if(arg == "-assetto"){
             std::cout << "assetto" << std::endl;
             std::cout << arg << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::assetto;
         }else if(arg == "-terminal") {
             std::cout << "terminal" << std::endl;
-            #ifdef linux
             mediaInput.mediaType = CVProcess::MediaSource::terminal;
+        }
+        cursor++;
+    }
+    CanProcess *canprocess = new CanProcess(&mediaInput);
+        if(arg == "-realtime") {
+            CVProcess *cvprocess = new CVProcess(&mediaInput);
+            application.RegisterProcess(cvprocess);
+            #ifdef linux
+            ReadProcess *readcan = new ReadProcess();
+            canprocess->setReadProcess(readcan);
+            application.RegisterProcess(readcan);
+            #endif
+        } else if(arg == "-assetto") {
+            CVProcess *cvprocess = new CVProcess(&mediaInput);
+            application.RegisterProcess(cvprocess);
+        } else if(arg == "-terminal") {
+            #ifdef linux
             TerminalProcess *terminal = new TerminalProcess();
             canprocess->setTerminalProcess(terminal);
             application.RegisterProcess(terminal);
             #endif
         }
-        cursor++;
-    }
-    
-    application.RegisterProcess(canprocess);
+        application.RegisterProcess(canprocess);
 
-    application.Run();
+        application.Run();
 }
