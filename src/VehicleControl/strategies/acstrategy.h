@@ -1,12 +1,12 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-#pragma once
+#ifndef AC_STRATEGY_H
+#define AC_STRATEGY_H
 #include "../CommunicationStrategy.h"
 #include <stdio.h>
 #include <winsock2.h>
 #include <winsock.h>
 #include <iostream>
 #include "../../utils/TaskScheduler/TaskScheduler.h"
-#include "../../utils/TaskScheduler/MessageTask.h"
 
 class ACStrategy : public CommunicationStrategy {
     public:
@@ -36,7 +36,8 @@ class ACStrategy : public CommunicationStrategy {
             if(send(s, socketMessage, sizeof(socketMessage), 0) < 0) {
                 puts("send failed");
             };
-            puts("Sent can-message");
+            // puts("Sent can-message");
         };
 };
+#endif
 #endif

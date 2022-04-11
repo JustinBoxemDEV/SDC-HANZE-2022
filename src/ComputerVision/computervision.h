@@ -1,9 +1,9 @@
-#ifndef COMPUTOR_VISION_H
-#define COMPUTOR_VISION_H
+#ifndef COMPUTER_VISION_H
+#define COMPUTER_VISION_H
 
 #include <opencv2/opencv.hpp>
 
-class ComputorVision{
+class ComputerVision{
     private:
         cv::Mat frame;
         cv::Mat structuringElement;
@@ -30,7 +30,7 @@ class ComputorVision{
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
     public:
-        ComputorVision(){
+        ComputerVision(){
             structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(9, 9));
         }
         double getNormalisedLaneOffset(){ return normalisedLaneOffset; }

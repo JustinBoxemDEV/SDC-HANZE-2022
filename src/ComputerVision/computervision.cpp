@@ -1,8 +1,8 @@
-#include "computorvision.h"
+#include "computervision.h"
 #include <numeric>
 #include "../Math/Polynomial.h"
 
-void ComputorVision::SetFrame(cv::Mat src){
+void ComputerVision::SetFrame(cv::Mat src){
     frame = src;
     dstP[0] = cv::Point2f(frame.cols * 0.1, 0);
     dstP[1] = cv::Point2f(frame.cols * 0.9, 0);
@@ -10,12 +10,12 @@ void ComputorVision::SetFrame(cv::Mat src){
     dstP[3] = cv::Point2f(frame.cols * 0.35, frame.rows);
 }
 
-cv::Mat ComputorVision::BlurImage(cv::Mat src){
+cv::Mat ComputerVision::BlurImage(cv::Mat src){
     cv::GaussianBlur(src, blurred, cv::Size(3,3), 0, 0);
     return blurred;
 }
 
-cv::Mat ComputorVision::GammaCorrection(const cv::Mat src, const float gamma)
+cv::Mat ComputerVision::GammaCorrection(const cv::Mat src, const float gamma)
 {
     cv::Mat result;
     float invGamma = 1 / gamma;
@@ -30,12 +30,12 @@ cv::Mat ComputorVision::GammaCorrection(const cv::Mat src, const float gamma)
     return result;
 }
 
-cv::Mat ComputorVision::DetectEdges(cv::Mat src){
+cv::Mat ComputerVision::DetectEdges(cv::Mat src){
     cv::Canny(src, edgeMap, 100, 3*3, 3 );
     return edgeMap;
 }
 
-cv::Mat ComputorVision::MaskImage(cv::Mat src){
+cv::Mat ComputerVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.8),
@@ -48,13 +48,13 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     return masked;
 }
 
-std::vector<cv::Vec4i> ComputorVision::HoughLines(cv::Mat src){
+std::vector<cv::Vec4i> ComputerVision::HoughLines(cv::Mat src){
     std::vector<cv::Vec4i> lines;
     cv::HoughLinesP(src, lines, 2, CV_PI/180, 100, 50, 5);
     return lines;
 }
 
-std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines){
+std::vector<cv::Vec4i> ComputerVision::AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines){
     std::vector<cv::Vec2f> left;
     std::vector<cv::Vec2f> right;
     int angleThreshold = 5;
@@ -94,7 +94,7 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
     return result;
 }
 
-cv::Vec2f ComputorVision::averageVec2Vector(std::vector<cv::Vec2f> vectors){
+cv::Vec2f ComputerVision::averageVec2Vector(std::vector<cv::Vec2f> vectors){
     cv::Vec2f sum;
 
     for(auto vect2 : vectors){
@@ -105,7 +105,7 @@ cv::Vec2f ComputorVision::averageVec2Vector(std::vector<cv::Vec2f> vectors){
     return sum;
 }
 
-cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
+cv::Vec4i ComputerVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float slope = average[0];
     float y_int = average[1];
   
@@ -116,7 +116,7 @@ cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     return cv::Vec4i(x1, y1, x2, y2);
 }
 
-cv::Mat ComputorVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines){
+cv::Mat ComputerVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines){
     for(auto line : lines){
         cv::Point start = cv::Point(line[0], line[1]);
         cv::Point end = cv::Point(line[2], line[3]);
@@ -137,7 +137,7 @@ cv::Mat ComputorVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines)
     return src;
 }
 
-std::vector<int> ComputorVision::Histogram(cv::Mat src){
+std::vector<int> ComputerVision::Histogram(cv::Mat src){
     std::vector<int> points;
     for(int i = 0; i < src.cols; i++){
         points.push_back(cv::countNonZero(src.col(i)));
@@ -145,7 +145,7 @@ std::vector<int> ComputorVision::Histogram(cv::Mat src){
     return points;
 }
 
-std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect window){
+std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect window){
     std::vector<cv::Point2f> points;
     const cv::Size imgSize = image.size();
     
@@ -182,7 +182,7 @@ std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect w
     return points;
 }
 
-cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
+cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     denoisedImage = BlurImage(src);
 
     // cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
@@ -293,7 +293,7 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     return binaryImage;
 }
 
-std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
+std::vector<cv::Vec4i> ComputerVision::GenerateLines(cv::Mat src){
     std::vector<cv::Vec4i> houghLines = HoughLines(src);
     std::vector<cv::Vec4i> averagedLines = AverageLines(src, houghLines);
 
@@ -304,7 +304,7 @@ std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
     return averagedLines;
 }
 
-void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
+void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     cv::Point2f srcP[4] = { 
         cv::Point2f(src.cols * 0.25, src.rows * 0.45),
         cv::Point2f(src.cols * 0.75, src.rows * 0.45),
