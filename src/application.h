@@ -4,6 +4,8 @@
 #include "Processes/process.h"
 #include "Processes/cvprocess.h"
 #include "Processes/canprocess.h"
+#include "Processes/terminalprocess.h"
+#include "Processes/readprocess.h"
 #include <string>
 #include <vector>
 #include <thread>

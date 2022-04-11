@@ -29,7 +29,7 @@ class Logger {
             if(!type.empty()) type = "["+type+"]";
             if(timeStamp) time = Time::currentDateTime()+"\t\t ";
             if(!ascii.empty()) ascii = "\033["+ascii+"m";
-            std::cout << ascii+type+tabs+"\033[0m"+time+getSS(object).str() << std::endl;
+            //std::cout << ascii+type+tabs+"\033[0m"+time+getSS(object).str() << std::endl;
             writeToFile(type+tabs+time+getSS(object).str(), filename);
         };
         

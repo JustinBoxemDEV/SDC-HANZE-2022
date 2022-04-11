@@ -3,11 +3,12 @@
 
 CommunicationStrategy *terminalStrategy;
 
-void setStrategy(CommunicationStrategy *strategy) {
+void TerminalProcess::setStrategy(CommunicationStrategy *strategy) {
     terminalStrategy = strategy;
 }
 
 void TerminalProcess::terminal() {
+    std::cout << "Test terminal" << std::endl;
     char input[25];
     std::cin.get(input, 25);
     std::cin.ignore(256, '\n');
@@ -19,7 +20,7 @@ void TerminalProcess::terminal() {
         std::cin.get(speed, 25);
         std::cin.ignore(256, '\n');
 
-        terminalStrategy->actuators.throttlePercentage = 20;
+        terminalStrategy->actuators.throttlePercentage = std::stoi(speed);
     }
     terminal();
 }
