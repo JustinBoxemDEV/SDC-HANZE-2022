@@ -9,7 +9,7 @@ CANStrategy::CANStrategy() {
     Logger::createFile("send " + timestamp);
     Logger::createFile("receive " + timestamp);
 
-    CANStrategy::init("vcan0"); // use vcan0 for testing, can0 for real kart.
+    CANStrategy::init("can0"); // use vcan0 for testing, can0 for real kart.
 };
 
 void CANStrategy::init(const char* canType) {
