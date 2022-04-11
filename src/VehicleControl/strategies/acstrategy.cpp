@@ -23,7 +23,10 @@ ACStrategy::ACStrategy() {
         puts("Connect error");
     };
 
-    puts("Connected");    
+    puts("Connected");
+
+    gearShiftUp();
+    actuators.throttlePercentage = 100;
 };
 
 void ACStrategy::steer() {

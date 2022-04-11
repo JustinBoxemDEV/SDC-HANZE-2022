@@ -69,13 +69,9 @@ void CVProcess::ProcessFrame(cv::Mat src){
 
     double pidout = pid.PIDController_update(normalisedLaneOffset);
 
-    // This needs to be fixed to set steeringAngle
-    std::cout << "setting steering anlge" << std::endl;
-    std::cout << pidout << std::endl;
-
-    CommunicationStrategy::actuators.steeringAngle = pidout;
-
-    // std::cout << canProcess->actuators.steeringAngle << std::endl;
+    if(pidout >= -1 && pidout <=1) {
+        CommunicationStrategy::actuators.steeringAngle = pidout;
+    };
 
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
