@@ -3,6 +3,12 @@
 #include "../MediaSources/screensource.h"
 #include "../MediaSources/videosource.h"
 
+CanProcess *canProcess;
+
+void CVProcess::setCanProcess(CanProcess *_canProcess) {
+    canProcess = _canProcess;
+};
+
 CVProcess::CVProcess(MediaInput *input){
     mediaInput = input;
     pid.PIDController_Init();
@@ -64,6 +70,10 @@ void CVProcess::ProcessFrame(cv::Mat src){
     cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double pidout = pid.PIDController_update(normalisedLaneOffset);
+
+    // This needs to be fixed to set steeringAngle
+    canProcess->actuators.steeringAngle = pidout;
+
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
     imshow("masked", maskedImage);

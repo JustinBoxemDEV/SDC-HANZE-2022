@@ -13,18 +13,19 @@ int main(int argc, char** argv) {
 
     Application application;
 
-    application.RegisterProcess(new CVProcess(&mediaInput));
+    CanProcess *canprocess = new CanProcess(&mediaInput);
+    CVProcess *cvprocess = new CVProcess(&mediaInput);
 
-    #if __WIN32__
-    application.RegisterProcess(new CanProcess(&mediaInput));
-    #endif
+    cvprocess->setCanProcess(canprocess);
+    application.RegisterProcess(cvprocess);
 
     #if linux
     ReadProcess *readcan = new ReadProcess();
-    CanProcess *canprocess = new CanProcess(&mediaInput);
     canprocess->setReadProcess(readcan);
-    application.RegisterProcess(canprocess);
     application.RegisterProcess(readcan);
     #endif
+
+    application.RegisterProcess(canprocess);
+
     application.Run();
 }

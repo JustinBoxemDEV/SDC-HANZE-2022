@@ -5,7 +5,6 @@
 #include "../utils/TaskScheduler/TaskScheduler.h"
 #include "../VehicleControl/communicationstrategy.h"
 
-
 class CanProcess : public Process
 {
     private:
@@ -20,7 +19,7 @@ class CanProcess : public Process
 
     public:
         CanProcess(MediaInput * input);
-        static Actuators actuators;
+        Actuators actuators;
         void setReadProcess(ReadProcess *_readProcess);
         void Run() override;
         void Terminate() override;
