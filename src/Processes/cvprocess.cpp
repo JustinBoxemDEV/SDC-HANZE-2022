@@ -3,6 +3,10 @@
 #include "../MediaSources/screensource.h"
 #include "../MediaSources/videosource.h"
 
+#ifdef __WIN32__
+CommunicationStrategy::Actuators CommunicationStrategy::actuators;
+#endif
+
 CVProcess::CVProcess(MediaInput *input){
     mediaInput = input;
     pid.PIDController_Init();

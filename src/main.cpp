@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     int cursor = 1;
     Process::MediaInput mediaInput;
 
-    mediaInput.mediaType = CVProcess::MediaSource::realtime;
+    mediaInput.mediaType = CVProcess::MediaSource::assetto;
 
     Application application;
 

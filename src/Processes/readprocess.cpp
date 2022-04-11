@@ -1,3 +1,4 @@
+#ifdef linux
 #include "readprocess.h"
 
 CommunicationStrategy *strategy2;
@@ -16,3 +17,5 @@ void ReadProcess::Run() {
 void ReadProcess::Terminate() {
 
 };
+
+#endif
