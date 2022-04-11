@@ -2,6 +2,7 @@
 #include "Processes/canprocess.h"
 #include "Processes/cvprocess.h"
 #include "Processes/readprocess.h"
+#include "Processes/terminalprocess.h"
 
 namespace fs = std::filesystem;
 
