@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../VehicleControl/strategies/canstrategy.h"
 #include "../VehicleControl/strategies/acstrategy.h"
+#include "readprocess.h"
 
 CommunicationStrategy* strategy;
 
@@ -18,7 +19,7 @@ void Forward(){
     strategy->forward();
 };
 
-CanProcess::CanProcess(MediaInput *input){
+CanProcess::CanProcess(MediaInput *input, Process *readprocess){
     mediaInput = input;
 
     switch (input->mediaType)
@@ -33,6 +34,7 @@ CanProcess::CanProcess(MediaInput *input){
         case MediaSource::assetto: case MediaSource::video:{
             #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
                 strategy = new ACStrategy();
+                ((ReadProcess*) readprocess)->setStrategy(strategy);
                 std::cout << "test" << std::endl;
             #endif
             break;

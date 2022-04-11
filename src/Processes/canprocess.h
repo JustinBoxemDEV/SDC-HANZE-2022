@@ -9,7 +9,7 @@
 class CanProcess : public Process
 {
     private:
-        // CommunicationStrategy* strategy;
+        //CommunicationStrategy* strategy;
         TaskScheduler taskScheduler;
         struct Actuators {
             float steeringAngle = 0;
@@ -19,7 +19,7 @@ class CanProcess : public Process
         };
 
     public:
-        CanProcess(MediaInput * input);
+        CanProcess(MediaInput * input, Process *_readproces);
         static Actuators actuators;
         void Run() override;
         void Terminate() override;
