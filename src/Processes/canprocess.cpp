@@ -5,6 +5,10 @@
 
 #if linux
 ReadProcess* readProcess;
+
+void CanProcess::setReadProcess(ReadProcess *_readProcess) {
+    readProcess = _readProcess;
+};
 #endif
 
 CommunicationStrategy* strategy;
@@ -20,10 +24,6 @@ void Brake(){
 
 void Forward(){
     strategy->forward();
-};
-
-void CanProcess::setReadProcess(ReadProcess *_readProcess) {
-    readProcess = _readProcess;
 };
 
 CanProcess::CanProcess(MediaInput *input){
