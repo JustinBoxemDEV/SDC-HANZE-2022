@@ -1,5 +1,4 @@
 #pragma once
-#include "../utils/TaskScheduler/TaskScheduler.h"
 
 class CommunicationStrategy {
     public:
@@ -8,7 +7,6 @@ class CommunicationStrategy {
         virtual void forward() = 0;
         virtual void neutral() = 0;
         virtual void stop() = 0;
-        TaskScheduler taskScheduler;
         struct Actuators {
             float steeringAngle = 0;
             int throttlePercentage = 0;

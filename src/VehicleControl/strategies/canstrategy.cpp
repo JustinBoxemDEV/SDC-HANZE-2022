@@ -62,15 +62,13 @@ void CANStrategy::init(const char* canType) {
     actuators.brakePercentage = 0;
     CANStrategy::brake();
 
-    // Homing message: can0 0x0000006F1 00 00 00 00 00 00 00 00 (correct wheels, can last between 1-20 seconds)
-    CANStrategy::homing();
-
-    delay = 15;
     delay *= CLOCKS_PER_SEC;
+    std::cout << delay << std::endl;
     now = clock();
     while(clock() - now < delay);
-    std::cout << "Startup Sequence Done" << std::endl;
-    // Now after 6-10 seconds it should be able to start accelerating when it receives acceleratingmessages
+
+    actuators.steeringAngle = 0.0;
+    CANStrategy::steer();
 };
 
 void CANStrategy::throttle(int amount, int direction) {

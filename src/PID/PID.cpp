@@ -15,8 +15,6 @@ void PIDController::PIDController_Init() {
 
 
 double PIDController::PIDController_update(double error) {
-
-
 	proportional = gp * error;	
 	differentiator = gd * (error - prevError)/time;	
 	integrator = gi *(integrator + error * time);

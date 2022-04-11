@@ -1,8 +1,8 @@
-#include "computorvision.h"
+#include "computervision.h"
 #include <numeric>
 #include "../Math/Polynomial.h"
 
-void ComputorVision::SetFrame(cv::Mat src){
+void ComputerVision::SetFrame(cv::Mat src){
     frame = src;
     dstP[0] = cv::Point2f(frame.cols * 0.1, 0);
     dstP[1] = cv::Point2f(frame.cols * 0.9, 0);
@@ -10,22 +10,37 @@ void ComputorVision::SetFrame(cv::Mat src){
     dstP[3] = cv::Point2f(frame.cols * 0.35, frame.rows);
 }
 
-cv::Mat ComputorVision::BlurImage(cv::Mat src){
+cv::Mat ComputerVision::BlurImage(cv::Mat src){
     cv::GaussianBlur(src, blurred, cv::Size(3,3), 0, 0);
     return blurred;
 }
 
-cv::Mat ComputorVision::DetectEdges(cv::Mat src){
+cv::Mat ComputerVision::GammaCorrection(const cv::Mat src, const float gamma)
+{
+    cv::Mat result;
+    float invGamma = 1 / gamma;
+
+    cv::Mat table(1, 256, CV_8U);
+    uchar *p = table.ptr();
+    for (int i = 0; i < 256; ++i) {
+        p[i] = (uchar) (pow(i / 255.0, invGamma) * 255);
+    }
+
+    LUT(src, table, result);
+    return result;
+}
+
+cv::Mat ComputerVision::DetectEdges(cv::Mat src){
     cv::Canny(src, edgeMap, 100, 3*3, 3 );
     return edgeMap;
 }
 
-cv::Mat ComputorVision::MaskImage(cv::Mat src){
+cv::Mat ComputerVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.8),
-        cv::Point(0, src.rows * 0.6),
-        cv::Point(src.cols, src.rows * 0.6),
+        cv::Point(0, src.rows * 0.45),
+        cv::Point(src.cols, src.rows * 0.45),
         cv::Point(src.cols, src.rows * 0.8),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -33,13 +48,13 @@ cv::Mat ComputorVision::MaskImage(cv::Mat src){
     return masked;
 }
 
-std::vector<cv::Vec4i> ComputorVision::HoughLines(cv::Mat src){
+std::vector<cv::Vec4i> ComputerVision::HoughLines(cv::Mat src){
     std::vector<cv::Vec4i> lines;
     cv::HoughLinesP(src, lines, 2, CV_PI/180, 100, 50, 5);
     return lines;
 }
 
-std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines){
+std::vector<cv::Vec4i> ComputerVision::AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines){
     std::vector<cv::Vec2f> left;
     std::vector<cv::Vec2f> right;
     int angleThreshold = 5;
@@ -79,7 +94,7 @@ std::vector<cv::Vec4i> ComputorVision::AverageLines(cv::Mat src, std::vector<cv:
     return result;
 }
 
-cv::Vec2f ComputorVision::averageVec2Vector(std::vector<cv::Vec2f> vectors){
+cv::Vec2f ComputerVision::averageVec2Vector(std::vector<cv::Vec2f> vectors){
     cv::Vec2f sum;
 
     for(auto vect2 : vectors){
@@ -90,18 +105,18 @@ cv::Vec2f ComputorVision::averageVec2Vector(std::vector<cv::Vec2f> vectors){
     return sum;
 }
 
-cv::Vec4i ComputorVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
+cv::Vec4i ComputerVision::GeneratePoints(cv::Mat src, cv::Vec2f average){
     float slope = average[0];
     float y_int = average[1];
   
     int y1 = src.rows;
-    int y2 = int(y1 * 0.6); //this defines height in image (inversed)
+    int y2 = int(y1 * 0.45); //this defines height in image (inversed)
     int x1 = int((y1 - y_int) / slope);
     int x2 = int((y2 - y_int) / slope);
     return cv::Vec4i(x1, y1, x2, y2);
 }
 
-cv::Mat ComputorVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines){
+cv::Mat ComputerVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines){
     for(auto line : lines){
         cv::Point start = cv::Point(line[0], line[1]);
         cv::Point end = cv::Point(line[2], line[3]);
@@ -122,7 +137,7 @@ cv::Mat ComputorVision::PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines)
     return src;
 }
 
-std::vector<int> ComputorVision::Histogram(cv::Mat src){
+std::vector<int> ComputerVision::Histogram(cv::Mat src){
     std::vector<int> points;
     for(int i = 0; i < src.cols; i++){
         points.push_back(cv::countNonZero(src.col(i)));
@@ -130,7 +145,7 @@ std::vector<int> ComputorVision::Histogram(cv::Mat src){
     return points;
 }
 
-std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect window){
+std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect window){
     std::vector<cv::Point2f> points;
     const cv::Size imgSize = image.size();
     
@@ -167,7 +182,7 @@ std::vector<cv::Point2f> ComputorVision::SlidingWindow(cv::Mat image, cv::Rect w
     return points;
 }
 
-cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
+cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     denoisedImage = BlurImage(src);
 
     // cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
@@ -180,23 +195,24 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // cv::dilate(hsvFilter, hsvFilter, structuringElement);
     // cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    // cv::Mat sobelx;
+    cv::Mat sobelx;
     cv::Mat sobely;
-    // cv::Mat sobelxy;
+    cv::Mat sobelxy;
 
     cv::Mat gray;
     cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
-    // Sobel(gray, sobelx, CV_64F, 1, 0);
+    Sobel(gray, sobelx, CV_64F, 1, 0);
     Sobel(gray, sobely, CV_64F, 0, 1);
-    // Sobel(gray, sobelxy, CV_64F, 1, 1);
-    cv::inRange(sobely, 75,255, sobely);
-    // imshow("soby'", sobely);
+    Sobel(gray, sobelxy, CV_64F, 1, 1);
+    cv::inRange(sobely, 50,255, sobely);
+    cv::inRange(sobelx, 20,70, sobelx);
+    imshow("soby'", sobely);
+    imshow("sobx'", sobelx);
 
-    // convertScaleAbs(sobelx, sobelx);
+    convertScaleAbs(sobelx, sobelx);
     convertScaleAbs(sobely, sobely);
-    // convertScaleAbs(sobelxy, sobelxy);
-    // imshow("sobx'", sobelx);
-    // imshow("sobxy'", sobelxy);
+    convertScaleAbs(sobelxy, sobelxy);
+    imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
     // cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
@@ -249,7 +265,6 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
-
     cv::inRange(hsvChannels[1], 105,255, hsvChannels[1]);
     cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
     cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
@@ -262,21 +277,23 @@ cv::Mat ComputorVision::CreateBinaryImage(cv::Mat src){
     // imshow("hls s'", hlsChannels[2]);
 
     cv::inRange(hlsChannels[1], 155,255, hlsChannels[1]);
-    imshow("hls l'", hlsChannels[1]);
+    // imshow("hls l'", hlsChannels[1]);
 
     cv::Mat mask;
     cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
     cv::bitwise_or(mask, hsvChannels[1], mask);
+    cv::bitwise_or(sobely, sobelx, sobely);
+    cv::bitwise_and(mask, sobely, mask);
 
-    // imshow("hsvfilter", hsvFilter);
-    cv::bitwise_or(mask, sobely, mask);
-    binaryImage = DetectEdges(mask);
+    cv::Mat edges = DetectEdges(mask);
+    cv::bitwise_or(edges, mask, binaryImage);
+
     imshow("binary", binaryImage);
 
     return binaryImage;
 }
 
-std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
+std::vector<cv::Vec4i> ComputerVision::GenerateLines(cv::Mat src){
     std::vector<cv::Vec4i> houghLines = HoughLines(src);
     std::vector<cv::Vec4i> averagedLines = AverageLines(src, houghLines);
 
@@ -287,10 +304,10 @@ std::vector<cv::Vec4i> ComputorVision::GenerateLines(cv::Mat src){
     return averagedLines;
 }
 
-void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
-    cv::Point2f srcP[4] = { //NOTE: This could be hard coded using markers during a test day
-        cv::Point2f(src.cols * 0.25, src.rows * 0.6),
-        cv::Point2f(src.cols * 0.75, src.rows * 0.6),
+void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
+    cv::Point2f srcP[4] = { 
+        cv::Point2f(src.cols * 0.25, src.rows * 0.45),
+        cv::Point2f(src.cols * 0.75, src.rows * 0.45),
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
@@ -300,15 +317,16 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     invert(homography, invertedPerspectiveMatrix);
 
     cv::warpPerspective(src, warped, homography, cv::Size(src.cols, src.rows));
+
     int rectHeight = 80;
     int rectwidth = 30;
     int rectY = src.rows - rectHeight;
 
     std::vector<int> histogram = Histogram(warped);
-    std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.33);
-    std::vector<int> rightHist(histogram.begin() + src.cols * 0.66, histogram.end());
+    std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.5);
+    std::vector<int> rightHist(histogram.begin() + src.cols * 0.5, histogram.end());
     int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
-    int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.66;
+    int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
 
     std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX - rectHeight, rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX - rectHeight, rectY, rectHeight, rectwidth));
@@ -336,7 +354,6 @@ void ComputorVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
         position.y = (fitL[2] * pow(pts.x, 2) + (fitL[1] * pts.x) + fitL[0]);
         leftLanePoints.push_back(position);
     }
-
 
     curveRadiusR = Polynomial::Curvature(fitR, src.rows * 0.7);
     curveRadiusL = Polynomial::Curvature(fitL, src.rows * 0.7);
