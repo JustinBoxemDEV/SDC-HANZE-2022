@@ -3,3 +3,4 @@ videos/
 build/compile_commands.json
 build/
 CMakeLIsts.txt
+src/racinggame/__pycache__/utils.cpython-39.pyc
