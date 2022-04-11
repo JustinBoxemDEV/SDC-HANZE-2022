@@ -3,7 +3,7 @@
 #include "../VehicleControl/strategies/canstrategy.h"
 #include "../VehicleControl/strategies/acstrategy.h"
 
-#if __WIN32__
+#if linux
 ReadProcess* readProcess;
 #endif
 
