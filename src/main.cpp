@@ -38,13 +38,13 @@ int main(int argc, char** argv) {
     CanProcess *canprocess = new CanProcess(&mediaInput);
     
     #ifdef linux
-    //ReadProcess *readcan = new ReadProcess();
+    ReadProcess *readcan = new ReadProcess();
     TerminalProcess *terminal = new TerminalProcess();
 
     canprocess->setTerminalProcess(terminal);
-    //canprocess->setReadProcess(readcan);
+    canprocess->setReadProcess(readcan);
     
-    //application.RegisterProcess(readcan);
+    application.RegisterProcess(readcan);
     application.RegisterProcess(terminal);
     #endif
 
