@@ -5,6 +5,7 @@
 #include "../utils/TaskScheduler/TaskScheduler.h"
 #include "../VehicleControl/communicationstrategy.h"
 #include "../VehicleControl/strategies/canstrategy.h"
+#include <iostream>
 
 class ReadProcess : public Process
 {

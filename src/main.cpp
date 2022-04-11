@@ -13,10 +13,18 @@ int main(int argc, char** argv) {
 
     Application application;
 
-    ReadProcess *readcan = new ReadProcess();
-
     application.RegisterProcess(new CVProcess(&mediaInput));
-    application.RegisterProcess(new CanProcess(&mediaInput, readcan));
+
+    #if __WIN32__
+    application.RegisterProcess(new CanProcess(&mediaInput));
+    #endif
+
+    #if linux
+    ReadProcess *readcan = new ReadProcess();
+    CanProcess *canprocess = new CanProcess(&mediaInput);
+    canprocess->setReadProcess(readcan);
+    application.RegisterProcess(canprocess);
     application.RegisterProcess(readcan);
+    #endif
     application.Run();
 }

@@ -3,6 +3,10 @@
 #include "../VehicleControl/strategies/canstrategy.h"
 #include "../VehicleControl/strategies/acstrategy.h"
 
+#if __WIN32__
+ReadProcess* readProcess;
+#endif
+
 CommunicationStrategy* strategy;
 
 // Scuffed fix for scheduler
@@ -18,7 +22,11 @@ void Forward(){
     strategy->forward();
 };
 
-CanProcess::CanProcess(MediaInput *input, ReadProcess *readprocess){
+void CanProcess::setReadProcess(ReadProcess *_readProcess) {
+    readProcess = _readProcess;
+};
+
+CanProcess::CanProcess(MediaInput *input){
     mediaInput = input;
 
     switch (input->mediaType)
@@ -26,7 +34,7 @@ CanProcess::CanProcess(MediaInput *input, ReadProcess *readprocess){
         case MediaSource::realtime:{
             #ifdef linux
                 strategy = new CANStrategy();
-                readprocess->setStrategy(strategy);
+                readProcess->setStrategy(strategy);
             #endif
 
             break;

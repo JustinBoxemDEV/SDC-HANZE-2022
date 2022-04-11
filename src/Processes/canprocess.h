@@ -19,8 +19,9 @@ class CanProcess : public Process
         };
 
     public:
-        CanProcess(MediaInput * input, ReadProcess * _readproces);
+        CanProcess(MediaInput * input);
         static Actuators actuators;
+        void setReadProcess(ReadProcess *_readProcess);
         void Run() override;
         void Terminate() override;
 };
