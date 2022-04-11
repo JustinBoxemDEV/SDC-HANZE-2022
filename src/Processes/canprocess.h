@@ -1,6 +1,6 @@
 #pragma once
-#include "readprocess.h"
 #include "terminalprocess.h"
+#include "readprocess.h"
 #include "../utils/TaskScheduler/TaskScheduler.h"
 #include "../VehicleControl/communicationstrategy.h"
 

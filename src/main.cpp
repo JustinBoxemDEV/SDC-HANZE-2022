@@ -38,8 +38,13 @@ int main(int argc, char** argv) {
     
     #ifdef linux
     ReadProcess *readcan = new ReadProcess();
+    TerminalProcess *terminal = new TerminalProcess();
+
+    canprocess->setTerminalProcess(terminal);
     canprocess->setReadProcess(readcan);
+    
     application.RegisterProcess(readcan);
+    application.RegisterProcess(terminal);
     #endif
 
     application.RegisterProcess(canprocess);

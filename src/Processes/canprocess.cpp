@@ -6,8 +6,8 @@
 // CanProcess::Actuators CanProcess::actuators;
 
 #ifdef linux
-ReadProcess* readProcess;
 TerminalProcess* terminalProcess;
+ReadProcess* readProcess;
 
 void CanProcess::setReadProcess(ReadProcess *_readProcess) {
     readProcess = _readProcess;
