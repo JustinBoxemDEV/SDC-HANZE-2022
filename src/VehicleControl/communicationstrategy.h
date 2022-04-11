@@ -10,10 +10,10 @@ class CommunicationStrategy {
         struct Actuators {
             float steeringAngle = 0;
             int throttlePercentage = 0;
-            int brakePercentage = 0;
+            int brakePercentage = -1;
             float steeringFeedback = 0;
         };
-        Actuators actuators;
+        static Actuators actuators;
     private:
         template<class T>
         void sendCanMessage(T & canMessage);

@@ -8,6 +8,7 @@
 #include "../PID/PID.h"
 #include "../MediaSources/streamsource.h"
 #include <filesystem>
+#include "../Processes/canprocess.h"
 
 namespace fs = std::filesystem;
 
@@ -20,6 +21,7 @@ class CVProcess : public Process
         PIDController pid{0.20,0.4211,0.0414};
         void ProcessFrame(cv::Mat src);
     public:
+        void setCanProcess(CanProcess *_canProcess);
         CVProcess(MediaInput *input);
         float gamma = 2; 
         void Run() override;

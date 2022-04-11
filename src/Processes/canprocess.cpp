@@ -3,6 +3,21 @@
 #include "../VehicleControl/strategies/canstrategy.h"
 #include "../VehicleControl/strategies/acstrategy.h"
 
+// CanProcess::Actuators CanProcess::actuators;
+
+#ifdef linux
+TerminalProcess* terminalProcess;
+ReadProcess* readProcess;
+
+void CanProcess::setReadProcess(ReadProcess *_readProcess) {
+    readProcess = _readProcess;
+};
+
+void CanProcess::setTerminalProcess(TerminalProcess *_terminalProcess) {
+    terminalProcess = _terminalProcess;
+}
+#endif
+
 CommunicationStrategy* strategy;
 
 // Scuffed fix for scheduler
@@ -21,11 +36,12 @@ void Forward(){
 CanProcess::CanProcess(MediaInput *input){
     mediaInput = input;
 
-    switch (input->mediaType)
-    {
+    switch (input->mediaType){
         case MediaSource::realtime:{
             #ifdef linux
                 strategy = new CANStrategy();
+                readProcess->setStrategy(strategy);
+                strategy->actuators.throttlePercentage = 30;
             #endif
 
             break;
@@ -33,7 +49,13 @@ CanProcess::CanProcess(MediaInput *input){
         case MediaSource::assetto: case MediaSource::video:{
             #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
                 strategy = new ACStrategy();
-                std::cout << "test" << std::endl;
+            #endif
+            break;
+        }
+        case MediaSource::terminal: {
+            #ifdef linux
+                strategy = new CANStrategy();
+                terminalProcess->setStrategy(strategy);
             #endif
             break;
         }
@@ -44,6 +66,7 @@ CanProcess::CanProcess(MediaInput *input){
     }
     taskScheduler.SCH_Add_Task(Forward, 0, 0.04);
     taskScheduler.SCH_Add_Task(Steer, 0.02, 0.04);
+    taskScheduler.SCH_Add_Task(Brake, 0.04, 0.04);
     taskScheduler.SCH_Start();
 }
 
