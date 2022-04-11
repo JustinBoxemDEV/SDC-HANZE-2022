@@ -1,4 +1,3 @@
-#ifdef linux
 #ifndef READ_PROCESS_H
 #define READ_PROCESS_H
 
@@ -15,5 +14,4 @@ class ReadProcess : public Process
         void Terminate() override;
 };
 
-#endif
 #endif

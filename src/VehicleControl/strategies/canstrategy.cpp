@@ -62,13 +62,13 @@ void CANStrategy::init(const char* canType) {
     actuators.brakePercentage = 0;
     CANStrategy::brake();
 
-    delay *= CLOCKS_PER_SEC;
     std::cout << delay << std::endl;
     now = clock();
     while(clock() - now < delay);
 
     actuators.steeringAngle = 0.0;
     CANStrategy::steer();
+    std::cout << "Test steering" << std::endl;
 };
 
 void CANStrategy::throttle(int amount, int direction) {
@@ -86,9 +86,9 @@ void CANStrategy::throttle(int amount, int direction) {
 
     std::unique_lock<std::mutex> locker(loggerMutex);
     Logger::info("Throttle : speed = " + std::to_string(amount) + " : direction = " + std::to_string(direction), "send " + timestamp);
-    locker.unlock();
 
     CANStrategy::sendCanMessage<throttleFrame>(canMessage);
+    locker.unlock();
 };
 
 void CANStrategy::steer() {
@@ -103,9 +103,9 @@ void CANStrategy::steer() {
 
     std::unique_lock<std::mutex> locker(loggerMutex);
     Logger::info("Steering : angle = " + std::to_string(actuators.steeringAngle), "send " + timestamp);
-    locker.unlock();
 
     CANStrategy::sendCanMessage<steerFrame>(canMessage);
+    locker.unlock();
 };
 
 void CANStrategy::brake() {
@@ -126,12 +126,12 @@ void CANStrategy::brake() {
 
     std::unique_lock<std::mutex> locker(loggerMutex);
     Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage), "send " + timestamp);
-    locker.unlock();
 
     CANStrategy::sendCanMessage<brakeFrame>(canMessage);
     if(actuators.brakePercentage == 0) {
         actuators.brakePercentage = -1;
     };
+    locker.unlock();
 };
 
 void CANStrategy::forward() {
@@ -153,9 +153,9 @@ void CANStrategy::homing() {
 
     std::unique_lock<std::mutex> locker(loggerMutex);
     Logger::info("Homing", "send " + timestamp);
-    locker.unlock();
 
     CANStrategy::sendCanMessage<homingFrame>(canMessage);
+    locker.unlock();
 };
 
 void CANStrategy::backward() {

@@ -1,7 +1,7 @@
 #ifndef CAN_PROCESS_H
 #define CAN_PROCESS_H
 
-#include "process.h"
+#include "readprocess.h"
 #include "../utils/TaskScheduler/TaskScheduler.h"
 #include "../VehicleControl/communicationstrategy.h"
 
@@ -19,7 +19,7 @@ class CanProcess : public Process
         };
 
     public:
-        CanProcess(MediaInput * input, Process *_readproces);
+        CanProcess(MediaInput * input, ReadProcess * _readproces);
         static Actuators actuators;
         void Run() override;
         void Terminate() override;
