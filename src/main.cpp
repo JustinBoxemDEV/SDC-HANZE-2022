@@ -20,11 +20,14 @@ int main(int argc, char** argv) {
             mediaInput.mediaType = CVProcess::MediaSource::video;
             cursor++;
             std::string path = fs::current_path().string() + "/assets/videos/" + argv[cursor];
+            std::cout << path << std::endl;
             if(!fs::exists(path)){
                 std::cout << "file does not exists!" << std::endl;
                 return 1;
             }
             mediaInput.filepath = path;
+            CVProcess *cvprocess = new CVProcess(&mediaInput);
+            application.RegisterProcess(cvprocess);
         }else if(arg == "-realtime"){
             std::cout << "realtime" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::realtime;

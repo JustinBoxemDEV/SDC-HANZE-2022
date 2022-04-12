@@ -21,7 +21,11 @@ void TerminalProcess::terminal() {
         std::cin.get(speed, 25);
         std::cin.ignore(256, '\n');
 
-        terminalStrategy->actuators.throttlePercentage = std::stoi(speed);
+        if(std::stoi(speed) >= 0 && std::stoi(speed) <= 100) {
+            terminalStrategy->actuators.throttlePercentage = std::stoi(speed);
+        } else {
+            std::cout << "Please give value between 0-100" << std::endl;
+        }
     } else if(strcmp(input, "steer") == 0) {
         std::cout << "Executing steer" << std::endl;
         std::cout << "Give steering angle (-1-1)" << std::endl;
@@ -29,15 +33,23 @@ void TerminalProcess::terminal() {
         std::cin.get(angle, 25);
         std::cin.ignore(256, '\n');
 
-        terminalStrategy->actuators.steeringAngle = std::stof(angle);
+        if(std::stof(angle) >= -1 && std::stof(angle) <= 1) {
+            terminalStrategy->actuators.steeringAngle = std::stof(angle);
+        } else {
+            std::cout << "Please give value between -1 and 1" << std::endl;
+        }
     } else if(strcmp(input, "brake") == 0) {
         std::cout << "Executing brake" << std::endl;
-        std::cout << "Give brake percentage" << std::endl;
+        std::cout << "Give brake percentage (0-100)" << std::endl;
         char brake[25];
         std::cin.get(brake, 25);
         std::cin.ignore(256, '\n');
 
-        terminalStrategy->actuators.brakePercentage = std::stoi(brake);
+        if(std::stoi(brake) == -1 || (std::stoi(brake) >= 0 && std::stoi(brake) <= 100)) {
+            terminalStrategy->actuators.brakePercentage = std::stoi(brake);
+        } else {
+            std::cout << "Please give value between 0-100 or -1 to stop braking" << std::endl;
+        }
     } else {
         std::cout << "Wrong command" << std::endl;
     }
