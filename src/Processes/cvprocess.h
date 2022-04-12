@@ -18,7 +18,7 @@ class CVProcess : public Process
         cv::VideoCapture *capture;
         StreamSource *streamSource;
         ComputerVision cVision;
-        PIDController pid{0.20, 0.4211, 0.0414};
+        PIDController pid{0.20,0.4211,0.0414};
         void ProcessFrame(cv::Mat src);
     public:
         void setCanProcess(CanProcess *_canProcess);
