@@ -3,13 +3,15 @@
 
 CommunicationStrategy::Actuators CommunicationStrategy::actuators;
 
+bool zeroThrottle = false;
+
 CANStrategy::CANStrategy() {
     timestamp = Time::currentDateTime();
 
     Logger::createFile("send " + timestamp);
     Logger::createFile("receive " + timestamp);
 
-    CANStrategy::init("can0"); // use vcan0 for testing, can0 for real kart.
+    CANStrategy::init("vcan0"); // use vcan0 for testing, can0 for real kart.
 };
 
 void CANStrategy::init(const char* canType) {
@@ -74,8 +76,13 @@ void CANStrategy::init(const char* canType) {
 };
 
 void CANStrategy::throttle(int amount, int direction) {
-    if(actuators.throttlePercentage == 0) {
+    if((actuators.throttlePercentage == 0 && zeroThrottle) || actuators.brakePercentage >= 0) {
         return;
+    }
+    if(actuators.throttlePercentage == 0) {
+        zeroThrottle = true;
+    } else {
+        zeroThrottle = false;
     }
     typedef CANStrategy::frame<std::byte[4]> throttleFrame;
 
@@ -117,7 +124,6 @@ void CANStrategy::brake() {
     if(actuators.brakePercentage == -1) {
         return;
     }
-    actuators.throttlePercentage = 0;
     typedef CANStrategy::frame<std::byte[4]> brakeFrame;
 
     brakeFrame canMessage;
@@ -136,7 +142,6 @@ void CANStrategy::brake() {
     CANStrategy::sendCanMessage<brakeFrame>(canMessage);
     if(actuators.brakePercentage == 0) {
         actuators.brakePercentage = -1;
-        actuators.throttlePercentage = 30;
     };
     locker.unlock();
 };
