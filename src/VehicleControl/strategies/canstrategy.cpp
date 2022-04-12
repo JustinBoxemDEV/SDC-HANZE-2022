@@ -9,7 +9,7 @@ CANStrategy::CANStrategy() {
     Logger::createFile("send " + timestamp);
     Logger::createFile("receive " + timestamp);
 
-    CANStrategy::init("can0"); // use vcan0 for testing, can0 for real kart.
+    CANStrategy::init("vcan0"); // use vcan0 for testing, can0 for real kart.
 };
 
 void CANStrategy::init(const char* canType) {
@@ -61,19 +61,22 @@ void CANStrategy::init(const char* canType) {
     while(clock() - now < delay);
 
     // Make sure the brake won't activate while accelerating. Set brakes to 0 using message: can0 0x0000000126 00 00 00 00 00 00 00 00
-      actuators.brakePercentage = 0;
+    actuators.brakePercentage = 0;
     CANStrategy::brake();
 
     std::cout << delay << std::endl;
     now = clock();
     while(clock() - now < delay);
 
-      actuators.steeringAngle = 0.0;
+    actuators.steeringAngle = 0.0;
     CANStrategy::steer();
     std::cout << "Test steering" << std::endl;
 };
 
 void CANStrategy::throttle(int amount, int direction) {
+    if(actuators.throttlePercentage == 0) {
+        return;
+    }
     typedef CANStrategy::frame<std::byte[4]> throttleFrame;
 
     throttleFrame canMessage;
@@ -114,6 +117,7 @@ void CANStrategy::brake() {
     if(actuators.brakePercentage == -1) {
         return;
     }
+    actuators.throttlePercentage = 0;
     typedef CANStrategy::frame<std::byte[4]> brakeFrame;
 
     brakeFrame canMessage;
@@ -132,6 +136,7 @@ void CANStrategy::brake() {
     CANStrategy::sendCanMessage<brakeFrame>(canMessage);
     if(actuators.brakePercentage == 0) {
         actuators.brakePercentage = -1;
+        actuators.throttlePercentage = 30;
     };
     locker.unlock();
 };
