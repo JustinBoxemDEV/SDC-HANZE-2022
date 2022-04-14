@@ -7,7 +7,6 @@
 class CanProcess : public Process
 {
     private:
-        //CommunicationStrategy* strategy;
         TaskScheduler taskScheduler;
     public:
         CanProcess(MediaInput * input);
