@@ -89,5 +89,3 @@ https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhook
 
 ### IEEE 802.11g / 802.11n --- WiFi 5G Femtocell specifications
 https://ieeexplore.ieee.org/document/4563871
-
-test
