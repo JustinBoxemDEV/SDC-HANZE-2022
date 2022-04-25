@@ -1,0 +1,1 @@
+# Training loop for the nn in Assetto Corsa (Virtual environment)

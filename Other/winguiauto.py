@@ -1,3 +1,5 @@
+# CURRENTLY NOT USED IN OUR PROJECT
+
 # Module     : winGuiAuto.py
 # Synopsis   : Windows GUI automation utilities
 # Programmer : Simon Brunning - simon@brunningonline.net
