@@ -1,5 +1,7 @@
 #include "cameracalibration.hpp"
 
+namespace fs = std::filesystem;
+
 /**
  * @brief Construct a new Camera Calibration:: Camera Calibration object
  * 
@@ -11,6 +13,9 @@
  * @param frameHeight The amount of pixels vertically
  */
 CameraCalibration::CameraCalibration(std::string path, int chessLength, int chessWidth, int fieldSize, int frameLength, int frameHeight) {
+    std::string currentPath = fs::current_path().string();
+    currentPath.append("\\assets\\images\\calibration\\results\\");
+
     cv::glob(path, CameraCalibration::fileNames, false);
     cv::Size patternSize(chessLength-1, chessWidth-1);
 
@@ -45,10 +50,14 @@ CameraCalibration::CameraCalibration(std::string path, int chessLength, int ches
 
         cv::drawChessboardCorners(img, patternSize, q[i], patternFound);
         cv::imshow("chessboard detection", img);
+        std::string filename = currentPath+"calibration"+std::to_string(i)+".jpg";
+        imwrite(filename, img);
         cv::waitKey(0);
 
         i++;
     }
+
+    i = 0;
 
     cv::Matx33f K(cv::Matx33f::eye());
     cv::Vec<float, 5> k(0, 0, 0, 0, 0);
@@ -82,6 +91,9 @@ CameraCalibration::CameraCalibration(std::string path, int chessLength, int ches
 
         // Display
         cv::imshow("undistorted image", imgUndistorted);
+        std::string filename = currentPath+"undistorted"+std::to_string(i)+".jpg";
+        imwrite(filename, imgUndistorted);
         cv::waitKey(0);
+        i++;
   }
 };

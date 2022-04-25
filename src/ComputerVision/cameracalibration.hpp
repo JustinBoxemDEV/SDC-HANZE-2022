@@ -1,11 +1,13 @@
 #ifndef CAMERA_CALIBRATION_H
 #define CAMERA_CALIBRATION_H
 
+#include <filesystem>
 #include <iostream>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include <string>
 
 class CameraCalibration {
     public:
