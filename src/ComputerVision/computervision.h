@@ -26,9 +26,13 @@ class ComputerVision{
         cv::Mat warped;
         cv::Mat homography;
         cv::Mat invertedPerspectiveMatrix;
+
+        std::vector<double> lastKnownAveragedFitR;
+        std::vector<double> lastKnownAveragedFitL;
     private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
+        std::vector<double> ExponentalMovingAverage(std::vector<double> &lastAveragedFit, std::vector<double> fit, double beta);
     public:
         ComputerVision(){
             structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(9, 9));

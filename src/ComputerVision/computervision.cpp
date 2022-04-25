@@ -4,8 +4,8 @@
 
 void ComputerVision::SetFrame(cv::Mat src){
     frame = src;
-    dstP[0] = cv::Point2f(frame.cols * 0.1, 0);
-    dstP[1] = cv::Point2f(frame.cols * 0.9, 0);
+    dstP[0] = cv::Point2f(frame.cols * 0.25, 0);
+    dstP[1] = cv::Point2f(frame.cols * 0.75, 0);
     dstP[2] = cv::Point2f(frame.cols * 0.65, frame.rows);
     dstP[3] = cv::Point2f(frame.cols * 0.35, frame.rows);
 }
@@ -165,14 +165,14 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
             float x = locations[i].x;
             avgX += window.x + x;
             cv::Point point(window.x + locations[i].x, window.y + locations[i].y);
-            // points.push_back(point);
+            points.push_back(point);
         }
         
         avgX = locations.empty() ? currentX : avgX / locations.size();
         cv::Point point(avgX, window.y + window.height * 0.5f);
-        if(!locations.empty()){
-            points.push_back(point);
-        }
+        // if(locations.empty()){
+        //     points.push_back(point);
+        // }
 
         cv::rectangle(warped,window, (255,255,255));
         window.y -= window.height;
@@ -183,7 +183,7 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
 }
 
 cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
-    denoisedImage = BlurImage(src);
+     denoisedImage = BlurImage(src);
 
     // cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
     // cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
@@ -195,24 +195,22 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     // cv::dilate(hsvFilter, hsvFilter, structuringElement);
     // cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    cv::Mat sobelx;
-    cv::Mat sobely;
-    cv::Mat sobelxy;
+    // cv::Mat sobelx;
+    // cv::Mat sobely;
+    // cv::Mat sobelxy;
 
-    cv::Mat gray;
-    cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
-    Sobel(gray, sobelx, CV_64F, 1, 0);
-    Sobel(gray, sobely, CV_64F, 0, 1);
-    Sobel(gray, sobelxy, CV_64F, 1, 1);
-    cv::inRange(sobely, 50,255, sobely);
-    cv::inRange(sobelx, 20,70, sobelx);
-    imshow("soby'", sobely);
-    imshow("sobx'", sobelx);
+    // cv::Mat gray;
+    // cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
+    // Sobel(gray, sobelx, CV_64F, 1, 0);
+    // Sobel(gray, sobely, CV_64F, 0, 1);
+    // Sobel(gray, sobelxy, CV_64F, 1, 1);
 
-    convertScaleAbs(sobelx, sobelx);
-    convertScaleAbs(sobely, sobely);
-    convertScaleAbs(sobelxy, sobelxy);
-    imshow("sobxy'", sobelxy);
+    // convertScaleAbs(sobelx, sobelx);
+    // convertScaleAbs(sobely, sobely);
+    // convertScaleAbs(sobelxy, sobelxy);
+    // imshow("sobx'", sobelx);
+    // imshow("soby'", sobely);
+    // imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
     // cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
@@ -265,29 +263,22 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
-    cv::inRange(hsvChannels[1], 105,255, hsvChannels[1]);
+    cv::inRange(hsvChannels[1], 50,255, hsvChannels[1]);
+
+    // cv::erode(mask, mask, structuringElement);
+    // cv::dilate(mask, mask, structuringElement);
+
     cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
     cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
 
-    // imshow("hsv s'", hsvChannels[1]);
 
-    cv::inRange(hlsChannels[2], 70,255, hlsChannels[2]);
-    cv::dilate(hlsChannels[2], hlsChannels[2], structuringElement);
-    cv::erode(hlsChannels[2], hlsChannels[2], structuringElement);
-    // imshow("hls s'", hlsChannels[2]);
-
-    cv::inRange(hlsChannels[1], 155,255, hlsChannels[1]);
-    // imshow("hls l'", hlsChannels[1]);
+    cv::inRange(hlsChannels[1], 185,255, hlsChannels[1]);
 
     cv::Mat mask;
-    cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
-    cv::bitwise_or(mask, hsvChannels[1], mask);
-    cv::bitwise_or(sobely, sobelx, sobely);
-    cv::bitwise_and(mask, sobely, mask);
+    cv::bitwise_or(hsvChannels[1], hlsChannels[1], mask);
 
-    cv::Mat edges = DetectEdges(mask);
-    cv::bitwise_or(edges, mask, binaryImage);
-
+    // imshow("hsvfilter", hsvFilter);
+    binaryImage = DetectEdges(mask);
     imshow("binary", binaryImage);
 
     return binaryImage;
@@ -304,10 +295,26 @@ std::vector<cv::Vec4i> ComputerVision::GenerateLines(cv::Mat src){
     return averagedLines;
 }
 
+std::vector<double> ComputerVision::ExponentalMovingAverage(std::vector<double> &lastAveragedFit, std::vector<double> fit, double beta){
+    if(lastAveragedFit.empty()){
+        lastAveragedFit = fit;
+        return lastAveragedFit;
+    }
+
+    for (int i = 0; i < fit.size(); i++){
+        if(isnan(fit[i])){
+            return lastAveragedFit;
+        }
+        lastAveragedFit[i] = beta * lastAveragedFit[i] + (1-beta) * fit[i];  
+    }        
+
+    return lastAveragedFit;
+}
+
 void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     cv::Point2f srcP[4] = { 
-        cv::Point2f(src.cols * 0.25, src.rows * 0.45),
-        cv::Point2f(src.cols * 0.75, src.rows * 0.45),
+        cv::Point2f(src.cols * 0.35, src.rows * 0.45),
+        cv::Point2f(src.cols * 0.68, src.rows * 0.45),
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
@@ -330,30 +337,70 @@ void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
 
     std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX - rectHeight, rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX - rectHeight, rectY, rectHeight, rectwidth));
-    imshow("warped", warped);
 
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
 
+    fitR = ExponentalMovingAverage(lastKnownAveragedFitR, fitR, 0.95);
+    fitL = ExponentalMovingAverage(lastKnownAveragedFitL, fitL, 0.95);
+
+    cv::Mat lineOverlayWarped = cv::Mat::zeros(src.size(), frame.type());
+
+    int minX = src.rows;
+    int maxX = 0;
+
+    for (auto point : rightLinePixels){
+        if(point.x < minX){
+            minX = point.x;
+        }
+
+        if(point.x > maxX){
+            maxX = point.x;
+        }
+    }
+
     std::vector<cv::Point2f> rightLanePoints;
 
-    for (auto pts : rightLinePixels)
+    for (int x = minX; x < maxX; x++)
     {
         cv::Point2f position;
-        position.x = pts.x;
-        position.y = (fitR[2] * pow(pts.x, 2) + (fitR[1] * pts.x) + fitR[0]);
+        position.x = x;
+        position.y = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
+
+        if(x != minX){
+            cv::line(lineOverlayWarped, rightLanePoints[rightLanePoints.size() -1], position, cv::Scalar(255,255,0), 5);
+        }
         rightLanePoints.push_back(position);
+    }
+
+    minX = src.rows;
+    maxX = 0;
+
+    for (auto point : leftLinePixels){
+        if(point.x < minX){
+            minX = point.x;
+        }
+
+        if(point.x > maxX){
+            maxX = point.x;
+        }
     }
     
     std::vector<cv::Point2f> leftLanePoints;
 
-    for (auto pts : leftLinePixels)
+    for (int x = minX; x < maxX; x++)
     {
         cv::Point2f position;
-        position.x = pts.x;
-        position.y = (fitL[2] * pow(pts.x, 2) + (fitL[1] * pts.x) + fitL[0]);
+        position.x = x;
+        position.y = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
+        if(x != minX){
+            cv::line(lineOverlayWarped, leftLanePoints[leftLanePoints.size() -1], position, cv::Scalar(0,255,255),5);
+        }
         leftLanePoints.push_back(position);
     }
+    cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
+    cv::addWeighted(warped, 1, lineOverlayWarped, 1, 0, warped);
+    imshow("warped", warped);
 
     curveRadiusR = Polynomial::Curvature(fitR, src.rows * 0.7);
     curveRadiusL = Polynomial::Curvature(fitL, src.rows * 0.7);
@@ -382,8 +429,19 @@ void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     std::vector<cv::Point2f> outPts;
     std::vector<cv::Point> allPts;
 
-    if(rightLinePixels.size() >0){
-        cv::perspectiveTransform(rightLinePixels, outPts, invertedPerspectiveMatrix);
+    if(leftLanePoints.size() >0){
+        cv::perspectiveTransform(leftLanePoints, outPts, invertedPerspectiveMatrix);
+
+        for (int i = 0; i < outPts.size() - 1; ++i)
+        {
+            cv::line(frame, outPts[i], outPts[i + 1], cv::Scalar(0, 255, 0), 3);
+            allPts.push_back(cv::Point(outPts[outPts.size() - i - 1].x, outPts[outPts.size() - i - 1].y));
+        }
+        allPts.push_back(cv::Point(outPts[0].x - (outPts.size() - 1), outPts[0].y));
+    }
+    
+    if(rightLanePoints.size() >0){
+        cv::perspectiveTransform(rightLanePoints, outPts, invertedPerspectiveMatrix);
         for (int i = 0; i < outPts.size() - 1; ++i)
         {
             cv::line(frame, outPts[i], outPts[i + 1], cv::Scalar(0, 255, 0), 3);
@@ -393,17 +451,6 @@ void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
         allPts.push_back(cv::Point(outPts[outPts.size() - 1].x, outPts[outPts.size() - 1].y));
     }
     
-    if(leftLinePixels.size() >0){
-        cv::perspectiveTransform(leftLinePixels, outPts, invertedPerspectiveMatrix);
-
-        for (int i = 0; i < outPts.size() - 1; ++i)
-        {
-            cv::line(frame, outPts[i], outPts[i + 1], cv::Scalar(0, 255, 0), 3);
-            allPts.push_back(cv::Point(outPts[outPts.size() - i - 1].x, outPts[outPts.size() - i - 1].y));
-        }
-        allPts.push_back(cv::Point(outPts[0].x - (outPts.size() - 1), outPts[0].y));
-    }
-
     if(allPts.size() > 0){
         std::vector<std::vector<cv::Point>> arr;
         arr.push_back(allPts);
