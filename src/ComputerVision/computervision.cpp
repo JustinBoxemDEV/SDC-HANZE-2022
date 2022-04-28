@@ -164,7 +164,7 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
         for (int i = 0; i < locations.size(); ++i) {
             float x = locations[i].x;
             avgX += window.x + x;
-            cv::Point point(window.x + locations[i].x, window.y + locations[i].y);
+            cv::Point point(window.y + locations[i].y,window.x + locations[i].x);
             points.push_back(point);
         }
         
@@ -174,7 +174,7 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
         //     points.push_back(point);
         // }
 
-        cv::rectangle(warped,window, (255,255,255));
+        cv::rectangle(image,window, (255,255,255));
         window.y -= window.height;
         window.x += (point.x - currentX);
         
@@ -311,14 +311,15 @@ std::vector<double> ComputerVision::ExponentalMovingAverage(std::vector<double> 
     return lastAveragedFit;
 }
 
-void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
+void ComputerVision::PredictTurn(cv::Mat src){
     cv::Point2f srcP[4] = { 
         cv::Point2f(src.cols * 0.35, src.rows * 0.45),
         cv::Point2f(src.cols * 0.68, src.rows * 0.45),
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
-
+    cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\curveHard.png", cv::COLOR_BGR2GRAY);
+    cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,250),img);
     homography = cv::getPerspectiveTransform(srcP, dstP);
     
     invert(homography, invertedPerspectiveMatrix);
@@ -327,16 +328,16 @@ void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
 
     int rectHeight = 80;
     int rectwidth = 30;
-    int rectY = src.rows - rectHeight;
+    int rectY = img.rows - rectHeight;
 
-    std::vector<int> histogram = Histogram(warped);
+    std::vector<int> histogram = Histogram(img);
     std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.5);
     std::vector<int> rightHist(histogram.begin() + src.cols * 0.5, histogram.end());
     int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
     int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
 
-    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX - rectHeight, rectY, rectHeight, rectwidth));
-    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX - rectHeight, rectY, rectHeight, rectwidth));
+    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(img, cv::Rect(rightMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
+    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(img, cv::Rect(leftMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
 
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
@@ -344,88 +345,46 @@ void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
     fitR = ExponentalMovingAverage(lastKnownAveragedFitR, fitR, 0.95);
     fitL = ExponentalMovingAverage(lastKnownAveragedFitL, fitL, 0.95);
 
-    cv::Mat lineOverlayWarped = cv::Mat::zeros(src.size(), frame.type());
-
-    int minX = src.rows;
-    int maxX = 0;
-
-    for (auto point : rightLinePixels){
-        if(point.x < minX){
-            minX = point.x;
-        }
-
-        if(point.x > maxX){
-            maxX = point.x;
-        }
-    }
+    cv::Mat lineOverlayWarped = cv::Mat::zeros(img.size(), frame.type());
 
     std::vector<cv::Point2f> rightLanePoints;
-
-    for (int x = minX; x < maxX; x++)
-    {
-        cv::Point2f position;
-        position.x = x;
-        position.y = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
-
-        if(x != minX){
-            cv::line(lineOverlayWarped, rightLanePoints[rightLanePoints.size() -1], position, cv::Scalar(255,255,0), 5);
-        }
-        rightLanePoints.push_back(position);
-    }
-
-    minX = src.rows;
-    maxX = 0;
-
-    for (auto point : leftLinePixels){
-        if(point.x < minX){
-            minX = point.x;
-        }
-
-        if(point.x > maxX){
-            maxX = point.x;
-        }
-    }
-    
     std::vector<cv::Point2f> leftLanePoints;
+    std::vector<cv::Point2f> centerLanePoints;
 
-    for (int x = minX; x < maxX; x++)
+    for (int x = 0; x < img.rows ; x++)
     {
-        cv::Point2f position;
-        position.x = x;
-        position.y = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
-        if(x != minX){
-            cv::line(lineOverlayWarped, leftLanePoints[leftLanePoints.size() -1], position, cv::Scalar(0,255,255),5);
+        cv::Point2f positionR;
+        positionR.y = x;
+        positionR.x = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
+
+        cv::Point2f positionL;
+        positionL.y = x;
+        positionL.x = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
+
+        int imageCenter = img.cols / 2.0f;
+        int laneLeft = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
+        int laneRight = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
+
+        int laneCenterX = (laneLeft + laneRight) / 2;
+        laneOffset = imageCenter - laneCenterX;
+        normalisedLaneOffset = 2 * (double(laneOffset - laneLeft) / double(laneRight - laneLeft)) - 1;
+        
+        if(x != 0){
+            cv::line(lineOverlayWarped, leftLanePoints[leftLanePoints.size() -1], positionR, cv::Scalar(0,255,255),5);
+            cv::line(lineOverlayWarped, rightLanePoints[rightLanePoints.size() -1], positionL, cv::Scalar(255,255,0), 5);
+            cv::line(lineOverlayWarped, centerLanePoints[centerLanePoints.size() -1], cv::Point(laneCenterX, x), cv::Scalar(255,0,0), 4);
         }
-        leftLanePoints.push_back(position);
+        leftLanePoints.push_back(positionR);
+        rightLanePoints.push_back(positionL);
+        centerLanePoints.push_back(cv::Point(laneCenterX, x));
     }
-    cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
-    cv::addWeighted(warped, 1, lineOverlayWarped, 1, 0, warped);
-    imshow("warped", warped);
+   
 
-    curveRadiusR = Polynomial::Curvature(fitR, src.rows * 0.7);
-    curveRadiusL = Polynomial::Curvature(fitL, src.rows * 0.7);
-
-    // cv::putText(frame, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
-    // cv::putText(frame, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
-
-    double vertexRX = Polynomial::Vertex(fitR);
-    double vertexLX = Polynomial::Vertex(fitL);
-
-    std::string roadType = "";
-    int turnThreshold = 3000;
-
-    if(vertexLX < turnThreshold){
-        roadType = "Left Turn";
-    }else if(vertexRX < turnThreshold){
-        roadType = "Right Turn";
-    }else{
-        roadType = "Straight";
-    }
+    cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
+    cv::addWeighted(img, 1, lineOverlayWarped, 1, 0, img);
+    imshow("warped", img);
 
     //----DRAW STUF -----
-
-    cv::putText(frame, roadType, cv::Point(src.cols/2 - 100, 175), 1, 1.5, cv::Scalar(255, 128, 255));
-
     std::vector<cv::Point2f> outPts;
     std::vector<cv::Point> allPts;
 
@@ -449,6 +408,14 @@ void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
         }
 
         allPts.push_back(cv::Point(outPts[outPts.size() - 1].x, outPts[outPts.size() - 1].y));
+    }
+
+    if(centerLanePoints.size() >0){
+        cv::perspectiveTransform(centerLanePoints, outPts, invertedPerspectiveMatrix);
+        for (int i = 0; i < outPts.size() - 1; ++i)
+        {
+            cv::line(frame, outPts[i], outPts[i + 1], cv::Scalar(255, 0, 0), 3);
+        }
     }
     
     if(allPts.size() > 0){

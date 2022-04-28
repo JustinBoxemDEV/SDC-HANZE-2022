@@ -60,7 +60,12 @@ void CVProcess::ProcessFrame(cv::Mat src){
     cv::Mat binaryImage = cVision.CreateBinaryImage(gammaCorrected);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
-    std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
+    cVision.PredictTurn(maskedImage);
+    
+    double curveRadiusR = cVision.getRightEdgeCurvature();
+    double curveRadiusL = cVision.getLeftEdgeCurvature();
+    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double laneOffset = cVision.getLaneOffset();
     double normalisedLaneOffset = cVision.getNormalisedLaneOffset();
@@ -74,14 +79,7 @@ void CVProcess::ProcessFrame(cv::Mat src){
     };
 
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
-
     imshow("masked", maskedImage);
-    cVision.PredictTurn(maskedImage, averagedLines);
-    
-    double curveRadiusR = cVision.getRightEdgeCurvature();
-    double curveRadiusL = cVision.getLeftEdgeCurvature();
-    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
-    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 }
 
 void CVProcess::Terminate(){

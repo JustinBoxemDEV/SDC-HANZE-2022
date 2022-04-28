@@ -54,7 +54,7 @@ class ComputerVision{
         std::vector<int> Histogram(cv::Mat src);
         cv::Mat CreateBinaryImage(cv::Mat src);
         std::vector<cv::Vec4i> GenerateLines(cv::Mat src);
-        void PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines);
+        void PredictTurn(cv::Mat src);
 };
 
 #endif
