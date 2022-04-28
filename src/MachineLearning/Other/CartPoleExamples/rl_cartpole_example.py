@@ -12,7 +12,7 @@ env = gym.make(environment_name)
 env = DummyVecEnv([lambda: env])
 
 # Load model
-PPO_path = os.path.join("src/MachineLearning/Other/", "training", "models", "PPO_Model_Cartpole")
+PPO_path = os.path.join("src/MachineLearning/Other/CartPoleExamples/cartpole_training", "training", "models", "PPO_Model_Cartpole")
 model = PPO.load(PPO_path, env=env)
 
 episodes = 5

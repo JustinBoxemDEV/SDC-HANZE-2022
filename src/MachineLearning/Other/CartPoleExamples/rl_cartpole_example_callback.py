@@ -7,9 +7,9 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
 
-log_path = os.path.join("src/MachineLearning/Other/", "training", "logs")
+log_path = os.path.join("src/MachineLearning/Other/CartPoleExamples/cartpole_training", "training", "logs")
 
-save_path = os.path.join("src/MachineLearning/Other/", "training", "models")
+save_path = os.path.join("src/MachineLearning/Other/CartPoleExamples/cartpole_training", "training", "models")
 
 environment_name = "CartPole-v0"
 env = gym.make(environment_name)
