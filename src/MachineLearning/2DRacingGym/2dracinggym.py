@@ -138,6 +138,9 @@ class Custom2dRacingHuman(gym.Env):
 
 class Custom2dRacingAI(gym.Env):
     def __init__(self, env_config={}):
+        self.action_space = None
+        self.observation_space = None
+
         self.car = ComputerCar(4, 4)
         self.window = None
         self.clock = None
@@ -188,6 +191,9 @@ class Custom2dRacingAI(gym.Env):
 
         self.car.draw(self.window)
         pygame.display.update()
+
+    def close(self):
+        pass
 
 # For playing as human
 def pressed_to_action(keytouple):
