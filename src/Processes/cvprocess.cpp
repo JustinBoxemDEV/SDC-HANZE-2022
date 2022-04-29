@@ -54,6 +54,17 @@ void CVProcess::Run(){
 }
 
 void CVProcess::ProcessFrame(cv::Mat src){
+    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 960.48218, 0, 319.5, 0, 960.48218, 239.5, 0, 0, 1); // OLD VALUES
+    cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 675.47607, 0, 319.5, 0, 675.47607, 239.5, 0, 0, 1);
+
+    // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.207945, -1.80821, 0, 0, 0); // OLD VALUES
+    cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
+
+    cv::Mat temp = src.clone();
+    cv::undistort(temp, src, cameraMatrix, distortionCoefficients);
+    cv::imshow("distorted image", temp);
+    cv::imshow("undistorted image", src);
+
     cv::Mat gammaCorrected = cVision.GammaCorrection(src, gamma );
     cVision.SetFrame(gammaCorrected);
 
