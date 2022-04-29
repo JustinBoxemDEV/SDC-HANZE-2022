@@ -318,8 +318,8 @@ void ComputerVision::PredictTurn(cv::Mat src){
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
-    cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\curveHard.png", cv::COLOR_BGR2GRAY);
-    cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,250),img);
+    // cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\curveHard.png", cv::COLOR_BGR2GRAY);
+    // cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,250),img);
     homography = cv::getPerspectiveTransform(srcP, dstP);
     
     invert(homography, invertedPerspectiveMatrix);
@@ -328,16 +328,16 @@ void ComputerVision::PredictTurn(cv::Mat src){
 
     int rectHeight = 80;
     int rectwidth = 30;
-    int rectY = img.rows - rectHeight;
+    int rectY = src.rows - rectHeight;
 
-    std::vector<int> histogram = Histogram(img);
+    std::vector<int> histogram = Histogram(warped);
     std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.5);
     std::vector<int> rightHist(histogram.begin() + src.cols * 0.5, histogram.end());
     int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
     int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
 
-    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(img, cv::Rect(rightMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
-    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(img, cv::Rect(leftMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
+    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
+    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
 
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
@@ -345,13 +345,13 @@ void ComputerVision::PredictTurn(cv::Mat src){
     fitR = ExponentalMovingAverage(lastKnownAveragedFitR, fitR, 0.95);
     fitL = ExponentalMovingAverage(lastKnownAveragedFitL, fitL, 0.95);
 
-    cv::Mat lineOverlayWarped = cv::Mat::zeros(img.size(), frame.type());
+    cv::Mat lineOverlayWarped = cv::Mat::zeros(warped.size(), frame.type());
 
     std::vector<cv::Point2f> rightLanePoints;
     std::vector<cv::Point2f> leftLanePoints;
     std::vector<cv::Point2f> centerLanePoints;
 
-    for (int x = 0; x < img.rows ; x++)
+    for (int x = 0; x < warped.rows ; x++)
     {
         cv::Point2f positionR;
         positionR.y = x;
@@ -361,7 +361,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
         positionL.y = x;
         positionL.x = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
 
-        int imageCenter = img.cols / 2.0f;
+        int imageCenter = warped.cols / 2.0f;
         int laneLeft = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
         int laneRight = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
 
@@ -380,9 +380,9 @@ void ComputerVision::PredictTurn(cv::Mat src){
     }
    
 
-    cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
-    cv::addWeighted(img, 1, lineOverlayWarped, 1, 0, img);
-    imshow("warped", img);
+    // cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
+    // cv::addWeighted(warped, 1, lineOverlayWarped, 1, 0, warped);
+    imshow("warped", warped);
 
     //----DRAW STUF -----
     std::vector<cv::Point2f> outPts;
