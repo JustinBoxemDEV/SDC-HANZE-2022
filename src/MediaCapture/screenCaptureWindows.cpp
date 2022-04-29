@@ -70,7 +70,7 @@ int ScreenCaptureWindows::run() {
     Sleep(2000);
     assettocorsa.gearShiftUp();
 
-    assettocorsa.actuators.throttlePercentage = 80;
+    assettocorsa.actuators.throttlePercentage = 100;
     assettocorsa.taskScheduler.SCH_Add_Task(sc_forward, 0, 0.04);
     assettocorsa.taskScheduler.SCH_Add_Task(sc_steer, 0.02, 0.04);
     assettocorsa.taskScheduler.SCH_Start();

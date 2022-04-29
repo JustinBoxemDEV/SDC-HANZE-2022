@@ -36,7 +36,7 @@ void MediaManager::ProcessImage(cv::Mat src){
     cVision.SetFrame(src);
     // cv::Mat wipImage;
     // src.copyTo(wipImage);
-
+    
     cv::Mat binaryImage = cVision.CreateBinaryImage(src);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
@@ -48,7 +48,8 @@ void MediaManager::ProcessImage(cv::Mat src){
     cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double pidout = pid.PIDController_update(-normalisedLaneOffset);
-    
+    std::cout << "test waarde = "<< pid.calculateTest(pidout) << std::endl;
+
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
 
     if(strategy != nullptr && !isnan(pidout)){

@@ -32,5 +32,6 @@ public:
 	}
 	void PIDController_Init();
 	double PIDController_update( double error);
+	double calculateTest(double pidout);
 };
 #endif 
