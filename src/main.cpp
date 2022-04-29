@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     } 
 
     //testspul PID//
-            PIDController pid{0.2,0.0,0.1456}; //0.2,0.2,0.1456
+            PIDController pid{0.2,0.1,0.1456}; //0.2,0.2,0.1456
             pid.PIDController_Init();
             double testOffset = 500.0;
             double targetOffset = 500.0;
@@ -48,9 +48,9 @@ int main(int argc, char** argv) {
             double totalhoek =0.0;
             double pref = 0;
             while ( x < 2000) {
-                cv::line(drawing, cv::Point(prefX, oldlink+724), cv::Point(x, link+724), cv::Scalar(200), 5, 5, 0);
-                cv::line(drawing, cv::Point(prefX, oldrech+724), cv::Point(x, rech+724), cv::Scalar(200), 5, 5, 0);
-                cv::line(drawing, cv::Point(prefX, (oldlink + oldrech)/2 +724), cv::Point(x, (oldlink + oldrech)/2 +724), cv::Scalar(200), 5, 5, 0);
+                cv::line(drawing, cv::Point(prefX, oldlink+724), cv::Point(x, link+724), cv::Scalar(200), 4, 4, 0);
+                cv::line(drawing, cv::Point(prefX, oldrech+724), cv::Point(x, rech+724), cv::Scalar(200), 4, 4, 0);
+                cv::line(drawing, cv::Point(prefX, (oldlink + oldrech)/2 +724), cv::Point(x, (oldlink + oldrech)/2 +724), cv::Scalar(200), 4, 4, 0);
                 cv::line(drawing, cv::Point(prefX, prefY+724), cv::Point(x, testOffset+724), cv::Scalar(255), 5, 5, 0);
                 
 
@@ -92,14 +92,27 @@ int main(int argc, char** argv) {
                     link = link +1;
                     rech = rech +1;
                 }
-                if (x >= 720){
-                    link = link -1;
-                    rech = rech -1;
+                if (x >= 720 && x <= 1100){
+                    link = link -2;
+                    rech = rech -2;
                 }
-                if (x >= 1500){
-                    link = link +4;
-                    rech = rech +4;
+                if(x == 1000){
+                    link = link +500;
+                    rech = rech +500;
                 }
+                if(x==1005){
+                    link = link - 500;
+                    rech = rech - 500;
+                }
+                if (x >= 1300 && x <= 1550 ){
+                    link = link +5;
+                    rech = rech +5;
+                }
+                if (x >= 1550 && x <= 1750){
+                    link = link -9;
+                    rech = rech -9;
+                }
+
             }
             std::cout <<"ult I = "<< I << std::endl;
             cv::Mat scaledown;
