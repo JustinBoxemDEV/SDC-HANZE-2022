@@ -1,6 +1,7 @@
 import vgamepad
 import struct
 import time
+import pyautogui
 
 class VX360CanGamepad(vgamepad.VX360Gamepad):
     """
@@ -96,3 +97,15 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         self.release_button(button=0x4000)
         self.update()
         time.sleep(0.5)
+
+    def shortkey(self, key2, key1='rightctrl'):
+        pyautogui.keyDown(key1)
+        pyautogui.keyDown(key2)
+        pyautogui.keyUp(key1)
+        pyautogui.keyUp(key2)
+    
+    def reset(self):
+        self.shortkey('o')
+        self.shortkey('y')
+        self.gearshiftup()
+    
