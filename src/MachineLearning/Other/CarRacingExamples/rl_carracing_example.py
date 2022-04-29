@@ -15,9 +15,9 @@ env = gym.make(environment_name)
 env = DummyVecEnv([lambda: env]) # for making several instances
 
 # Load model
-log_path = os.path.join("src/MachineLearning/Other/CarRacingExamples/carracing_training", "training", "logs")
-ppo_path = os.path.join("src/MachineLearning/Other/CarRacingExamples/carracing_training", "models", "PPO_Driving_Model")
-model = PPO.load(ppo_path, env=env)
+log_path = os.path.join("src/MachineLearning/Other/CarRacingExamples/carracing_training/", "training", "logs")
+ppo_path = os.path.join("src/MachineLearning/Other/CarRacingExamples/carracing_training/", "models", "PPO_Driving_Model")
+model = PPO.load(ppo_path, env=env, device='cuda')
 print(env.action_space)
 
 episodes = 5

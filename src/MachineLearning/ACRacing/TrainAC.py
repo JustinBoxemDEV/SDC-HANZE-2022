@@ -17,8 +17,8 @@ import AssettoCorsaEnv
 env = AssettoCorsaEnv()
 
 # Paths
-log_path = os.path.join("src/MachineLearning/ACRacing", "training", "logs")
-save_path = os.path.join("src/MachineLearning/Other/", "training", "models") # location for best model
+log_path = os.path.join("src/MachineLearning/ACRacing/", "training", "logs")
+save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models") # location for best model
 
 # Load model (to resume training)
 # model = PPO.load(save_path, env=env)
