@@ -204,7 +204,7 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     Sobel(gray, sobelx, CV_64F, 1, 0);
     Sobel(gray, sobely, CV_64F, 0, 1);
     Sobel(gray, sobelxy, CV_64F, 1, 1);
-    cv::inRange(sobely, 50,255, sobely);
+    cv::inRange(sobely, 80,255, sobely);
     cv::inRange(sobelx, 20,70, sobelx);
     // imshow("soby'", sobely);
     // imshow("sobx'", sobelx);
@@ -281,14 +281,14 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
 
     cv::Mat mask;
     // cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
-    cv::bitwise_or(sobely, sobelx, sobely);
+    // cv::bitwise_or(sobely, sobelx, sobely);
     cv::bitwise_or(sobely, hsvChannels[1], mask);
     // cv::bitwise_or(mask, sobely, mask);
 
     cv::Mat edges = DetectEdges(mask);
     cv::bitwise_or(edges, mask, binaryImage);
 
-    // imshow("binary", binaryImage);
+    imshow("binary", binaryImage);
 
     return binaryImage;
 }
