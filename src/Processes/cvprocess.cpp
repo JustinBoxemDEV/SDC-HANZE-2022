@@ -58,12 +58,12 @@ void CVProcess::ProcessFrame(cv::Mat src){
     cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 675.47607, 0, 319.5, 0, 675.47607, 239.5, 0, 0, 1);
 
     // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.207945, -1.80821, 0, 0, 0); // OLD VALUES
-    cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
+    // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
 
-    cv::Mat temp = src.clone();
-    cv::undistort(temp, src, cameraMatrix, distortionCoefficients);
-    cv::imshow("distorted image", temp);
-    cv::imshow("undistorted image", src);
+    // cv::Mat temp = src.clone();
+    // cv::undistort(temp, src, cameraMatrix, distortionCoefficients);
+    // cv::imshow("distorted image", temp);
+    // cv::imshow("undistorted image", src);
 
     cv::Mat gammaCorrected = cVision.GammaCorrection(src, gamma );
     cVision.SetFrame(gammaCorrected);
@@ -90,7 +90,7 @@ void CVProcess::ProcessFrame(cv::Mat src){
     };
 
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
-    imshow("masked", maskedImage);
+    // imshow("masked", maskedImage);
 }
 
 void CVProcess::Terminate(){

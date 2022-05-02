@@ -288,7 +288,7 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     cv::Mat edges = DetectEdges(mask);
     cv::bitwise_or(edges, mask, binaryImage);
 
-    imshow("binary", binaryImage);
+    // imshow("binary", binaryImage);
 
     return binaryImage;
 }
@@ -391,7 +391,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
 
     // cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
     // cv::addWeighted(warped, 1, lineOverlayWarped, 1, 0, warped);
-    imshow("warped", warped);
+    // imshow("warped", warped);
 
     //----DRAW STUF -----
     std::vector<cv::Point2f> outPts;
