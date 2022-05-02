@@ -183,7 +183,7 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
 }
 
 cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
-     denoisedImage = BlurImage(src);
+  denoisedImage = BlurImage(src);
 
     // cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
     // cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
@@ -195,21 +195,23 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     // cv::dilate(hsvFilter, hsvFilter, structuringElement);
     // cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    // cv::Mat sobelx;
-    // cv::Mat sobely;
-    // cv::Mat sobelxy;
+    cv::Mat sobelx;
+    cv::Mat sobely;
+    cv::Mat sobelxy;
 
-    // cv::Mat gray;
-    // cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
-    // Sobel(gray, sobelx, CV_64F, 1, 0);
-    // Sobel(gray, sobely, CV_64F, 0, 1);
-    // Sobel(gray, sobelxy, CV_64F, 1, 1);
-
-    // convertScaleAbs(sobelx, sobelx);
-    // convertScaleAbs(sobely, sobely);
-    // convertScaleAbs(sobelxy, sobelxy);
-    // imshow("sobx'", sobelx);
+    cv::Mat gray;
+    cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
+    Sobel(gray, sobelx, CV_64F, 1, 0);
+    Sobel(gray, sobely, CV_64F, 0, 1);
+    Sobel(gray, sobelxy, CV_64F, 1, 1);
+    cv::inRange(sobely, 50,255, sobely);
+    cv::inRange(sobelx, 20,70, sobelx);
     // imshow("soby'", sobely);
+    // imshow("sobx'", sobelx);
+
+    convertScaleAbs(sobelx, sobelx);
+    convertScaleAbs(sobely, sobely);
+    convertScaleAbs(sobelxy, sobelxy);
     // imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
@@ -263,22 +265,29 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
-    cv::inRange(hsvChannels[1], 50,255, hsvChannels[1]);
-
-    // cv::erode(mask, mask, structuringElement);
-    // cv::dilate(mask, mask, structuringElement);
-
+    cv::inRange(hsvChannels[1], 105,255, hsvChannels[1]);
     cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
     cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
 
+    // imshow("hsv s'", hsvChannels[1]);
 
-    cv::inRange(hlsChannels[1], 185,255, hlsChannels[1]);
+    cv::inRange(hlsChannels[2], 50,255, hlsChannels[2]);
+    cv::dilate(hlsChannels[2], hlsChannels[2], structuringElement);
+    cv::erode(hlsChannels[2], hlsChannels[2], structuringElement);
+    // imshow("hls s'", hlsChannels[2]);
+
+    cv::inRange(hlsChannels[1], 180,255, hlsChannels[1]);
+    // imshow("hls l'", hlsChannels[1]);
 
     cv::Mat mask;
-    cv::bitwise_or(hsvChannels[1], hlsChannels[1], mask);
+    // cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
+    cv::bitwise_or(sobely, sobelx, sobely);
+    cv::bitwise_or(sobely, hsvChannels[1], mask);
+    // cv::bitwise_or(mask, sobely, mask);
 
-    // imshow("hsvfilter", hsvFilter);
-    binaryImage = DetectEdges(mask);
+    cv::Mat edges = DetectEdges(mask);
+    cv::bitwise_or(edges, mask, binaryImage);
+
     imshow("binary", binaryImage);
 
     return binaryImage;
