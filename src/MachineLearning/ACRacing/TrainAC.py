@@ -6,6 +6,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
+import torch
 
 import os
 from AssettoCorsaEnv import AssettoCorsaEnv
@@ -27,10 +28,32 @@ save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models") 
 model = PPO("CnnPolicy", env, verbose=1, tensorboard_log=log_path, device="cuda") # change device to cpu if you dont have a gpu
 
 # Set callback
-# stop_callback = StopTrainingOnRewardThreshold(reward_threshold=200, verbose=1)
-# eval_callback = EvalCallback(env, callback_on_new_best=stop_callback, eval_freq=1000, best_model_save_path=save_path, verbose=1)
+# stop_callback = StopTrainingOnRewardThreshold(reward_threshold=1000, verbose=1)
+# eval_callback = EvalCallback(env, callback_on_new_best=stop_callback, eval_freq=2, best_model_save_path=save_path, verbose=1)
 
 # Train model (evaluate every 1000)
-# model.learn(total_timesteps=20000, callback=eval_callback)
-model.learn(total_timesteps=20000)
-model.save()
+# model.learn(total_timesteps=10, callback=eval_callback, eval_env=env)
+
+torch.cuda.empty_cache()
+print('learning...')
+model = model.learn(total_timesteps=100)
+
+print('testing...')
+episodes = 5
+for episode in range(episodes):
+    observation = env.reset()
+    done = False
+    score = 0
+
+    while not done:
+        env.render()
+        action = model.predict(observation)
+        # print(f"action: {action}")
+        observation, reward, done, _ = env.step(action[0])
+        score += reward
+    print("Episode: {} Score: {}".format(episode, score))
+env.close()
+
+# torch.cuda.empty_cache()
+# print('saving model...')
+# model.save(save_path)

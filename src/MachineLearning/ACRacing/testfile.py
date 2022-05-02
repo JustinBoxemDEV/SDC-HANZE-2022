@@ -83,11 +83,11 @@ rect = win32gui.GetWindowPlacement(ACWindow)[-1]
 frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
 frame = frame[:720, :1280]
 
-cv2.imshow("pog", frame)
+cv2.imshow("a", frame)
 
-roi = frame[576:606, 315:1090]
+roi = frame[410:430, 180:585]
 
-cv2.imshow("pog2", roi)
+cv2.imshow("roi", roi)
 
 
 cv2.waitKey(0)

@@ -40,7 +40,8 @@ def get_current_frame():
     ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
     rect = win32gui.GetWindowPlacement(ACWindow)[-1]
     frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
-    frame = frame[:720, :1280]
+    # frame = frame[:720, :1280] # 720p cut a couple pixels to fit the model
+    frame = frame[:480, :720] # 480p
  
     # For testing
     # frame = imread("C:/Users/Sabin/Documents/SDC/Screenshot 2022-04-29 193118.png") # only road
@@ -51,7 +52,8 @@ def get_current_frame():
 
 def count_green_pixels_ish(observation):
     # roi = observation[1250:1280, 870:1709] # 1440p
-    roi = observation[576:606, 315:1090] # 720p
+    # roi = observation[576:606, 315:1090] # 720p
+    roi = observation[410:430, 180:585] # 480p
     
     grass_pixels_count = 0
     for row in roi:
@@ -66,8 +68,11 @@ def count_green_pixels_ish(observation):
 class AssettoCorsaEnv(gym.Env):
     def __init__(self):
         print("Assetto Corsa Environment")
-        self.display_height = 720 # TODO: change this
-        self.display_width = 1280 # TODO: change this
+        # self.display_height = 720
+        # self.display_width = 1280
+
+        self.display_height = 480
+        self.display_width = 720
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.action_space = spaces.Box(
@@ -75,7 +80,7 @@ class AssettoCorsaEnv(gym.Env):
             np.array([+1, +1, +1]).astype(np.float32),
             # steer and gas, could add brake here
         )
-        self.observation_space = spaces.Box(low=0, high=255, shape=(self.display_height, self.display_width, 3), dtype=np.uint8) # not sure yet
+        self.observation_space = spaces.Box(low=0, high=255, shape=(self.display_height, self.display_width, 3), dtype=np.uint8)
     
     def reset(self):
         # Reset AC (go to starting position)
@@ -99,18 +104,21 @@ class AssettoCorsaEnv(gym.Env):
         # self.client_socket.sendto(ushort_to_bytes(0x126) + bytes([round(brake * 100)] + [0]*7), (IP, PORT)) # we do not use brake
         
         observation = get_current_frame()
-        reward = self.get_reward(observation)
     
         # Temporary random condition to terminate, maybe a timer instead
         green_pixels = count_green_pixels_ish(observation)
-        if green_pixels > 300:
+
+        
+        if green_pixels > 200:
             done = True
             print("Too many green pixels:", green_pixels)
         else:
             done = False
             print("Green pixels:", green_pixels)
         info = {}
-
+        reward = self.get_reward(green_pixels)
+        
+        print("reward:", reward)
         # Returning mandatory gym values
         return observation, reward, done, info
 
@@ -118,19 +126,18 @@ class AssettoCorsaEnv(gym.Env):
         # Don't need this i think?
         pass
 
-    def get_reward(self, observation):
+    def get_reward(self, green_pixels):
         # check reward given current observation
 
         # SCUFFED
         # Negative points for driving on grass (green pixels)
         # Positive points for driving on the track (grey pixels)
-        green_pixels = count_green_pixels_ish(observation)
-        if green_pixels < 5:
+        if green_pixels < 7:
             print("No grass here!")
-            reward =+ 1
+            reward =+ 10
         else:
             print("We seem to be in the grass!")
-            reward =- 2
+            reward =- 50
         
         # Negative points for driving too slow
         # Positive points for finishing track faster than previous time
