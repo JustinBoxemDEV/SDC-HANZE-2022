@@ -54,11 +54,18 @@ void CVProcess::Run(){
 }
 
 void CVProcess::ProcessFrame(cv::Mat src){
-    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 960.48218, 0, 319.5, 0, 960.48218, 239.5, 0, 0, 1); // OLD VALUES
-    cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 675.47607, 0, 319.5, 0, 675.47607, 239.5, 0, 0, 1);
+    //cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 960.48218, 0, 319.5, 0, 960.48218, 239.5, 0, 0, 1); // OLD VALUES
+    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 675.47607, 0, 319.5, 0, 675.47607, 239.5, 0, 0, 1);
+    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 800.55762, 0, 319.5, 0, 800.55762, 239.5, 0, 0, 1); // new values without certain images 0.344804 reprojection error
+    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 92.13574, 0, 319.5, 0, 792.13574, 239.5, 0, 0, 1); // 0.178943 reprojection error
+    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 1556.9927, 0, 239.5,0, 1556.9927, 319.5, 0, 0, 1); // 0.367196 reprojection error - flipped resolution
+    cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 792.13574, 0, 319.5, 0, 792.13574, 239.5, 0, 0, 1);
 
-    // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.207945, -1.80821, 0, 0, 0); // OLD VALUES
-    cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
+    //cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.207945, -1.80821, 0, 0, 0); // OLD VALUES
+    // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
+    // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.075056, -0.421619, 0, 0, 0); // new values without certain images 0.344804 reprojection error
+    cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.0905006, -0.55128, 0, 0, 0); // 0.178943 reprojection error
+    //cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.13394, 0.641369, 0, 0, 0); // 0.367196 reprojection error - flipped resolution
 
     cv::Mat temp = src.clone();
     cv::undistort(temp, src, cameraMatrix, distortionCoefficients);

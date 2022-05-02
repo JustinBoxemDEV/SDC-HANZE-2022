@@ -65,7 +65,7 @@ CameraCalibration::CameraCalibration(std::string path, int chessLength, int ches
     std::vector<cv::Mat> rvecs, tvecs;
     std::vector<double> stdIntrinsics, stdExtrinsics, perViewError;
     int flags = cv::CALIB_FIX_ASPECT_RATIO + cv::CALIB_FIX_K3 + cv::CALIB_ZERO_TANGENT_DIST + cv::CALIB_FIX_PRINCIPAL_POINT;
-    cv::Size frameSize(frameLength, frameHeight);
+    cv::Size frameSize(640, 480);
 
     std::cout << "Calibrating" << std::endl;
 
