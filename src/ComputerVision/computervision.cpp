@@ -271,13 +271,13 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
 
     // imshow("hsv s'", hsvChannels[1]);
 
-    cv::inRange(hlsChannels[2], 50,255, hlsChannels[2]);
+    cv::inRange(hlsChannels[2], 35,100, hlsChannels[2]);
     cv::dilate(hlsChannels[2], hlsChannels[2], structuringElement);
     cv::erode(hlsChannels[2], hlsChannels[2], structuringElement);
     // imshow("hls s'", hlsChannels[2]);
 
     cv::inRange(hlsChannels[1], 180,255, hlsChannels[1]);
-    // imshow("hls l'", hlsChannels[1]);
+    imshow("hls l'", hlsChannels[1]);
 
     cv::Mat mask;
     // cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
@@ -285,8 +285,8 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     cv::bitwise_or(sobely, hsvChannels[1], mask);
     // cv::bitwise_or(mask, sobely, mask);
 
-    cv::Mat edges = DetectEdges(mask);
-    cv::bitwise_or(edges, mask, binaryImage);
+    cv::Mat edges = DetectEdges(hlsChannels[2]);
+    cv::bitwise_or(edges, hlsChannels[1], binaryImage);
 
     imshow("binary", binaryImage);
 
