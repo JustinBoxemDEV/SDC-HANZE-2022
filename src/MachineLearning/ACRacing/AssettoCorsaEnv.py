@@ -1,7 +1,4 @@
-# Steal from gym Carla implementation https://github.com/cjy1992/gym-carla/blob/master/gym_carla/envs/carla_env.py
-# Brainstorm version
-
-# I DO NOT KNOW IF THIS WORKS
+# Inspired by gym Carla implementation https://github.com/cjy1992/gym-carla/blob/master/gym_carla/envs/carla_env.py
 
 from itertools import count
 from time import sleep
@@ -45,20 +42,23 @@ def get_current_frame():
         ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
         rect = win32gui.GetWindowPlacement(ACWindow)[-1]
         frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
+        # frame = frame[:720, :1280] # 720p
+        frame = frame[:480, :640] # 480p cut a couple pixels to fit the model
     else:
         # For testing on linux
         frame = imread("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/ac480p.png") # 480p image
-    # frame = frame[:720, :1280] # 720p
-    # frame = frame[:480, :640] # 480p cut a couple pixels to fit the model
-    frame = frame[:100, :100]
+        frame = frame[:100, :100]
  
     return frame
 
 def count_green_pixels_ish(observation):
-    # roi = observation[1250:1280, 870:1709] # 1440p
-    # roi = observation[576:606, 315:1090] # 720p
-    # roi = observation[410:430, 180:585] # 480p
-    roi = observation[10:11, 20:21] # temp
+    if platform == "win32" or platform =="cygwin":
+        roi = observation[410:430, 180:585] # 480p
+        # roi = observation[576:606, 315:1090] # 720p
+        # roi = observation[1250:1280, 870:1709] # 1440p
+    else:
+        # For testing on linux
+        roi = observation[10:11, 20:21] # temp
     
     grass_pixels_count = 0
     for row in roi:
@@ -69,18 +69,19 @@ def count_green_pixels_ish(observation):
 
     return grass_pixels_count
 
-
 class AssettoCorsaEnv(gym.Env):
     def __init__(self):
         print("Assetto Corsa Environment")
-        # self.display_height = 720
-        # self.display_width = 1280
 
-        # self.display_height = 480
-        # self.display_width = 640
+        if platform == "win32" or platform =="cygwin":
+            self.display_height = 480
+            self.display_width = 640
 
-        self.display_height = 100
-        self.display_width = 100
+            # self.display_height = 720
+            # self.display_width = 1280
+        else:
+            self.display_height = 100
+            self.display_width = 100
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.action_space = spaces.Box(
@@ -92,7 +93,7 @@ class AssettoCorsaEnv(gym.Env):
     
     def reset(self):
         # Reset AC (go to starting position)
-        # reset_pos()
+        reset_pos()
         # Set gear to 1 again
         self.client_socket.sendto(ushort_to_bytes(0x121) + bytes([0]*8), (IP, PORT))
 
@@ -127,6 +128,7 @@ class AssettoCorsaEnv(gym.Env):
         reward = self.get_reward(green_pixels)
         
         # print("reward:", reward)
+
         # Returning mandatory gym values
         return observation, reward, done, info
 
@@ -140,6 +142,7 @@ class AssettoCorsaEnv(gym.Env):
         # SCUFFED
         # Negative points for driving on grass (green pixels)
         # Positive points for driving on the track (grey pixels)
+        # Might have to tweak these values
         if green_pixels < 7:
             # print("No grass here!")
             reward =+ 10
