@@ -46,7 +46,7 @@ def get_current_frame():
         frame = frame[:480, :640] # 480p cut a couple pixels to fit the model
     else:
         # For testing on linux
-        frame = imread("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/ac480p.png") # 480p image
+        frame = imread("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
         frame = frame[:100, :100]
  
     return frame

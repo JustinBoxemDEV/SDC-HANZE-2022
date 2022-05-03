@@ -18,6 +18,27 @@
 #         observation, reward, done, _ = env.step(action)
 #         score += reward
 #     print("Episode: {} Score: {}".format(episode, score))
+
+# ------------------------------------------------------------------------------------
+# Test model
+# from AssettoCorsaEnv import AssettoCorsaEnv
+# torch.cuda.empty_cache()
+# env = AssettoCorsaEnv()
+# print('testing...')
+# episodes = 5
+# for episode in range(episodes):
+#     observation = env.reset()
+#     done = False
+#     score = 0
+
+#     while not done:
+#         # env.render()
+#         action = model.predict(observation)
+#         # print(f"action: {action}")
+#         observation, reward, done, _ = env.step(action[0])
+#         score += reward
+#     print("Episode: {} Score: {}".format(episode, score))
+# env.close()
     
 
 # ------------------------------------------------------------------------------------
@@ -72,22 +93,23 @@
 
 # cv2.waitKey(0)
 
-
-import win32gui
+# -------------------------------------------------------------------------------------------------
+# import win32gui
 from PIL import ImageGrab
 import numpy as np
 import cv2
 
-ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
-rect = win32gui.GetWindowPlacement(ACWindow)[-1]
-frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
-frame = frame[:720, :1280]
+# ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
+# rect = win32gui.GetWindowPlacement(ACWindow)[-1]
+# frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
+# frame = frame[:720, :1280]
+
+frame = cv2.imread("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
+# frame = frame[:100, :100]
 
 cv2.imshow("a", frame)
 
 roi = frame[410:430, 180:585]
 
 cv2.imshow("roi", roi)
-
-
 cv2.waitKey(0)

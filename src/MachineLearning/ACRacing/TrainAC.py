@@ -1,5 +1,4 @@
 # Training loop for the nn in Assetto Corsa (Virtual environment)
-# Brainstorm version
 
 import gym
 from stable_baselines3 import PPO
@@ -27,7 +26,9 @@ save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", 
 # model = PPO.load(save_path, env=env)
 
 # Create new model for training (maybe try MultiInputPolicy)
-model = PPO("CnnPolicy", env, verbose=1, tensorboard_log=log_path, device="cuda", n_steps=16, batch_size=8) # change device to cpu if you dont have a gpu
+model = PPO("CnnPolicy", env, verbose=1, 
+            tensorboard_log=log_path, device="cuda", # change device to cpu if you dont have a gpu
+            n_steps=16, batch_size=8)  # TODO: change these values
 
 # TODO: set callback
 # stop_callback = StopTrainingOnRewardThreshold(reward_threshold=1000, verbose=1)
@@ -41,22 +42,3 @@ model = model.learn(total_timesteps=100)
 model.save(save_path)
 print("we did it")
 env.close()
-
-
-# torch.cuda.empty_cache()
-# print('testing...')
-# episodes = 5
-# for episode in range(episodes):
-#     observation = env.reset()
-#     done = False
-#     score = 0
-
-#     while not done:
-#         # env.render()
-#         action = model.predict(observation)
-#         # print(f"action: {action}")
-#         observation, reward, done, _ = env.step(action[0])
-#         score += reward
-#     print("Episode: {} Score: {}".format(episode, score))
-# env.close()
-
