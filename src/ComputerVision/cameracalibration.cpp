@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
  */
 CameraCalibration::CameraCalibration(std::string path, int chessLength, int chessWidth, int fieldSize, int frameLength, int frameHeight) {
     std::string currentPath = fs::current_path().string();
-    currentPath.append("\\assets\\images\\calibration\\results\\");
+    currentPath.append("\\assets\\images\\results\\");
 
     cv::glob(path, CameraCalibration::fileNames, false);
     cv::Size patternSize(chessLength-1, chessWidth-1);
