@@ -13,7 +13,11 @@ import socket
 import struct
 import pyautogui
 import random
-import win32gui
+from sys import platform
+import sys
+
+if platform == "win32":
+    import win32gui
 from PIL import ImageGrab
 
 
@@ -37,23 +41,24 @@ def reset_pos():
     shortkey('y')
 
 def get_current_frame():
-    ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
-    rect = win32gui.GetWindowPlacement(ACWindow)[-1]
-    frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
-    # frame = frame[:720, :1280] # 720p cut a couple pixels to fit the model
-    frame = frame[:480, :720] # 480p
+    if platform == "win32" or platform =="cygwin":
+        ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
+        rect = win32gui.GetWindowPlacement(ACWindow)[-1]
+        frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
+    else:
+        # For testing on linux
+        frame = imread("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/ac480p.png") # 480p image
+    # frame = frame[:720, :1280] # 720p
+    # frame = frame[:480, :640] # 480p cut a couple pixels to fit the model
+    frame = frame[:100, :100]
  
-    # For testing
-    # frame = imread("C:/Users/Sabin/Documents/SDC/Screenshot 2022-04-29 193118.png") # only road
-    # frame = imread("C:/Users/Sabin/Documents/SDC/Screenshot 2022-04-29 210226.png") # some grass
-    # frame = imread("C:/Users/Sabin/Documents/SDC/Screenshot 2022-04-29 212150.png") # only grass
-    # frame = imread("C:/Users/Sabin/Documents/SDC/Screenshot 2022-04-29 215205_720p.png") # 720p image
     return frame
 
 def count_green_pixels_ish(observation):
     # roi = observation[1250:1280, 870:1709] # 1440p
     # roi = observation[576:606, 315:1090] # 720p
-    roi = observation[410:430, 180:585] # 480p
+    # roi = observation[410:430, 180:585] # 480p
+    roi = observation[10:11, 20:21] # temp
     
     grass_pixels_count = 0
     for row in roi:
@@ -71,8 +76,11 @@ class AssettoCorsaEnv(gym.Env):
         # self.display_height = 720
         # self.display_width = 1280
 
-        self.display_height = 480
-        self.display_width = 720
+        # self.display_height = 480
+        # self.display_width = 640
+
+        self.display_height = 100
+        self.display_width = 100
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.action_space = spaces.Box(
@@ -84,7 +92,7 @@ class AssettoCorsaEnv(gym.Env):
     
     def reset(self):
         # Reset AC (go to starting position)
-        reset_pos()
+        # reset_pos()
         # Set gear to 1 again
         self.client_socket.sendto(ushort_to_bytes(0x121) + bytes([0]*8), (IP, PORT))
 
@@ -95,8 +103,8 @@ class AssettoCorsaEnv(gym.Env):
         steer = action[0]
         acc = action[1]
 
-        print("Steering with", steer)
-        print("Accelerating with", acc)
+        # print("Steering with", steer)
+        # print("Accelerating with", acc)
         
         # send steer and acc on socket to controller.py
         self.client_socket.sendto(ushort_to_bytes(0x12c) + float_to_bytes(steer) + bytes([0]*4), (IP, PORT))
@@ -111,18 +119,18 @@ class AssettoCorsaEnv(gym.Env):
         
         if green_pixels > 200:
             done = True
-            print("Too many green pixels:", green_pixels)
+            # print("Too many green pixels:", green_pixels)
         else:
             done = False
-            print("Green pixels:", green_pixels)
+            # print("Green pixels:", green_pixels)
         info = {}
         reward = self.get_reward(green_pixels)
         
-        print("reward:", reward)
+        # print("reward:", reward)
         # Returning mandatory gym values
         return observation, reward, done, info
 
-    def render(self):
+    def render(self, mode):
         # Don't need this i think?
         pass
 
@@ -133,12 +141,16 @@ class AssettoCorsaEnv(gym.Env):
         # Negative points for driving on grass (green pixels)
         # Positive points for driving on the track (grey pixels)
         if green_pixels < 7:
-            print("No grass here!")
+            # print("No grass here!")
             reward =+ 10
         else:
-            print("We seem to be in the grass!")
+            # print("We seem to be in the grass!")
             reward =- 50
         
         # Negative points for driving too slow
         # Positive points for finishing track faster than previous time
         return reward
+
+    def close(self):
+        print("Closing...")
+        sys.exit()
