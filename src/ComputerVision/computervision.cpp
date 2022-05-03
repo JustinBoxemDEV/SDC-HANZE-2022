@@ -39,8 +39,8 @@ cv::Mat ComputerVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.8),
-        cv::Point(0, src.rows * 0.45),
-        cv::Point(src.cols, src.rows * 0.45),
+        cv::Point(0, src.rows * 0.6),
+        cv::Point(src.cols, src.rows * 0.6),
         cv::Point(src.cols, src.rows * 0.8),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -277,7 +277,7 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     // imshow("hls s'", hlsChannels[2]);
 
     cv::inRange(hlsChannels[1], 180,255, hlsChannels[1]);
-    imshow("hls l'", hlsChannels[1]);
+    //imshow("hls l'", hlsChannels[1]);
 
     cv::Mat mask;
     // cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
@@ -322,8 +322,8 @@ std::vector<double> ComputerVision::ExponentalMovingAverage(std::vector<double> 
 
 void ComputerVision::PredictTurn(cv::Mat src){
     cv::Point2f srcP[4] = { 
-        cv::Point2f(src.cols * 0.35, src.rows * 0.45),
-        cv::Point2f(src.cols * 0.68, src.rows * 0.45),
+        cv::Point2f(src.cols * 0.15, src.rows * 0.6),
+        cv::Point2f(src.cols * 0.85, src.rows * 0.6),
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
@@ -359,6 +359,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
     std::vector<cv::Point2f> rightLanePoints;
     std::vector<cv::Point2f> leftLanePoints;
     std::vector<cv::Point2f> centerLanePoints;
+    int imageCenter = warped.cols / 2.0f;
 
     for (int x = 0; x < warped.rows ; x++)
     {
@@ -370,13 +371,10 @@ void ComputerVision::PredictTurn(cv::Mat src){
         positionL.y = x;
         positionL.x = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
 
-        int imageCenter = warped.cols / 2.0f;
         int laneLeft = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
         int laneRight = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
 
         int laneCenterX = (laneLeft + laneRight) / 2;
-        laneOffset = imageCenter - laneCenterX;
-        normalisedLaneOffset = 2 * (double(laneOffset - laneLeft) / double(laneRight - laneLeft)) - 1;
         
         if(x != 0){
             cv::line(lineOverlayWarped, leftLanePoints[leftLanePoints.size() -1], positionR, cv::Scalar(0,255,255),5);
@@ -387,11 +385,19 @@ void ComputerVision::PredictTurn(cv::Mat src){
         rightLanePoints.push_back(positionL);
         centerLanePoints.push_back(cv::Point(laneCenterX, x));
     }
-   
+    int laneLeft = (fitL[2] * pow(src.rows, 2) + (fitL[1] * src.rows) + fitL[0]);
+    int laneRight = (fitR[2] * pow(src.rows, 2) + (fitR[1] * src.rows) + fitR[0]);
 
+    int laneCenterX = (laneLeft + laneRight) / 2;
+    laneOffset = imageCenter - laneCenterX;
+    normalisedLaneOffset = 2 * (double(imageCenter - laneLeft) / double(laneRight - laneLeft)) - 1;
+    // std::cout<< "laneCenter= "<< laneCenterX << std::endl;
+    // std::cout<< "laneoffset= "<< laneOffset << std::endl;
+    // std::cout<< "laneleft= "<< laneLeft << std::endl;
+    // std::cout<< "laneright= "<< laneRight << std::endl;
     // cv::cvtColor(img, img, cv::COLOR_GRAY2BGR);
     // cv::addWeighted(warped, 1, lineOverlayWarped, 1, 0, warped);
-    // imshow("warped", warped);
+    //imshow("warped", warped);
 
     //----DRAW STUF -----
     std::vector<cv::Point2f> outPts;
@@ -435,7 +441,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
         cv::fillPoly(overlay, arr, cv::Scalar(0, 255, 100));
         cv::addWeighted(frame, 1, overlay, 0.5, 0, frame);
     }
-
+    cv::line(frame, cv::Point(src.cols/2, src.rows), cv::Point(src.cols/2, src.rows - 100), cv::Scalar(255, 128, 128), 3);
     cv::namedWindow("Turn");
     imshow("Turn", frame);
 }

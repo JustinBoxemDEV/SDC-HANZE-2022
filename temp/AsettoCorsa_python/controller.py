@@ -1,3 +1,4 @@
+from audioop import byteswap
 import vgamepad
 import struct
 import time
@@ -30,6 +31,7 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
             self.gearshiftup()
         elif arbitration_id == 0x122:
             self.gearshiftdown()
+        print("update")
         self.update()    
 
     @staticmethod
@@ -57,7 +59,10 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         Convert a steering message to a float between -1 (left) and 1 (right).
         """
         # Steering is encoded as a float in the first four bytes of the data.
+
+
         steering_value, = VX360CanGamepad.floatStruct.unpack(bytearray(data[:4]))
+        print(f'Steering value: {steering_value}')
         return steering_value
 
     def throttle_float(self, throttle_percentage):
@@ -72,6 +77,8 @@ class VX360CanGamepad(vgamepad.VX360Gamepad):
         Apply steering. Steering is mapped to the left thumbstick.
         """
         # 32767 is the maximum value of a signed short
+        print(steer_float)
+        print(round(32767 * steer_float))
         self.report.sThumbLX = round(32767 * steer_float)
     
     def brake_float(self, brake_percentage):
