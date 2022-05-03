@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
  */
 CameraCalibration::CameraCalibration(std::string path, int chessLength, int chessWidth, int fieldSize, int frameLength, int frameHeight) {
     std::string currentPath = fs::current_path().string();
-    currentPath.append("\\assets\\images\\calibration\\results\\");
+    currentPath.append("\\assets\\images\\results\\");
 
     cv::glob(path, CameraCalibration::fileNames, false);
     cv::Size patternSize(chessLength-1, chessWidth-1);
@@ -65,7 +65,7 @@ CameraCalibration::CameraCalibration(std::string path, int chessLength, int ches
     std::vector<cv::Mat> rvecs, tvecs;
     std::vector<double> stdIntrinsics, stdExtrinsics, perViewError;
     int flags = cv::CALIB_FIX_ASPECT_RATIO + cv::CALIB_FIX_K3 + cv::CALIB_ZERO_TANGENT_DIST + cv::CALIB_FIX_PRINCIPAL_POINT;
-    cv::Size frameSize(640, 480);
+    cv::Size frameSize(frameLength, frameHeight);
 
     std::cout << "Calibrating" << std::endl;
 

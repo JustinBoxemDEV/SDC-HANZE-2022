@@ -102,3 +102,25 @@ double Polynomial::Curvature(std::vector<double> fit, int yEval){
 double Polynomial::Vertex(std::vector<double> fit){
     return (-fit[1]) / 2 * fit[2];
 }
+
+std::vector<double> Polynomial::QuadraticFormula(std::vector<double> fit){
+    std::vector<double> solutions;
+    
+    int a = fit[2];
+    int b = fit[1];
+    int c = fit[0];
+
+    int D = b * b -4 * a *c;
+
+    if(D < 0){
+        return solutions;
+    }
+    
+    if(D > 0){
+        solutions.push_back((-b - sqrt(D)) / (2 * a)); 
+        solutions.push_back((-b + sqrt(D)) / (2 * a)); 
+    }else{
+        solutions.push_back(-b / (2 * a)); 
+    }
+    return solutions;
+}

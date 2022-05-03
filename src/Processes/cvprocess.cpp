@@ -53,22 +53,13 @@ void CVProcess::Run(){
     };
 }
 
-void CVProcess::ProcessFrame(cv::Mat src){
-    //cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 960.48218, 0, 319.5, 0, 960.48218, 239.5, 0, 0, 1); // OLD VALUES
-    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 675.47607, 0, 319.5, 0, 675.47607, 239.5, 0, 0, 1);
-    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 800.55762, 0, 319.5, 0, 800.55762, 239.5, 0, 0, 1); // new values without certain images 0.344804 reprojection error
-    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 92.13574, 0, 319.5, 0, 792.13574, 239.5, 0, 0, 1); // 0.178943 reprojection error
-    // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 1556.9927, 0, 239.5,0, 1556.9927, 319.5, 0, 0, 1); // 0.367196 reprojection error - flipped resolution
+void CVProcess::ProcessFrame(cv::Mat src) {
     cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 792.13574, 0, 319.5, 0, 792.13574, 239.5, 0, 0, 1);
-
-    //cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.207945, -1.80821, 0, 0, 0); // OLD VALUES
-    // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
-    // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.075056, -0.421619, 0, 0, 0); // new values without certain images 0.344804 reprojection error
-    cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.0905006, -0.55128, 0, 0, 0); // 0.178943 reprojection error
-    //cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.13394, 0.641369, 0, 0, 0); // 0.367196 reprojection error - flipped resolution
+    cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.0905006, -0.55128, 0, 0, 0);
 
     cv::Mat temp = src.clone();
     cv::undistort(temp, src, cameraMatrix, distortionCoefficients);
+
     cv::imshow("distorted image", temp);
     cv::imshow("undistorted image", src);
 
@@ -78,7 +69,12 @@ void CVProcess::ProcessFrame(cv::Mat src){
     cv::Mat binaryImage = cVision.CreateBinaryImage(gammaCorrected);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
 
-    std::vector<cv::Vec4i> averagedLines = cVision.GenerateLines(maskedImage);
+    cVision.PredictTurn(maskedImage);
+    
+    double curveRadiusR = cVision.getRightEdgeCurvature();
+    double curveRadiusL = cVision.getLeftEdgeCurvature();
+    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double laneOffset = cVision.getLaneOffset();
     double normalisedLaneOffset = cVision.getNormalisedLaneOffset();
@@ -92,14 +88,7 @@ void CVProcess::ProcessFrame(cv::Mat src){
     };
 
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
-
-    imshow("masked", maskedImage);
-    cVision.PredictTurn(maskedImage, averagedLines);
-    
-    double curveRadiusR = cVision.getRightEdgeCurvature();
-    double curveRadiusL = cVision.getLeftEdgeCurvature();
-    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
-    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
+    // imshow("masked", maskedImage);
 }
 
 void CVProcess::Terminate(){
