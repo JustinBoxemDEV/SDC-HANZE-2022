@@ -27,6 +27,6 @@ double PIDController::PIDController_update(double error) {
     std::cout<<"proportional= " << proportional <<std::endl;
     std::cout<<"intergator= " << integrator<<std::endl;
     std::cout<<"differentiator= " << differentiator<<std::endl;
-    return output;
+    return -output;
 }
 
