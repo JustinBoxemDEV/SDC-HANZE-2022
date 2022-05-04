@@ -151,14 +151,13 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
     
     //Box Points (relative from mean point)
     std::vector<cv::Point2f> relativePoints = {
-        cv::Point2f (-window.width, -(window.height /2)),
-        cv::Point2f (0, -(window.height /2)),
-        cv::Point2f (window.width, -(window.height /2)),
-        cv::Point2f (-(window.width / 2), 0),
-        cv::Point2f (window.width / 2, 0)
+        cv::Point2f (-window.width, -(window.height /2)), //Top Left
+        cv::Point2f (0, -(window.height /2)), //Top Middle
+        cv::Point2f (window.width, -(window.height /2)), //Top Right
+        cv::Point2f (-(window.width / 2), 0), // Bottom Left
+        cv::Point2f (window.width / 2, 0)   //Bottom Right
     };
-
-    std::vector<cv::Point2f> locations;
+    int count = 0;
     while (window.y - window.height /2 >= 0){
         if (window.x < 0)
             window.x = 0;
@@ -166,54 +165,64 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
             window.x = imgSize.width - window.width - 1;
         
         std::vector<cv::Point2f> allPixels;
-        
-        for(auto relativePosition : relativePoints){
-            cv::Rect box = window;
-            box.x += relativePosition.x;            
-            box.y += relativePosition.y;            
-            cv::Mat roi = image(box);     
-
-            cv::rectangle(image,box, (255,255,255));
-
-            std::vector<cv::Point2f> pixels;
-        
-            findNonZero(roi, pixels);     
-            auto iter = pixels.begin();
-
-            while(iter != pixels.end()){
-                if(std::find(locations.begin(), locations.end(), *iter) != locations.end()){
-                   iter = pixels.erase(iter);
-                }else{
-                    ++iter;
-                } 
-            }
-            allPixels.insert(allPixels.end(), pixels.begin(), pixels.end());
-            locations.insert(locations.end(), pixels.begin(), pixels.end());
-        }
+        // cv::circle(image, cv::Point(window.x, window.y), 3, cv::Scalar(255,0,255));
         float avgX = 0.0f;
         float avgY = 0.0f;
-        
-        for (int i = 0; i < allPixels.size(); ++i) {
-            avgX += window.x + allPixels[i].x;
-            avgY += window.y + allPixels[i].y;
 
-            cv::Point point(window.y + allPixels[i].y, window.x + allPixels[i].x);
-            points.push_back(point);
-        }
-        float currentX = window.x + window.width * 0.5f;
-        float currentY = window.y + window.height * 0.5f;
+        for(auto relativePosition : relativePoints){
+            cv::Rect box = window;
+            box.x += relativePosition.x - window.width/2;            
+            box.y += relativePosition.y - window.height/2;       
+            cv::Mat roi = image(box);     
+
+            // cv::rectangle(image,box, (255,255,255));
+
+            std::vector<cv::Point2f> pixels;
+            // cv::circle(image, cv::Point(box.x, box.y), 7, cv::Scalar(255,0,255));
         
+            findNonZero(roi, pixels);     
+            // auto iter = pixels.begin();
+
+            // while(iter != pixels.end()){
+            //     if(std::find(allPixels.begin(), allPixels.end(), *iter) != allPixels.end()){
+            //        iter = pixels.erase(iter);
+            //     }else{
+            //         ++iter;
+            //     } 
+            // }
+
+            
+            for (int i = 0; i < pixels.size(); i++) {
+                avgX += box.x + pixels[i].x;
+                avgY += box.y + pixels[i].y;
+
+                cv::Point point(box.y + pixels[i].y, box.x + pixels[i].x);
+                points.push_back(point);
+                allPixels.push_back(point);
+            }
+        }
+        float currentX = window.x;
+        float currentY = window.y;
+        // cv::circle(image, cv::Point(window.x, window.y), 7, cv::Scalar(255,0,255));
+        std::cout << allPixels.size() << std::endl;
         avgX = allPixels.empty() ? currentX : avgX / allPixels.size();
         avgY = allPixels.empty() ? currentY : avgY / allPixels.size();
-        cv::Point point(avgX, avgY);
+        cv::Point averagePosition(avgX, avgY);
+
+        cv::circle(image, cv::Point(avgX, avgY), 7, cv::Scalar(0,0,0));
 
         if(allPixels.empty()){
             window.y -= window.height;
         }else{
-            window.y -= (point.y + currentY);
+            window.y = averagePosition.y;
         }
-        std::cout << avgX << " : " << currentX  << std::endl;
-        window.x += (point.x - currentX);
+        window.x = averagePosition.x;
+
+        // cv::circle(image, cv::Point(window.x, window.y), 7, cv::Scalar(255,0,255));
+        if(count ==12){
+            break;
+        }
+        count++;
     }
 
     return points;
@@ -355,8 +364,8 @@ void ComputerVision::PredictTurn(cv::Mat src){
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
-    cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\curveHard.png", cv::COLOR_BGR2GRAY);
-    cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,250),img);
+    cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\curveHard.png");
+    cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,255),img);
     homography = cv::getPerspectiveTransform(srcP, dstP);
     
     invert(homography, invertedPerspectiveMatrix);
@@ -365,7 +374,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
 
     int rectHeight = 50;
     int rectwidth = 40;
-    int rectY = img.rows - rectHeight;
+    int rectY = img.rows - rectHeight/2;
 
     std::vector<int> histogram = Histogram(img);
     std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.5);
@@ -373,8 +382,8 @@ void ComputerVision::PredictTurn(cv::Mat src){
     int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
     int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
 
-    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(img, cv::Rect(rightMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
-    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(img, cv::Rect(leftMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
+    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(img, cv::Rect(rightMaxX , rectY, rectHeight, rectwidth));
+    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(img, cv::Rect(leftMaxX , rectY, rectHeight, rectwidth));
 
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
