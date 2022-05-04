@@ -62,7 +62,7 @@ import cv2
 # rect = win32gui.GetWindowPlacement(ACWindow)[-1]
 # frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
 
-frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.pn") # 480p image for testing
+frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png") # 480p image for testing
 # frame = frame[30:510, 10:650] # 480p
 # cv2.imshow("img", frame)
 
@@ -75,7 +75,7 @@ hsv = cv2.medianBlur(hsv, 15)
 cv2.imshow("blur", hsv)
 
 # range green
-lower_green = np.array([32, 0, 0])
+lower_green = np.array([28, 0, 0])
 print(lower_green)
 upper_green= np.array([55, 255, 255])
 mask = cv2.inRange(hsv, lower_green, upper_green)
