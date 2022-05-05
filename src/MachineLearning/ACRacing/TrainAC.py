@@ -6,7 +6,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
 import torch
-
+from datetime import datetime
 import os
 from AssettoCorsaEnv import AssettoCorsaEnv
 
@@ -18,9 +18,11 @@ from AssettoCorsaEnv import AssettoCorsaEnv
 env = AssettoCorsaEnv()
 env = DummyVecEnv([lambda: env])
 
+dt = datetime.now()
+
 # Paths
 log_path = os.path.join("src/MachineLearning/ACRacing/", "training", "logs")
-save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", "AC_model_4") # location for best model
+save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", f"AC_model_{dt}") # location for best model
 
 # Load model (to resume training)
 # model = PPO.load(save_path, env=env)

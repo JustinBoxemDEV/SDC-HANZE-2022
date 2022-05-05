@@ -2,7 +2,6 @@
 
 from itertools import count
 from time import sleep
-from cv2 import imread
 import gym
 from gym import spaces
 import numpy as np
@@ -13,6 +12,7 @@ import random
 from sys import platform
 import sys
 import cv2
+from datetime import datetime
 if platform == "win32":
     import win32gui
 from PIL import ImageGrab
@@ -25,6 +25,24 @@ ushort_to_bytes = struct.Struct('>H').pack
 float_to_bytes = struct.Struct('f').pack
 
 # helper functions
+def setHSV(frame, blur):
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    if(blur):
+        hsv = cv2.medianBlur(hsv, 27)
+    hsv = np.array(hsv)
+    return hsv
+
+def setMask(hsv, lower, upper):
+    lower = np.array(lower)
+    upper = np.array(upper)
+
+    mask = cv2.inRange(hsv, lower, upper)
+    return mask
+
+def setColor(frame, mask, color):
+    frame[mask>0]=color
+    return frame
+
 def shortkey(key2, key1='ctrlright'):
     pyautogui.keyDown(key1)
     pyautogui.keyDown(key2)
@@ -44,8 +62,18 @@ def get_current_frame():
         frame = frame[30:510, 10:650]# 480p cut a couple pixels to fit the model and screen
     else:
         # For testing on linux
-        frame = imread("/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
+        frame = cv2.imread("/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
         frame = frame[:100, :100]
+    
+    # assetto to IRL conversion
+
+    hsv = setHSV(frame, True)
+    mask = setMask(hsv, [18, 90, 40], [41, 145, 70]) # set mask for Assetto grass
+    frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
+
+    hsv = setHSV(frame, True)
+    mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
+    frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
 
     return frame
 
@@ -69,6 +97,10 @@ def count_green_pixels_ish(observation):
 
     return green_pixels
 
+def count_road_pixels_ish(self, observation):
+    # TODO: identify which pixels are road
+    return 0
+ 
 class AssettoCorsaEnv(gym.Env):
     def __init__(self):
         print("Assetto Corsa Environment")
@@ -90,6 +122,10 @@ class AssettoCorsaEnv(gym.Env):
             np.array([-1]).astype(np.float32),
             np.array([+1]).astype(np.float32)
         )
+
+        # start timer
+        self.timer = datetime.now()
+
         self.observation_space = spaces.Box(low=0, high=255, shape=(self.display_height, self.display_width, 3), dtype=np.uint8)
     
     def reset(self):
@@ -137,16 +173,15 @@ class AssettoCorsaEnv(gym.Env):
 
         green_pixels = count_green_pixels_ish(observation)
 
-        # Negative points for driving on grass (green pixels)
-        # Positive points for driving on the track (grey pixels)
-        if green_pixels > 100:
+        # Negative points for driving on grass (green pixels) ( + temporarily gives positive points for not being in grass)
+        if green_pixels > 200:
             reward = reward - 20
             done = True
             # print("Too many green pixels,", green_pixels,". restarting.")
-        elif green_pixels > 50:
+        elif green_pixels > 100:
             reward = reward - 10
             done = False
-        elif green_pixels > 15:
+        elif green_pixels > 20:
             reward = reward - 5
             done = False
         elif green_pixels > 7:
@@ -155,6 +190,16 @@ class AssettoCorsaEnv(gym.Env):
         else:
             reward = reward + 4
             done = False
+        
+        # TODO: road pixels (brown ish?)
+        road_pixels = count_road_pixels_ish(observation)
+
+        if road_pixels > 200: # TODO: tweak these values
+            reward = reward + 10
+        elif road_pixels > 100: # TODO: tweak these values
+            reward = reward + 5
+        else:
+            reward = reward + 4
         
         # Negative points for driving too slow (currently not used because we do not use acceleration)
         # if acceleration > 0.9:
