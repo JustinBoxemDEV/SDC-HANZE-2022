@@ -62,7 +62,8 @@ import cv2
 # rect = win32gui.GetWindowPlacement(ACWindow)[-1]
 # frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
 
-frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png") # 480p image for testing
+# frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png")
+frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")# 480p image for testing
 # frame = frame[30:510, 10:650] # 480p
 # cv2.imshow("img", frame)
 
