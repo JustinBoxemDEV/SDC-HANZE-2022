@@ -66,40 +66,38 @@ def get_current_frame():
         frame = frame[:100, :100]
     
     # assetto to IRL conversion
+    # hsv = setHSV(frame, True)
+    # mask = setMask(hsv, [18, 90, 40], [41, 145, 70]) # set mask for Assetto grass
+    # frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
 
-    hsv = setHSV(frame, True)
-    mask = setMask(hsv, [18, 90, 40], [41, 145, 70]) # set mask for Assetto grass
-    frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
-
-    hsv = setHSV(frame, True)
-    mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
-    frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
+    # hsv = setHSV(frame, True)
+    # mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
+    # frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
 
     return frame
 
-def count_green_pixels_ish(observation):
+def count_pixels(self, observation, lower_range, upper_range):
+    """ Counts the amount of pixels within the colour range lower_range and upper_range (HSV)
+    :param observation The image in which the pixels will be counted
+    :param lower_range The lower threshold as an array with 3 values (HSV format)
+    :param upper_range The upper threshold as an array with 3 values (HSV format)
+    """
     hsv = cv2.cvtColor(observation, cv2.COLOR_BGR2HSV)
 
-    # range green (maybe tweak)
-    lower_green = np.array([36, 0, 0])
-    upper_green= np.array([86, 255, 255])
-    mask = cv2.inRange(hsv, lower_green, upper_green)
+    # Mask in range
+    lower_range = np.array(lower_range)
+    upper_range= np.array(upper_range)
+    mask = cv2.inRange(hsv, lower_range, upper_range)
 
     roi = mask[400:420, 130:530] # only works for 480p AC image
 
-    green_pixels = 0
+    pixels_amt = 0
     for row in roi:
         for pixel in row:
             if pixel == 255:
-                green_pixels = green_pixels + 1
+                pixels_amt = pixels_amt + 1
 
-    print("Green pixels:", green_pixels)
-
-    return green_pixels
-
-def count_road_pixels_ish(self, observation):
-    # TODO: identify which pixels are road
-    return 0
+    return pixels_amt
  
 class AssettoCorsaEnv(gym.Env):
     def __init__(self):
@@ -171,35 +169,36 @@ class AssettoCorsaEnv(gym.Env):
         # check reward given current observation
         reward = 0
 
-        green_pixels = count_green_pixels_ish(observation)
+        green_pixels = count_pixels(observation, [36, 0, 0], [86, 255, 255])
+        print(f"Grass pixels: {green_pixels}")
 
-        # Negative points for driving on grass (green pixels) ( + temporarily gives positive points for not being in grass)
-        if green_pixels > 200:
+        # Negative points for driving on grass (green pixels)
+        if green_pixels > 3000:
             reward = reward - 20
             done = True
             # print("Too many green pixels,", green_pixels,". restarting.")
-        elif green_pixels > 100:
+        elif green_pixels > 500:
             reward = reward - 10
             done = False
         elif green_pixels > 20:
             reward = reward - 5
             done = False
-        elif green_pixels > 7:
+        elif green_pixels > 5: # small error offset for rogue pixels, should be 0
             reward = reward - 1
             done = False
         else:
-            reward = reward + 4
+            # Nothing
             done = False
         
-        # TODO: road pixels (brown ish?)
-        road_pixels = count_road_pixels_ish(observation)
+        road_pixels = count_pixels(observation, [0, 0, 0], [25, 100, 150])
+        print(f"Road pixels: {road_pixels}")
 
-        if road_pixels > 200: # TODO: tweak these values
-            reward = reward + 10
-        elif road_pixels > 100: # TODO: tweak these values
+        if road_pixels > 7000: # TODO: tweak these values
             reward = reward + 5
+        elif road_pixels > 1000: # TODO: tweak these values
+            reward = reward + 2
         else:
-            reward = reward + 4
+            reward = reward - 20
         
         # Negative points for driving too slow (currently not used because we do not use acceleration)
         # if acceleration > 0.9:

@@ -21,7 +21,7 @@ env = DummyVecEnv([lambda: env])
 dt = datetime.now()
 
 # Paths
-log_path = os.path.join("src/MachineLearning/ACRacing/", "training", "logs")
+log_path = os.path.join("src/MachineLearning/ACRacing/", "training", f"logs_{dt}")
 save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", f"AC_model_{dt}") # location for best model
 
 # Load model (to resume training)
@@ -30,7 +30,7 @@ save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", 
 # Create new model for training (maybe try MultiInputPolicy)
 model = PPO("CnnPolicy", env, verbose=1, 
             tensorboard_log=log_path, device="cuda", # change device to cpu if you dont have a gpu
-            n_epochs=10, n_steps=512, batch_size=8)  # TODO: change these values
+            n_epochs=10, n_steps=1024, batch_size=8)  # TODO: change these values
 
 # TODO: set callback
 # stop_callback = StopTrainingOnRewardThreshold(reward_threshold=1000, verbose=1)
@@ -42,5 +42,5 @@ model = PPO("CnnPolicy", env, verbose=1,
 torch.cuda.empty_cache()
 model = model.learn(total_timesteps=1000)
 model.save(save_path)
-print("we did it")
+print("we made it")
 env.close()
