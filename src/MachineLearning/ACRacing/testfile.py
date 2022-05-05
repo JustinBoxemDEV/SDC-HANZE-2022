@@ -122,6 +122,74 @@ mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
 
 cv2.imshow("Final Mask", mask)
 
+# ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
+# rect = win32gui.GetWindowPlacement(ACWindow)[-1]
+# frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
+
+roi = mask[400:420, 130:530]
+cv2.imshow("roi", roi)
+
+green_pixels = 0
+for row in roi:
+    for pixel in row:
+        if pixel == 255:
+            green_pixels = green_pixels + 1
+            # print("woo")
+
+print("Green pixels:", green_pixels)
+
+# USES BGR INSTEAD OF RGB
+# count_grass_pixels1 = 0
+# for row in roi_road:
+#     for pixel in row:
+#         # print(pixel)
+#         if pixel[1]-10 > pixel[0] and pixel[1]-10 > pixel[2]:
+#             count_grass_pixels1 = count_grass_pixels1 + 1
+# print("Grass pixels in image with only road:", count_grass_pixels1)
+
+frame = cv2.imread("TestImges/ac480p.png")# 480p image for testing
+# frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png") # 480p image for testing
+frame = frame[30:510, 10:650] # 480p
+
+# assetto to IRL conversion
+
+hsv = setHSV(frame, True)
+mask = setMask(hsv, [18, 90, 40], [41, 145, 70]) # set mask for Assetto grass
+frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
+
+hsv = setHSV(frame, True)
+mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
+frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
+
+cv2.imshow("Assetto TO IRL", frame)
+
+# set False if converting assetto to IRL, set True if using IRL image
+hsv = setHSV(frame, False)
+
+# final grass mask
+mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
+
+# final road mask
+# mask = setMask(hsv, [95, 0, 50], [155, 80, 150]) # IRL road mask
+
+cv2.imshow("Final Mask", mask)
+
+# ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
+# rect = win32gui.GetWindowPlacement(ACWindow)[-1]
+# frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
+
+roi = mask[400:420, 130:530]
+cv2.imshow("roi", roi)
+
+green_pixels = 0
+for row in roi:
+    for pixel in row:
+        if pixel == 255:
+            green_pixels = green_pixels + 1
+            # print("woo")
+
+print("Green pixels:", green_pixels)
+
 def nothing(x):
     pass
 
