@@ -76,10 +76,9 @@ def setColor(frame, mask, color):
     frame[mask>0]=color
     return frame
 
-frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\src\\MachineLearning\\ACRacing\\TestImges\\ac480p.png")
+frame = cv2.imread("TestImges/ac480p.png")# 480p image for testing
 # frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png") # 480p image for testing
-
-cv2.imshow("assen", frame)
+frame = frame[30:510, 10:650] # 480p
 
 # assetto to IRL conversion
 
@@ -97,10 +96,10 @@ cv2.imshow("Assetto TO IRL", frame)
 hsv = setHSV(frame, False)
 
 # final grass mask
-# mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
+mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
 
 # final road mask
-mask = setMask(hsv, [95, 0, 50], [155, 80, 150]) # IRL road mask
+# mask = setMask(hsv, [95, 0, 50], [155, 80, 150]) # IRL road mask
 
 cv2.imshow("Final Mask", mask)
 
