@@ -2,7 +2,6 @@
 
 from itertools import count
 from time import sleep
-from cv2 import imread
 import gym
 from gym import spaces
 import numpy as np
@@ -12,6 +11,7 @@ import pyautogui
 import random
 from sys import platform
 import sys
+import cv2
 
 if platform == "win32":
     import win32gui
@@ -26,6 +26,24 @@ ushort_to_bytes = struct.Struct('>H').pack
 float_to_bytes = struct.Struct('f').pack
 
 # helper functions
+def setHSV(frame, blur):
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    if(blur):
+        hsv = cv2.medianBlur(hsv, 27)
+    hsv = np.array(hsv)
+    return hsv
+
+def setMask(hsv, lower, upper):
+    lower = np.array(lower)
+    upper = np.array(upper)
+
+    mask = cv2.inRange(hsv, lower, upper)
+    return mask
+
+def setColor(frame, mask, color):
+    frame[mask>0]=color
+    return frame
+
 def shortkey(key2, key1='ctrlright'):
     pyautogui.keyDown(key1)
     pyautogui.keyDown(key2)
@@ -46,9 +64,19 @@ def get_current_frame():
         frame = frame[:480, :640] # 480p cut a couple pixels to fit the model
     else:
         # For testing on linux
-        frame = imread("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
+        frame = cv2.imread("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
         frame = frame[:100, :100]
- 
+    
+    # assetto to IRL conversion
+
+    hsv = setHSV(frame, True)
+    mask = setMask(hsv, [18, 90, 40], [41, 145, 70]) # set mask for Assetto grass
+    frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
+
+    hsv = setHSV(frame, True)
+    mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
+    frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
+
     return frame
 
 def count_green_pixels_ish(observation):
