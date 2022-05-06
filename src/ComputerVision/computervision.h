@@ -27,6 +27,8 @@ class ComputerVision{
         cv::Mat homography;
         cv::Mat invertedPerspectiveMatrix;
 
+        cv::Mat warpedOverlay;
+
         std::vector<double> lastKnownAveragedFitR;
         std::vector<double> lastKnownAveragedFitL;
     private:
