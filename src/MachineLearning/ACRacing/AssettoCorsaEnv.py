@@ -60,7 +60,7 @@ def get_current_frame():
         ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
         rect = win32gui.GetWindowPlacement(ACWindow)[-1]
         frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
-        frame = frame[30:510, 10:650]# 480p cut a couple pixels to fit the model and screen
+        frame = frame[30:510, 10:650] # 480p cut a couple pixels to fit the model and screen
     else:
         # For testing on linux
         frame = cv2.imread("/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
@@ -90,7 +90,8 @@ def count_pixels(observation, lower_range, upper_range):
     upper_range= np.array(upper_range)
     mask = cv2.inRange(hsv, lower_range, upper_range)
 
-    roi = mask[400:420, 130:530] # only works for 480p AC image
+    # roi = mask[400:420, 130:530] # only works for 480p AC image
+    roi = mask[380:420, 50:600]
 
     pixels_amt = 0
     for row in roi:
@@ -122,9 +123,6 @@ class AssettoCorsaEnv(gym.Env):
             np.array([+1]).astype(np.float32)
         )
 
-        # start timer
-        self.epoch_time = int(time.time())
-
         self.observation_space = spaces.Box(low=0, high=255, shape=(self.display_height, self.display_width, 3), dtype=np.uint8)
     
     def reset(self):
@@ -135,6 +133,10 @@ class AssettoCorsaEnv(gym.Env):
         self.client_socket.sendto(ushort_to_bytes(0x121) + bytes([0]*8), (IP, PORT))
 
         obversation = get_current_frame()
+
+        # start timer
+        self.epoch_time = int(time.time())
+
         return obversation
 
     def step(self, action):
@@ -170,8 +172,8 @@ class AssettoCorsaEnv(gym.Env):
         # check reward given current observation
         reward = 0
 
-        green_pixels = count_pixels(observation, [18, 90, 40], [41, 145, 70])
-        print(f"Grass pixels: {green_pixels}")
+        green_pixels = count_pixels(observation, [24, 74, 0], [70, 255, 255])
+        # print(f"Grass pixels: {green_pixels}")
 
         # Negative points for driving on grass (green pixels)
         if green_pixels > 3000:
@@ -182,17 +184,17 @@ class AssettoCorsaEnv(gym.Env):
             reward = reward - 20
             done = False
         elif green_pixels > 20:
-            reward = reward - 5
+            reward = reward - 10
             done = False
         elif green_pixels > 5: # small error offset for rogue pixels, should be 0
-            reward = reward - 2
+            reward = reward - 5
             done = False
         else:
             # Nothing
             done = False
         
         road_pixels = count_pixels(observation, [0, 0, 0], [25, 100, 150])
-        print(f"Road pixels: {road_pixels}")
+        # print(f"Road pixels: {road_pixels}")
 
         # if road_pixels > 5000: # TODO: tweak these values
         #     reward = reward + 2
@@ -213,19 +215,31 @@ class AssettoCorsaEnv(gym.Env):
         if green_pixels > 3 or road_pixels < 5000: # small error offset for rogue pixels, should be 0
             consecutive_time_spent_on_road = int(time.time()) - self.epoch_time 
             
-            if consecutive_time_spent_on_road < 10: 
-                print(f"wtf?: {consecutive_time_spent_on_road}")
-                reward = reward - 1
-            elif consecutive_time_spent_on_road > 9:
-                print(f"5 or more seconds: {consecutive_time_spent_on_road}")
-                reward = reward + 1
+            if consecutive_time_spent_on_road < 5: 
+                print(f"Not enough time spent on the road: {consecutive_time_spent_on_road}")
+                # reward = reward - 1
             elif consecutive_time_spent_on_road > 20:
-                print(f"more than 20: {consecutive_time_spent_on_road}")
+                print(f"more than 20 seconds on the road, +2: {consecutive_time_spent_on_road}")
                 reward = reward + 2
             else:
-                reward = reward + 5
+                print(f"5 or more seconds on the road, +1: {consecutive_time_spent_on_road}")
+                reward = reward + 1
 
             self.epoch_time = int(time.time())
+        else:
+            # reward = reward + 1
+            pass
+
+        # Negative points for driving over the white line!
+        white_pixels = count_pixels(observation, [0,43, 97], [28, 68, 159])
+        if white_pixels > 350:
+            reward = reward - 50
+            done = True
+        elif white_pixels > 250:
+            reward = reward - 10
+        else:
+            # Nothing
+            pass
 
         return reward, done
 

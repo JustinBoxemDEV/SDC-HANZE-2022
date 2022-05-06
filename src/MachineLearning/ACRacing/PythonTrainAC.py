@@ -20,7 +20,7 @@ env = DummyVecEnv([lambda: env])
 
 # Paths
 log_path = os.path.join("src/MachineLearning/ACRacing/", "training", "logs")
-save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", "AC_model_050522") # location for best model
+save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", "AC_model_060522") # location for best model
 
 # Load model (to resume training)
 # model = PPO.load(save_path, env=env)
@@ -30,15 +30,17 @@ model = PPO("CnnPolicy", env, verbose=1,
             tensorboard_log=log_path, device="cuda", # change device to cpu if you dont have a gpu
             n_epochs=10, n_steps=1024, batch_size=8)  # TODO: change these values
 
-# TODO: set callback?
-# stop_callback = StopTrainingOnRewardThreshold(reward_threshold=1000, verbose=1)
-# eval_callback = EvalCallback(env, callback_on_new_best=stop_callback, eval_freq=2, best_model_save_path=save_path, verbose=1)
+# With callback
+stop_callback = StopTrainingOnRewardThreshold(reward_threshold=500, verbose=1)
+eval_callback = EvalCallback(env, callback_on_new_best=stop_callback, eval_freq=2, best_model_save_path=save_path, verbose=1)
 
 # Train model (evaluate every x)
-# model.learn(total_timesteps=2, callback=eval_callback, eval_env=env)
+model.learn(total_timesteps=2, callback=eval_callback, eval_env=env)
 
-torch.cuda.empty_cache()
-model = model.learn(total_timesteps=1000) # TODO: change these values
-model.save(save_path)
+# without callback (for training short periods)
+# torch.cuda.empty_cache()
+# model = model.learn(total_timesteps=1000)
+# model.save(save_path)
+
 print("we made it")
 env.close()

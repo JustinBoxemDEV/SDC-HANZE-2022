@@ -46,9 +46,9 @@ def setColor(frame, mask, color):
     frame[mask>0]=color
     return frame
 
-# frame = cv2.imread("TestImges/ac480p.png")# 480p image for testing
-# frame = cv2.imread("TestImges/ac480pgrass.png")# 480p image for testing
-frame = cv2.imread("TestImges/ac480phalfgrass.png")# 480p image for testing
+# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")# 480p image for testing
+# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pgrass.png")# 480p image for testing
+frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480phalfgrass.png")# 480p image for testing
 # frame = cv2.imread("/home/douwe/Projects/SDC-HANZE-2022/assets/images/assen.png") # 480p image for testing
 frame = frame[30:510, 10:650] # 480p
 
