@@ -5,12 +5,12 @@
 #include "Processes/terminalprocess.h"
 #include "ComputerVision/cameracalibration.hpp"
 
-// namespace fs = std::filesystem;
+namespace fs = std::filesystem;
 
 // int main(int argc, char** argv) {
 //     // std::string path = "/home/douwe/Projects/SDC-HANZE-2022/assets/images/calibration_dsh/";
 //     // std::cout << path << std::endl;
-//     // CameraCalibration calib(path, 20, 14, 20, 480, 640);
+//     // CameraCalibration calib(path, 20, 14, 20, 640, 480);
 //   std::string path = "/home/douwe/Projects/SDC-HANZE-2022/assets/images/fuzz/";
 //   std::vector<cv::String> fileNames;
 
@@ -23,27 +23,60 @@
 
 //   // Show lens corrected images
 //   for (auto const &f : fileNames) {
-//       std::cout << std::string(f) << std::endl;
+//     std::cout << std::string(f) << std::endl;
 
-//       cv::Mat img = cv::imread(f, cv::IMREAD_COLOR);
-//       cv::Mat temp = img.clone();
+//     cv::Mat img = cv::imread(f, cv::IMREAD_COLOR);
+//     cv::Mat img2 = cv::imread(f, cv::IMREAD_COLOR);
+//     cv::Mat img3 = cv::imread(f, cv::IMREAD_COLOR);
+//     cv::Mat img4 = cv::imread(f, cv::IMREAD_COLOR);
 
-//       // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 960.48218, 0, 319.5, 0, 960.48218, 239.5, 0, 0, 1); // OLD VALUES
-//       // cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 675.47607, 0, 319.5, 0, 675.47607, 239.5, 0, 0, 1);
-//       cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 1556.9927, 0, 239.5,0, 1556.9927, 319.5, 0, 0, 1); // 0.367196 reprojection error - flipped resolution
+//     cv::Mat temp = img.clone();
+//     cv::Mat temp2 = img2.clone();
+//     cv::Mat temp3 = img3.clone();
+//     cv::Mat temp4 = img4.clone();
 
+//     cv::Mat cameraMatrix2 = (cv::Mat1d(3,3) << 675.47607, 0, 319.5, 0, 675.47607, 239.5, 0, 0, 1);
+//     cv::Mat distortionCoefficients2 = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
 
-//       // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.207945, -1.80821, 0, 0, 0); // OLD VALUES
-//       // cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.0649378, -0.0861269, 0, 0, 0);
-//         cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << -0.13394, 0.641369, 0, 0, 0); // 0.367196 reprojection error - flipped resolution
+//     cv::Mat cameraMatrix4 = (cv::Mat1d(3,3) << 800.55762, 0, 319.5, 0, 800.55762, 239.5, 0, 0, 1); // new values without certain images 0.344804 reprojection error IMG 4
+//     cv::Mat distortionCoefficients4 = (cv::Mat1d(1, 5) << 0.075056, -0.421619, 0, 0, 0); // new values without certain images 0.344804 reprojection error IMG 4
 
+//     cv::Mat cameraMatrix3 = (cv::Mat1d(3,3) << 792.13574, 0, 319.5, 0, 792.13574, 239.5, 0, 0, 1); // reprojection error = 0.178943 only plane calibrating images IMG 3
+//     cv::Mat distortionCoefficients3 = (cv::Mat1d(1, 5) << 0.0905006, -0.55128, 0, 0, 0); // reprojection error = 0.178943 only plane calibrating images IMG 3
 
-//       cv::undistort(temp, img, cameraMatrix, distortionCoefficients);
+//     cv::Mat cameraMatrix1 = (cv::Mat1d(3,3) << 674.10211, 0, 319.5, 0, 674.10211, 239.5, 0, 0, 1); // reprojection error = 2.25489 calibrating images with curves IMG 1
+//     cv::Mat distortionCoefficients1 = (cv::Mat1d(1, 5) << -0.0565066, -0.151204, 0, 0, 0); // reprojection error = 2.25489 calibrating images with curves IMG 1
 
-//       // Display
-//       cv::imshow("distorted image", temp);
-//       cv::imshow("undistorted image", img);
-//       cv::waitKey(0);
+//     cv::undistort(temp, img, cameraMatrix1, distortionCoefficients1);
+//     cv::undistort(temp3, img3, cameraMatrix3, distortionCoefficients3);
+//     cv::undistort(temp2, img2, cameraMatrix2, distortionCoefficients2);
+//     cv::undistort(temp4, img4, cameraMatrix4, distortionCoefficients4);
+
+//     cv::Mat flipped;
+//     cv::flip(img3, flipped, 1);
+
+//     // Display
+//     cv::imshow("distorted image", temp);
+//     cv::imshow("undistorted image 1", img);
+//     cv::imshow("undistorted image 2", img2);
+//     cv::imshow("undisorted image 3", img3);
+//     cv::imshow("undisorted image 4", img4);
+//     //cv::imshow("undistorted image 4", flipped);
+
+//     // Get dimension of final image
+//     int rows = std::max(img2.rows, flipped.rows);
+//     int cols = img2.cols + flipped.cols;
+
+//     // Create a black image
+//     cv::Mat3b res(rows, cols, cv::Vec3b(0,0,0));
+
+//     // Copy images in correct position
+//     img2.copyTo(res(cv::Rect(0, 0, img2.cols, img2.rows)));
+//     flipped.copyTo(res(cv::Rect(img2.cols, 0, flipped.cols, flipped.rows)));
+
+//     imshow("Result", res);
+
+//     cv::waitKey(0);
 //   }
 // }
 
@@ -53,7 +86,7 @@
 // #include "Processes/readprocess.h"
 // #include "Processes/terminalprocess.h"
 
-namespace fs = std::filesystem;
+// namespace fs = std::filesystem;
 
 int main(int argc, char** argv) {
     int cursor = 1;
