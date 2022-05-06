@@ -4,6 +4,7 @@ import win32gui
 from PIL import ImageGrab
 import numpy as np
 import cv2
+import time
 
 def count_pixels(observation, lower_range, upper_range):
     """ Counts the amount of pixels within the colour range lower_range and upper_range (HSV)
@@ -24,6 +25,9 @@ def count_pixels(observation, lower_range, upper_range):
 
     roi = mask[400:420, 130:530] # only works for 480p AC image
     cv2.imshow("roi", roi)
+
+    epoch_time = int(time.time())
+    print(epoch_time)
 
     pixels_amt = 0
     for row in roi:
@@ -46,3 +50,12 @@ frame = frame[30:510, 10:650]
 
 # print(count_pixels(frame, [18, 90, 40], [41, 145, 70])) # green
 print(count_pixels(frame, [0, 0, 0], [25, 100, 150])) # brown ish
+
+first =int(time.time())
+print(first)
+time.sleep(5)
+second = int(time.time())
+print(second)
+
+third = second - first
+print(f"Seconds elapsed:{third}")

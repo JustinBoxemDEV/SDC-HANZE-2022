@@ -6,7 +6,6 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold
 import torch
-from datetime import datetime
 import os
 from AssettoCorsaEnv import AssettoCorsaEnv
 
@@ -18,11 +17,10 @@ from AssettoCorsaEnv import AssettoCorsaEnv
 env = AssettoCorsaEnv()
 env = DummyVecEnv([lambda: env])
 
-dt = datetime.now()
 
 # Paths
-log_path = os.path.join("src/MachineLearning/ACRacing/", "training", f"logs_{dt}")
-save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", f"AC_model_{dt}") # location for best model
+log_path = os.path.join("src/MachineLearning/ACRacing/", "training", "logs")
+save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", "AC_model_050522") # location for best model
 
 # Load model (to resume training)
 # model = PPO.load(save_path, env=env)
@@ -32,7 +30,7 @@ model = PPO("CnnPolicy", env, verbose=1,
             tensorboard_log=log_path, device="cuda", # change device to cpu if you dont have a gpu
             n_epochs=10, n_steps=1024, batch_size=8)  # TODO: change these values
 
-# TODO: set callback
+# TODO: set callback?
 # stop_callback = StopTrainingOnRewardThreshold(reward_threshold=1000, verbose=1)
 # eval_callback = EvalCallback(env, callback_on_new_best=stop_callback, eval_freq=2, best_model_save_path=save_path, verbose=1)
 
@@ -40,7 +38,7 @@ model = PPO("CnnPolicy", env, verbose=1,
 # model.learn(total_timesteps=2, callback=eval_callback, eval_env=env)
 
 torch.cuda.empty_cache()
-model = model.learn(total_timesteps=1000)
+model = model.learn(total_timesteps=1000) # TODO: change these values
 model.save(save_path)
 print("we made it")
 env.close()

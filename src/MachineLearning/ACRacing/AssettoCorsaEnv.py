@@ -2,6 +2,7 @@
 
 from itertools import count
 from time import sleep
+import time
 import gym
 from gym import spaces
 import numpy as np
@@ -12,7 +13,7 @@ import random
 from sys import platform
 import sys
 import cv2
-from datetime import datetime
+import time
 if platform == "win32":
     import win32gui
 from PIL import ImageGrab
@@ -76,7 +77,7 @@ def get_current_frame():
 
     return frame
 
-def count_pixels(self, observation, lower_range, upper_range):
+def count_pixels(observation, lower_range, upper_range):
     """ Counts the amount of pixels within the colour range lower_range and upper_range (HSV)
     :param observation The image in which the pixels will be counted
     :param lower_range The lower threshold as an array with 3 values (HSV format)
@@ -122,7 +123,7 @@ class AssettoCorsaEnv(gym.Env):
         )
 
         # start timer
-        self.timer = datetime.now()
+        self.epoch_time = int(time.time())
 
         self.observation_space = spaces.Box(low=0, high=255, shape=(self.display_height, self.display_width, 3), dtype=np.uint8)
     
@@ -143,7 +144,7 @@ class AssettoCorsaEnv(gym.Env):
         acc = 1 # we ignore acceleration for now and only focus on steering
 
         print("Steering with", steer)
-        print("Accelerating with", acc)
+        # print("Accelerating with", acc)
         
         # send steer and acc to controller.py via socket
         self.client_socket.sendto(ushort_to_bytes(0x12c) + float_to_bytes(steer) + bytes([0]*4), (IP, PORT))
@@ -169,22 +170,22 @@ class AssettoCorsaEnv(gym.Env):
         # check reward given current observation
         reward = 0
 
-        green_pixels = count_pixels(observation, [36, 0, 0], [86, 255, 255])
+        green_pixels = count_pixels(observation, [18, 90, 40], [41, 145, 70])
         print(f"Grass pixels: {green_pixels}")
 
         # Negative points for driving on grass (green pixels)
         if green_pixels > 3000:
-            reward = reward - 20
+            reward = reward - 50
             done = True
             # print("Too many green pixels,", green_pixels,". restarting.")
         elif green_pixels > 500:
-            reward = reward - 10
+            reward = reward - 20
             done = False
         elif green_pixels > 20:
             reward = reward - 5
             done = False
         elif green_pixels > 5: # small error offset for rogue pixels, should be 0
-            reward = reward - 1
+            reward = reward - 2
             done = False
         else:
             # Nothing
@@ -193,12 +194,12 @@ class AssettoCorsaEnv(gym.Env):
         road_pixels = count_pixels(observation, [0, 0, 0], [25, 100, 150])
         print(f"Road pixels: {road_pixels}")
 
-        if road_pixels > 7000: # TODO: tweak these values
-            reward = reward + 5
-        elif road_pixels > 1000: # TODO: tweak these values
-            reward = reward + 2
-        else:
-            reward = reward - 20
+        # if road_pixels > 5000: # TODO: tweak these values
+        #     reward = reward + 2
+        # elif road_pixels > 1000: # TODO: tweak these values
+        #     reward = reward + 1
+        # else:
+        #     reward = reward - 20
         
         # Negative points for driving too slow (currently not used because we do not use acceleration)
         # if acceleration > 0.9:
@@ -207,6 +208,24 @@ class AssettoCorsaEnv(gym.Env):
         #     reward = reward - 10
         # else:
         #     reward = reward - 5
+
+        # Time spent on road
+        if green_pixels > 3 or road_pixels < 5000: # small error offset for rogue pixels, should be 0
+            consecutive_time_spent_on_road = int(time.time()) - self.epoch_time 
+            
+            if consecutive_time_spent_on_road < 10: 
+                print(f"wtf?: {consecutive_time_spent_on_road}")
+                reward = reward - 1
+            elif consecutive_time_spent_on_road > 9:
+                print(f"5 or more seconds: {consecutive_time_spent_on_road}")
+                reward = reward + 1
+            elif consecutive_time_spent_on_road > 20:
+                print(f"more than 20: {consecutive_time_spent_on_road}")
+                reward = reward + 2
+            else:
+                reward = reward + 5
+
+            self.epoch_time = int(time.time())
 
         return reward, done
 
