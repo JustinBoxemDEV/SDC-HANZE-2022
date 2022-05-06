@@ -8,9 +8,9 @@
 namespace fs = std::filesystem;
 
 int main(int argc, char** argv) {
-    // std::string path = "/home/douwe/Projects/SDC-HANZE-2022/assets/images/calibration_dsh/";
-    // std::cout << path << std::endl;
-    // CameraCalibration calib(path, 20, 14, 20, 640, 480);
+    std::string path = "/home/douwe/Projects/SDC-HANZE-2022/assets/images/calibration_dsh/";
+    std::cout << path << std::endl;
+    CameraCalibration calib(path, 20, 14, 20, 640, 480);
   std::string path = "/home/douwe/Projects/SDC-HANZE-2022/assets/images/fuzz/";
   std::vector<cv::String> fileNames;
 
@@ -20,6 +20,8 @@ int main(int argc, char** argv) {
   cv::glob(path, fileNames, false);
 
   std::cout << "Calibrating" << std::endl;
+
+    int i = 0;
 
   // Show lens corrected images
   for (auto const &f : fileNames) {
@@ -64,25 +66,33 @@ int main(int argc, char** argv) {
     //cv::imshow("undistorted image 4", flipped);
 
     // Get dimension of final image
-    int rows = std::max(img2.rows, flipped.rows);
-    int cols = img2.cols + flipped.cols;
+    // int rows = std::max(img2.rows, flipped.rows);
+    // int cols = img2.cols + flipped.cols;
+
+    // // Create a black image
+    // cv::Mat3b res(rows, cols, cv::Vec3b(0,0,0));
+
+    // // Copy images in correct position
+    // img2.copyTo(res(cv::Rect(0, 0, img2.cols, img2.rows)));
+    // flipped.copyTo(res(cv::Rect(img2.cols, 0, flipped.cols, flipped.rows)));
+
+    // Get dimension of final image
+    int rows = std::max(temp.rows, img3.rows);
+    int cols = temp.cols + img3.cols;
 
     // Create a black image
     cv::Mat3b res(rows, cols, cv::Vec3b(0,0,0));
 
     // Copy images in correct position
-    img2.copyTo(res(cv::Rect(0, 0, img2.cols, img2.rows)));
-    flipped.copyTo(res(cv::Rect(img2.cols, 0, flipped.cols, flipped.rows)));
-
-    // Get dimension of final image
-    int rows = std::max(img2.rows, flipped.rows);
-    int cols = img2.cols + flipped.cols;
-
-    // Create a black image
-    cv::Mat3b res(rows, cols, cv::Vec3b(0,0,0));
+    temp.copyTo(res(cv::Rect(0, 0, temp.cols, temp.rows)));
+    img3.copyTo(res(cv::Rect(temp.cols, 0, img3.cols, img3.rows)));
 
     imshow("Result", res);
-
+    std::string currentPath = fs::current_path().string();
+    currentPath.append("/../assets/images/results/");
+    std::cout << currentPath << std::endl;
+    cv::imwrite(currentPath+"demo"+std::to_string(i)+".jpg", res);
+    i++;
     cv::waitKey(0);
   }
 }
