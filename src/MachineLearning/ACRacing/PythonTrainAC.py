@@ -17,7 +17,6 @@ from AssettoCorsaEnv import AssettoCorsaEnv
 env = AssettoCorsaEnv()
 env = DummyVecEnv([lambda: env])
 
-
 # Paths
 log_path = os.path.join("src/MachineLearning/ACRacing/", "training", "logs")
 save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", "AC_model_060522") # location for best model
@@ -31,7 +30,7 @@ model = PPO("CnnPolicy", env, verbose=1,
             n_epochs=10, n_steps=1024, batch_size=8)  # TODO: change these values
 
 # With callback
-stop_callback = StopTrainingOnRewardThreshold(reward_threshold=500, verbose=1)
+stop_callback = StopTrainingOnRewardThreshold(reward_threshold=700, verbose=1)
 eval_callback = EvalCallback(env, callback_on_new_best=stop_callback, eval_freq=2, best_model_save_path=save_path, verbose=1)
 
 # Train model (evaluate every x)
