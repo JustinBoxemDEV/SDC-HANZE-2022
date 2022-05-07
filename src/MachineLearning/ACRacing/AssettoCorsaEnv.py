@@ -175,18 +175,18 @@ class AssettoCorsaEnv(gym.Env):
         # print(f"Grass pixels: {green_pixels}")
 
         # Negative points for driving on grass (green pixels)
-        if green_pixels > 3000:
+        if green_pixels > 10000:
             reward = reward - 50
             done = True
             # print("Too many green pixels,", green_pixels,". restarting.")
-        elif green_pixels > 500:
+        elif green_pixels > 4000:
             reward = reward - 20
             done = False
-        elif green_pixels > 20:
+        elif green_pixels > 50:
             reward = reward - 10
             done = False
-        elif green_pixels > 5: # small error offset for rogue pixels, should be 0
-            reward = reward - 5
+        elif green_pixels > 3: # small error offset for rogue pixels, should be 0
+            reward = reward - 1
             done = False
         else:
             # Nothing
@@ -212,7 +212,7 @@ class AssettoCorsaEnv(gym.Env):
         #     reward = reward - 5
 
         # Time spent on road
-        if green_pixels > 3 or road_pixels < 5000: # small error offset for rogue pixels, should be 0
+        if green_pixels > 3 or road_pixels < 10000: # small error offset for rogue pixels, should be 0
             consecutive_time_spent_on_road = int(time.time()) - self.epoch_time 
             
             if consecutive_time_spent_on_road < 10: 
@@ -232,9 +232,9 @@ class AssettoCorsaEnv(gym.Env):
 
         # Negative points for driving over the white line!
         white_pixels = count_pixels(observation, [0,43, 97], [28, 68, 159])
-        if white_pixels > 350:
-            reward = reward - 50
-            done = True
+        if white_pixels > 300:
+            reward = reward - 20
+            # done = True
         elif white_pixels > 250:
             reward = reward - 10
         else:
