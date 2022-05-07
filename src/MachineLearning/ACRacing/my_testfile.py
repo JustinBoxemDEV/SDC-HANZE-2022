@@ -16,12 +16,13 @@ def count_pixels(observation, lower_range, upper_range):
     cv2.imshow("frame", observation)
 
     hsv = cv2.cvtColor(observation, cv2.COLOR_BGR2HSV)
+    hsv = cv2.medianBlur(hsv, 7)
     
     # Mask in range
     lower_range = np.array(lower_range)
     upper_range= np.array(upper_range)
     mask = cv2.inRange(hsv, lower_range, upper_range)
-    cv2.imshow("mask", mask)
+    cv2.imshow("White pixels mask", mask)
 
     # roi = mask[400:420, 130:530] # only works for 480p AC image
     roi = mask[380:420, 50:600] # only works for 480p AC image
@@ -41,8 +42,8 @@ def count_pixels(observation, lower_range, upper_range):
 # frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
 
 # 480p image for testing
-frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")
-# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p2.png")
+# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")
+frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p2.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p3.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pgrass.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480phalfgrass.png")
@@ -50,9 +51,9 @@ frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pwhitecorner.png")
 frame = frame[30:510, 10:650]
 
-# print(count_pixels(frame, [18, 90, 40], [41, 145, 70])) # green
-# print(count_pixels(frame, [0, 0, 0], [25, 100, 150])) # brown ish
-print("White pixels in roi:", count_pixels(frame, [0,43, 97], [28, 68, 159])) # white)
+print("Grass pixels in roi:", count_pixels(frame, [23, 0, 0], [42, 255, 191])) # green
+# print("Road pixels in roi:", count_pixels(frame, [0, 0, 0], [25, 100, 150])) # brown ish
+# print("White pixels in roi:", count_pixels(frame, [0,43, 97], [28, 68, 159])) # white)
 
 # -----------------------------------------------------------------------------------------------------
 # first =int(time.time())
@@ -63,3 +64,10 @@ print("White pixels in roi:", count_pixels(frame, [0,43, 97], [28, 68, 159])) # 
 
 # third = second - first
 # print(f"Seconds elapsed:{third}")
+
+# -----------------------------------------------------------------------------------------------------
+# For powerpoint images
+# cv2.imshow("frame", frame)
+# roi = frame[380:420, 50:600] # only works for 480p AC image
+# cv2.imshow("roi", roi)
+# cv2.waitKey(0)

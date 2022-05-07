@@ -2,7 +2,9 @@
 
 # ------------------------------------------------------------------------------------
 # count green pixels in region of interest (roi)
+from xml.etree.ElementTree import tostring
 import cv2
+import os
 from cv2 import imread
 # import win32gui
 #from PIL import ImageGrab
@@ -27,6 +29,8 @@ import cv2
 #         if pixel == 255:
 #             green_pixels = green_pixels + 1
 #             # print("woo")
+def nothing(x):
+    pass
 
 def setHSV(frame, blur):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -46,123 +50,162 @@ def setColor(frame, mask, color):
     frame[mask>0]=color
     return frame
 
-# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")# 480p image for testing
-# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pgrass.png")# 480p image for testing
-frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480phalfgrass.png")# 480p image for testing
-# frame = cv2.imread("/home/douwe/Projects/SDC-HANZE-2022/assets/images/assen.png") # 480p image for testing
-frame = frame[30:510, 10:650] # 480p
+assetto = False
+road = False
+grass = False
+lines = True
 
-cv2.imshow("Original frame", frame)
+if(assetto):
+    dir = "/home/douwe/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/TestImges/assetto"
+else:
+    dir = "/home/douwe/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/TestImges/real life"
 
-# assetto to IRL conversion
+tweak = cv2.imread("/home/douwe/Projects/SDC-HANZE-2022/src/MachineLearning/ACRacing/TestImges/real life/assen2.png")
 
-tweak = frame.copy();
+width = int(tweak.shape[1] * 60 / 100)
+height = int(tweak.shape[0] * 60 / 100)
+dim = (width, height)
 
-hsv = setHSV(frame, 0)
-mask = setMask(hsv, [0,43, 97], [28, 68, 159])
-frame = setColor(frame, mask, (255, 0, 0))
+tweak = cv2.resize(tweak, dim, interpolation= cv2.INTER_AREA)
 
-hsv = setHSV(frame, 0)
-mask = setMask(hsv, [24, 74, 0], [70, 255, 255]) # set mask for Assetto grass
-frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
+for subdir, dirs, files in os.walk(dir):
+    for file in files:
+        print(file)
+        frame = cv2.imread(dir+"/"+file)
+        
+        originalFrame = frame.copy()
+        
+        # frame = frame[30:510, 10:650] # 480p
 
-hsv = setHSV(frame, 0)
-mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
-frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
+        if(assetto):
+            # assetto to IRL conversion
+            
+            if(lines):
+                hsv = setHSV(frame, 3)
+                mask = setMask(hsv, [0,40, 124], [77, 61, 162]) # set mask for Assetto lines
+                frame = setColor(frame, mask, (200, 200, 200)) # set assetto lines to real life lines color
+                mask= cv2.medianBlur(mask, 11)
+                frame = setColor(frame, mask, (192, 192, 200))
+                cv2.imshow("white lines", mask)
 
-# tweak = frame.copy()
-cv2.imshow("Assetto TO IRL", frame)
+            if(grass):
+                hsv = setHSV(frame, 0)
+                mask = setMask(hsv, [24, 74, 0], [70, 255, 255]) # set mask for Assetto grass
+                frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
+            
+            if(road):
+                hsv = setHSV(frame, 7)
+                mask = setMask(hsv, [0, 0, 0], [25, 255, 74]) # set mask for Assetto road
+                frame = setColor(frame, mask, (78, 62, 63)) # set assetto road to real life road color
+        
+            # tweak = frame.copy()
+            
+            AssettoToIRLFrame = frame.copy()
+            
+            # cv2.imshow(file+"Assetto TO IRL", frame)
+            hsv = setHSV(frame, 0)
 
-# set False if converting assetto to IRL, set True if using IRL image
-hsv = setHSV(frame, 0)
+        if(assetto == False):
+            hsv = setHSV(frame, 7)
+            
+        # final grass mask
+        if(grass):
+            mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
+            mask = cv2.medianBlur(mask, 7)
+        
+        # cv2.imshow(file+"hsv mask", mask)
+        
+        # final road mask
+        if(road):
+            mask = setMask(hsv, [0, 0, 0], [179, 65, 165]) # IRL road mask
 
-# final grass mask
-# mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
+        # final line mask
+        if(lines):
+            mask = setMask(hsv, [0, 0, 170], [179, 72, 255]) # IRL line mask
+        
+        unblurredMask = mask.copy()
+        
+        mask = cv2.medianBlur(mask, 7)
+        blurredMask = mask.copy()
+        
+        roi = mask[380:420, 50:600] # only works for 480p AC image
+        
+        cv2.imshow(file+" original image", originalFrame)
+        
+        if(assetto):
+            cv2.imshow(file+" Assetto to IRL", AssettoToIRLFrame)
+        cv2.imshow(file+" unblurred mask", unblurredMask)
+        cv2.imshow(file+" blurred mask", blurredMask)
+        cv2.imshow(file+"roi", roi)
+        
+        # ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
+        # rect = win32gui.GetWindowPlacement(ACWindow)[-1]
+        # frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
 
-# final road mask
-mask = setMask(hsv, [98, 0, 0], [179, 82, 150]) # IRL road mask
+        pixels_amt = 0
+        for row in roi:
+            for pixel in row:
+                if pixel == 255:
+                    pixels_amt = pixels_amt + 1
+                    
+        print("roi pixels:", pixels_amt)
 
-cv2.imshow("Final Mask", mask)
+    # tweak = cv2.imread("TestImges/ac480p.png")
+    # tweak = frame.copy()
+    # tweak = cv2.medianBlur(tweak, 27)
 
-mask = cv2.medianBlur(mask, 3)
+    # Create a window
+    cv2.namedWindow('image')
 
-cv2.imshow("Final mask with blur", mask)
+    # Create trackbars for color change
+    # Hue is from 0-179 for Opencv
+    cv2.createTrackbar('HMin', 'image', 0, 179, nothing)
+    cv2.createTrackbar('SMin', 'image', 0, 255, nothing)
+    cv2.createTrackbar('VMin', 'image', 0, 255, nothing)
+    cv2.createTrackbar('HMax', 'image', 0, 179, nothing)
+    cv2.createTrackbar('SMax', 'image', 0, 255, nothing)
+    cv2.createTrackbar('VMax', 'image', 0, 255, nothing)
 
-# ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
-# rect = win32gui.GetWindowPlacement(ACWindow)[-1]
-# frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
+    # Set default value for Max HSV trackbars
+    cv2.setTrackbarPos('HMax', 'image', 179)
+    cv2.setTrackbarPos('SMax', 'image', 255)
+    cv2.setTrackbarPos('VMax', 'image', 255)
 
-roi = mask[400:420, 130:530]
-cv2.imshow("roi", roi)
+    # Initialize HSV min/max values
+    hMin = sMin = vMin = hMax = sMax = vMax = 0
+    phMin = psMin = pvMin = phMax = psMax = pvMax = 0
 
-green_pixels = 0
-for row in roi:
-    for pixel in row:
-        if pixel == 255:
-            green_pixels = green_pixels + 1
-            # print("woo")
+    while(1):
+        # Get current positions of all trackbars
+        hMin = cv2.getTrackbarPos('HMin', 'image')
+        sMin = cv2.getTrackbarPos('SMin', 'image')
+        vMin = cv2.getTrackbarPos('VMin', 'image')
+        hMax = cv2.getTrackbarPos('HMax', 'image')
+        sMax = cv2.getTrackbarPos('SMax', 'image')
+        vMax = cv2.getTrackbarPos('VMax', 'image')
 
-print("Green pixels:", green_pixels)
+        # Set minimum and maximum HSV values to display
+        lower = np.array([hMin, sMin, vMin])
+        upper = np.array([hMax, sMax, vMax])
 
-def nothing(x):
-    pass
+        # Convert to HSV format and color threshold
+        hsv = cv2.cvtColor(tweak, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv, lower, upper)
+        result = cv2.bitwise_and(tweak, tweak, mask=mask)
 
-# tweak = cv2.imread("TestImges/ac480p.png")
-# tweak = frame.copy()
-# tweak = cv2.medianBlur(tweak, 27)
+        # Print if there is a change in HSV value
+        if((phMin != hMin) | (psMin != sMin) | (pvMin != vMin) | (phMax != hMax) | (psMax != sMax) | (pvMax != vMax) ):
+            print("(hMin = %d , sMin = %d, vMin = %d), (hMax = %d , sMax = %d, vMax = %d)" % (hMin , sMin , vMin, hMax, sMax , vMax))
+            phMin = hMin
+            psMin = sMin
+            pvMin = vMin
+            phMax = hMax
+            psMax = sMax
+            pvMax = vMax
 
-# Create a window
-cv2.namedWindow('image')
+        # Display result image
+        cv2.imshow('image', result)
+        if cv2.waitKey(10) & 0xFF == ord('q'):
+            break
 
-# Create trackbars for color change
-# Hue is from 0-179 for Opencv
-cv2.createTrackbar('HMin', 'image', 0, 179, nothing)
-cv2.createTrackbar('SMin', 'image', 0, 255, nothing)
-cv2.createTrackbar('VMin', 'image', 0, 255, nothing)
-cv2.createTrackbar('HMax', 'image', 0, 179, nothing)
-cv2.createTrackbar('SMax', 'image', 0, 255, nothing)
-cv2.createTrackbar('VMax', 'image', 0, 255, nothing)
-
-# Set default value for Max HSV trackbars
-cv2.setTrackbarPos('HMax', 'image', 179)
-cv2.setTrackbarPos('SMax', 'image', 255)
-cv2.setTrackbarPos('VMax', 'image', 255)
-
-# Initialize HSV min/max values
-hMin = sMin = vMin = hMax = sMax = vMax = 0
-phMin = psMin = pvMin = phMax = psMax = pvMax = 0
-
-while(1):
-    # Get current positions of all trackbars
-    hMin = cv2.getTrackbarPos('HMin', 'image')
-    sMin = cv2.getTrackbarPos('SMin', 'image')
-    vMin = cv2.getTrackbarPos('VMin', 'image')
-    hMax = cv2.getTrackbarPos('HMax', 'image')
-    sMax = cv2.getTrackbarPos('SMax', 'image')
-    vMax = cv2.getTrackbarPos('VMax', 'image')
-
-    # Set minimum and maximum HSV values to display
-    lower = np.array([hMin, sMin, vMin])
-    upper = np.array([hMax, sMax, vMax])
-
-    # Convert to HSV format and color threshold
-    hsv = cv2.cvtColor(tweak, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, lower, upper)
-    result = cv2.bitwise_and(tweak, tweak, mask=mask)
-
-    # Print if there is a change in HSV value
-    if((phMin != hMin) | (psMin != sMin) | (pvMin != vMin) | (phMax != hMax) | (psMax != sMax) | (pvMax != vMax) ):
-        print("(hMin = %d , sMin = %d, vMin = %d), (hMax = %d , sMax = %d, vMax = %d)" % (hMin , sMin , vMin, hMax, sMax , vMax))
-        phMin = hMin
-        psMin = sMin
-        pvMin = vMin
-        phMax = hMax
-        psMax = sMax
-        pvMax = vMax
-
-    # Display result image
-    cv2.imshow('image', result)
-    if cv2.waitKey(10) & 0xFF == ord('q'):
-        break
-
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()

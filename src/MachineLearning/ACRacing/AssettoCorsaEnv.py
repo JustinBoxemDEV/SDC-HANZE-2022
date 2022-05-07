@@ -55,17 +55,11 @@ def reset_pos():
     sleep(2) # sometimes it wont register the shortkey if it happens too fast
     shortkey('y')
 
-def get_current_frame():
-    if platform == "win32" or platform =="cygwin":
-        ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
-        rect = win32gui.GetWindowPlacement(ACWindow)[-1]
-        frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
-        frame = frame[30:510, 10:650] # 480p cut a couple pixels to fit the model and screen
-    else:
-        # For testing on linux
-        frame = cv2.imread("/src/MachineLearning/ACRacing/TestImges/ac480p.png") # 480p image
-        frame = frame[:100, :100]
-    
+def get_current_observation():
+    ACWindow = win32gui.FindWindow(None, "Assetto Corsa")
+    rect = win32gui.GetWindowPlacement(ACWindow)[-1]
+    frame = np.array(ImageGrab.grab(rect))[:,:,::-1]
+
     # assetto to IRL conversion
     # hsv = setHSV(frame, True)
     # mask = setMask(hsv, [18, 90, 40], [41, 145, 70]) # set mask for Assetto grass
@@ -74,16 +68,20 @@ def get_current_frame():
     # hsv = setHSV(frame, True)
     # mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
     # frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
-
-    return frame
+    
+    # frame = frame[30:510, 10:650] # 480p, cut a couple pixels to fit the model and screen
+    roi = frame[380:420, 50:600] # roi in 480p AC image
+    
+    return roi
 
 def count_pixels(observation, lower_range, upper_range):
-    """ Counts the amount of pixels within the colour range lower_range and upper_range (HSV)
+    """Counts the amount of pixels within the colour range lower_range and upper_range (HSV)
     :param observation The image in which the pixels will be counted
     :param lower_range The lower threshold as an array with 3 values (HSV format)
     :param upper_range The upper threshold as an array with 3 values (HSV format)
     """
     hsv = cv2.cvtColor(observation, cv2.COLOR_BGR2HSV)
+    hsv = cv2.medianBlur(hsv, 7)
 
     # Mask in range
     lower_range = np.array(lower_range)
@@ -91,10 +89,10 @@ def count_pixels(observation, lower_range, upper_range):
     mask = cv2.inRange(hsv, lower_range, upper_range)
 
     # roi = mask[400:420, 130:530] # only works for 480p AC image
-    roi = mask[380:420, 50:600]
+    # roi = mask[380:420, 50:600]
 
     pixels_amt = 0
-    for row in roi:
+    for row in mask:
         for pixel in row:
             if pixel == 255:
                 pixels_amt = pixels_amt + 1
@@ -105,12 +103,13 @@ class AssettoCorsaEnv(gym.Env):
     def __init__(self):
         print("Assetto Corsa Environment")
 
-        if platform == "win32" or platform =="cygwin":
-            self.display_height = 480
-            self.display_width = 640
-        else:
-            self.display_height = 100
-            self.display_width = 100
+        # 480p image
+        # self.display_height = 480
+        # self.display_width = 640
+
+        # roi
+        self.display_height = 40
+        self.display_width = 550
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.action_space = spaces.Box(
@@ -132,9 +131,9 @@ class AssettoCorsaEnv(gym.Env):
         # Set gear to 1 again
         self.client_socket.sendto(ushort_to_bytes(0x121) + bytes([0]*8), (IP, PORT))
 
-        obversation = get_current_frame()
+        obversation = get_current_observation()
 
-        # start timer
+        # start timer for consecutive time spent on road
         self.epoch_time = int(time.time())
 
         return obversation
@@ -153,7 +152,7 @@ class AssettoCorsaEnv(gym.Env):
         self.client_socket.sendto(ushort_to_bytes(0x120) + bytes([round(acc * 100)] + [0]*7), (IP, PORT))
         # self.client_socket.sendto(ushort_to_bytes(0x126) + bytes([round(brake * 100)] + [0]*7), (IP, PORT)) # we do not use brake
         
-        observation = get_current_frame()
+        observation = get_current_observation()
 
         reward, done = self.get_reward(observation)
 
@@ -196,6 +195,7 @@ class AssettoCorsaEnv(gym.Env):
         road_pixels = count_pixels(observation, [0, 0, 0], [25, 100, 150])
         # print(f"Road pixels: {road_pixels}")
 
+        # I dont think we need this anymore?
         # if road_pixels > 5000: # TODO: tweak these values
         #     reward = reward + 2
         # elif road_pixels > 1000: # TODO: tweak these values
@@ -215,7 +215,7 @@ class AssettoCorsaEnv(gym.Env):
         if green_pixels > 3 or road_pixels < 5000: # small error offset for rogue pixels, should be 0
             consecutive_time_spent_on_road = int(time.time()) - self.epoch_time 
             
-            if consecutive_time_spent_on_road < 5: 
+            if consecutive_time_spent_on_road < 10: 
                 print(f"Not enough time spent on the road: {consecutive_time_spent_on_road}")
                 # reward = reward - 1
             elif consecutive_time_spent_on_road > 20:
