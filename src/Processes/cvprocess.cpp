@@ -93,7 +93,7 @@ void CVProcess::ProcessFrame(cv::Mat src) {
     };
 
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
-    // imshow("masked", maskedImage);
+    imshow("masked", maskedImage);
 }
 
 void CVProcess::Terminate(){
