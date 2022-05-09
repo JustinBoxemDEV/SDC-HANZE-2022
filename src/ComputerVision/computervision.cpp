@@ -39,10 +39,10 @@ cv::Mat ComputerVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.8),
-        cv::Point(0, src.rows * 0.45), //IRL
-        cv::Point(src.cols, src.rows * 0.45), //IRL
-        // cv::Point(0, src.rows * 0.6), //Assetto
-        // cv::Point(src.cols, src.rows * 0.6), //Assetto
+        cv::Point(0, src.rows * 0.45), // IRL
+        cv::Point(src.cols, src.rows * 0.45), // IRL
+        // cv::Point(0, src.rows * 0.6), // Assetto
+        // cv::Point(src.cols, src.rows * 0.6), // Assetto
         cv::Point(src.cols, src.rows * 0.8),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -324,10 +324,10 @@ std::vector<double> ComputerVision::ExponentalMovingAverage(std::vector<double> 
 
 void ComputerVision::PredictTurn(cv::Mat src){
     cv::Point2f srcP[4] = { 
-        cv::Point2f(src.cols * 0.35, src.rows * 0.45), //IRL
-        cv::Point2f(src.cols * 0.68, src.rows * 0.45), //IRL
-        // cv::Point2f(src.cols * 0.15, src.rows * 0.6), //Assetto
-        // cv::Point2f(src.cols * 0.85, src.rows * 0.6), //Assetto
+        cv::Point2f(src.cols * 0.35, src.rows * 0.45), // IRL
+        cv::Point2f(src.cols * 0.68, src.rows * 0.45), // IRL
+        // cv::Point2f(src.cols * 0.15, src.rows * 0.6), // Assetto
+        // cv::Point2f(src.cols * 0.85, src.rows * 0.6), // Assetto
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
