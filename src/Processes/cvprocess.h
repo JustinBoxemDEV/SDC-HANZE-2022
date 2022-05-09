@@ -17,7 +17,7 @@ class CVProcess : public Process
         cv::VideoCapture *capture;
         StreamSource *streamSource;
         ComputerVision cVision;
-        PIDController pid{0.2,0.2,0.1456};
+        PIDController pid{0.3,0.2,0.4};
         void ProcessFrame(cv::Mat src);
     public:
         CVProcess(MediaInput *input);
