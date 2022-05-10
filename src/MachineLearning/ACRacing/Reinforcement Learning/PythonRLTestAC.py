@@ -24,7 +24,7 @@ import os
 from AssettoCorsaEnv import AssettoCorsaEnv
 from stable_baselines3 import PPO
 
-save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", "AC_model_060522")
+save_path = os.path.join("src/MachineLearning/ACRacing/", "training", "models", "best_model_080522")
 
 torch.cuda.empty_cache()
 env = AssettoCorsaEnv()

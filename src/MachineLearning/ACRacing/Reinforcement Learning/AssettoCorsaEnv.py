@@ -70,7 +70,7 @@ def get_current_observation():
     # frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
     
     # frame = frame[30:510, 10:650] # 480p, cut a couple pixels to fit the model and screen
-    roi = frame[380:420, 50:600] # roi in 480p AC image
+    roi = frame[380:420, 70:580] # roi in 480p AC image
     
     return roi
 
@@ -109,7 +109,7 @@ class AssettoCorsaEnv(gym.Env):
 
         # roi
         self.display_height = 40
-        self.display_width = 550
+        self.display_width = 510
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.action_space = spaces.Box(
@@ -178,7 +178,7 @@ class AssettoCorsaEnv(gym.Env):
         if green_pixels > 10000:
             reward = reward - 50
             done = True
-            # print("Too many green pixels,", green_pixels,". restarting.")
+            print("Too many green pixels,", green_pixels,". restarting.")
         elif green_pixels > 4000:
             reward = reward - 20
             done = False
@@ -192,7 +192,7 @@ class AssettoCorsaEnv(gym.Env):
             # Nothing
             done = False
         
-        road_pixels = count_pixels(observation, [0, 0, 0], [25, 100, 150])
+        road_pixels = count_pixels(observation, [0, 0, 0], [25, 255, 74])
         # print(f"Road pixels: {road_pixels}")
 
         # I dont think we need this anymore?
@@ -231,11 +231,12 @@ class AssettoCorsaEnv(gym.Env):
             pass
 
         # Negative points for driving over the white line!
-        white_pixels = count_pixels(observation, [0,43, 97], [28, 68, 159])
-        if white_pixels > 300:
+        white_pixels = count_pixels(observation, [0,40, 124], [77, 61, 162])
+        if white_pixels > 700:
+            print("White pixels:", white_pixels)
             reward = reward - 20
             # done = True
-        elif white_pixels > 250:
+        elif white_pixels > 500:
             reward = reward - 10
         else:
             # Nothing

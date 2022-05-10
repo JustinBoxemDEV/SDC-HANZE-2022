@@ -25,7 +25,7 @@ def count_pixels(observation, lower_range, upper_range):
     cv2.imshow("White pixels mask", mask)
 
     # roi = mask[400:420, 130:530] # only works for 480p AC image
-    roi = mask[380:420, 50:600] # only works for 480p AC image
+    roi = mask[380:420, 70:580] # only works for 480p AC image
     cv2.imshow("roi", roi)
 
     pixels_amt = 0
@@ -43,16 +43,17 @@ def count_pixels(observation, lower_range, upper_range):
 
 # 480p image for testing
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")
-frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p2.png")
+# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p2.png")
+# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/Screenshot 2022-05-09 002844.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p3.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pgrass.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480phalfgrass.png")
 # frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pwhiteline.png")
-# frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pwhitecorner.png")
+frame = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480pwhitecorner.png")
 frame = frame[30:510, 10:650]
 
-print("Grass pixels in roi:", count_pixels(frame, [23, 0, 0], [42, 255, 191])) # green
-# print("Road pixels in roi:", count_pixels(frame, [0, 0, 0], [25, 100, 150])) # brown ish
+print("Grass pixels in roi:", count_pixels(frame, [0,40, 124], [77, 61, 162])) # green
+# print("Road pixels in roi:", count_pixels(frame, [0, 0, 0], [25, 255, 74])) # brown ish
 # print("White pixels in roi:", count_pixels(frame, [0,43, 97], [28, 68, 159])) # white)
 
 # -----------------------------------------------------------------------------------------------------
