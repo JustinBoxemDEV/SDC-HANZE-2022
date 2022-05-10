@@ -61,7 +61,7 @@ import cv2
 def setHSV(frame, blur):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     if(blur):
-        hsv = cv2.medianBlur(hsv, 27)
+        hsv = cv2.medianBlur(hsv, 1)
     hsv = np.array(hsv)
     return hsv
 
@@ -73,33 +73,39 @@ def setMask(hsv, lower, upper):
     return mask
 
 def setColor(frame, mask, color):
+    print(mask>0)
     frame[mask>0]=color
     return frame
 
-frame = cv2.imread("TestImges/ac480p.png")# 480p image for testing
-# frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png") # 480p image for testing
+# frame = cv2.imread("TestImges/1.png")# 480p image for testing
+frame = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png") # 480p image for testing
 frame = frame[30:510, 10:650] # 480p
 
 # assetto to IRL conversion
 
-hsv = setHSV(frame, True)
-mask = setMask(hsv, [18, 90, 40], [41, 145, 70]) # set mask for Assetto grass
-frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
+# hsv = setHSV(frame, False)
+# mask = setMask(hsv, [18, 90, 40], [41, 145, 80]) # set mask for Assetto grass
+# frame = setColor(frame, mask, (35, 120, 100)) # set assetto grass to real life grass color
 
-hsv = setHSV(frame, True)
-mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
-frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
+# hsv = setHSV(frame, False)
+# mask = setMask(hsv, [0, 0, 0], [25, 100, 150]) # set mask for Assetto road
+# frame = setColor(frame, mask, (100, 81, 82)) # set assetto road to real life road color
+
+# hsv = setHSV(frame, False)
+# mask = setMask(hsv, [100, 0, 167], [179, 255, 224]) # set white pixels
+# cv2.imshow("white pixels", mask)
+# frame = setColor(frame, mask, (359, 0, 100)) # set assetto road to real life road color
 
 cv2.imshow("Assetto TO IRL", frame)
 
 # set False if converting assetto to IRL, set True if using IRL image
-hsv = setHSV(frame, False)
+hsv = setHSV(frame, True)
 
 # final grass mask
-mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
+# mask = setMask(hsv, [23, 0, 0], [42, 255, 191]) # IRL grass mask
 
 # final road mask
-# mask = setMask(hsv, [95, 0, 50], [155, 80, 150]) # IRL road mask
+mask = setMask(hsv, [95, 0, 50], [155, 80, 150]) # IRL road mask
 
 cv2.imshow("Final Mask", mask)
 
@@ -130,9 +136,9 @@ print("Green pixels:", green_pixels)
 
 def nothing(x):
     pass
-
-tweak = frame.copy()
-tweak = cv2.medianBlur(tweak, 27)
+tweak = cv2.imread("D:\\Github Desktop Clones\\SDC-HANZE-2022\\assets\\images\\assen.png")
+# tweak = frame.copy()
+# tweak = cv2.medianBlur(tweak, 27)
 
 # Create a window
 cv2.namedWindow('image')
