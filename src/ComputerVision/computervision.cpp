@@ -39,8 +39,10 @@ cv::Mat ComputerVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
         cv::Point(0, src.rows * 0.8),
-        cv::Point(0, src.rows * 0.45),
-        cv::Point(src.cols, src.rows * 0.45),
+        cv::Point(0, src.rows * 0.45), // IRL
+        cv::Point(src.cols, src.rows * 0.45), // IRL
+        // cv::Point(0, src.rows * 0.6), // Assetto
+        // cv::Point(src.cols, src.rows * 0.6), // Assetto
         cv::Point(src.cols, src.rows * 0.8),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
@@ -145,8 +147,6 @@ std::vector<int> ComputerVision::Histogram(cv::Mat src){
     return points;
 }
 
-
-
 std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect window){
     std::vector<cv::Point2f> points;
     const cv::Size imgSize = image.size();
@@ -159,27 +159,22 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
         cv::Point2f (-(window.width / 2), 0), // Bottom Left
         cv::Point2f (window.width / 2, 0)   //Bottom Right
     };
+
     bool completed = false;
-    std::vector<cv::Point2f> lastWindowPixels;
-    std::vector<cv::Point2f> currentWindowPixels;
     std::vector<cv::Point2f> pixels;
     int count =0;
-    while (window.y - window.height * 1.5 >= 0 && !completed){
-        if (window.x <= window.width * 1.5){
-            window.x = window.width * 1.5 +1;
+    std::deque<cv::Point> lastPositions;
+
+    while (window.y - window.height >= 0 && !completed){
+        if (window.x <= window.width * 1.5 || window.x + window.width * 1.5 >= imgSize.width){
             completed = true;
             break;
         }
-        if (window.x + window.width * 1.5 >= imgSize.width){
-            window.x = imgSize.width - window.width * 1.5 - 1;
-            completed = true;
-            break;
-        }
-        
+
         int pixelsFound = 0;
         float avgX = 0.0f;
         float avgY = 0.0f;
-      
+
         for(auto relativePosition : relativePoints){
             cv::Rect box = window;
             box.x += relativePosition.x - window.width/2;            
@@ -191,12 +186,10 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
 
             findNonZero(roi, pixels);     
             for (int i = 0; i < pixels.size(); i++) {
-                currentWindowPixels.push_back(cv::Point(box.x + pixels[i].x, box.y + pixels[i].y));
+                avgX += box.x + pixels[i].x;
+                avgY += box.y + pixels[i].y;
 
-                avgX += currentWindowPixels[i].x;
-                avgY += currentWindowPixels[i].y;
-
-                cv::Point point(currentWindowPixels[i].y,currentWindowPixels[i].x);
+                cv::Point point(box.y + pixels[i].y,box.x + pixels[i].x);
                 points.push_back(point);
                 pixelsFound++;
             }
@@ -206,16 +199,19 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
         avgX = pixelsFound == 0 ? window.x : avgX / pixelsFound;
         avgY = pixelsFound == 0 ? window.y : avgY / pixelsFound;
     
-        if(points.empty() && pixelsFound == 0){
+        if(pixelsFound == 0){
             window.y -= window.height;
-        }else if(pixelsFound == 0){
+        }else if(!lastPositions.empty() && (lastPositions.front() == cv::Point(avgX, avgY) || lastPositions.back() == cv::Point(avgX, avgY))){
             completed = true;
         }else{
             window.y = avgY;
         }
         window.x = avgX;
-        lastWindowPixels = currentWindowPixels;
-        currentWindowPixels.clear();
+        lastPositions.push_front(cv::Point(window.x, window.y));
+
+        if(lastPositions.size() > 2){
+            lastPositions.pop_back();
+        }
     }
 
     struct ComparePoints {
@@ -234,7 +230,7 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
 }
 
 cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
-     denoisedImage = BlurImage(src);
+  denoisedImage = BlurImage(src);
 
     // cv::cvtColor(denoisedImage, hsv, cv::COLOR_BGR2HSV);
     // cv::inRange(hsv, cv::Scalar(hMin, sMin, vMin), cv::Scalar(hMax, sMax, vMax), hsvFilter); // cv::Scalar(0, 10, 28), cv::Scalar(38, 255, 255)
@@ -246,21 +242,23 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     // cv::dilate(hsvFilter, hsvFilter, structuringElement);
     // cv::erode(hsvFilter, hsvFilter, structuringElement);
     
-    // cv::Mat sobelx;
-    // cv::Mat sobely;
-    // cv::Mat sobelxy;
+    cv::Mat sobelx;
+    cv::Mat sobely;
+    cv::Mat sobelxy;
 
-    // cv::Mat gray;
-    // cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
-    // Sobel(gray, sobelx, CV_64F, 1, 0);
-    // Sobel(gray, sobely, CV_64F, 0, 1);
-    // Sobel(gray, sobelxy, CV_64F, 1, 1);
-
-    // convertScaleAbs(sobelx, sobelx);
-    // convertScaleAbs(sobely, sobely);
-    // convertScaleAbs(sobelxy, sobelxy);
-    // imshow("sobx'", sobelx);
+    cv::Mat gray;
+    cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
+    Sobel(gray, sobelx, CV_64F, 1, 0);
+    Sobel(gray, sobely, CV_64F, 0, 1);
+    Sobel(gray, sobelxy, CV_64F, 1, 1);
+    cv::inRange(sobely, 80,255, sobely);
+    cv::inRange(sobelx, 20,70, sobelx);
     // imshow("soby'", sobely);
+    // imshow("sobx'", sobelx);
+
+    convertScaleAbs(sobelx, sobelx);
+    convertScaleAbs(sobely, sobely);
+    convertScaleAbs(sobelxy, sobelxy);
     // imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
@@ -314,22 +312,29 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     // cv::bitwise_or(sobel, sobelxy, sobel);
     // imshow("sobel'", sobel);
 
-    cv::inRange(hsvChannels[1], 50,255, hsvChannels[1]);
-
-    // cv::erode(mask, mask, structuringElement);
-    // cv::dilate(mask, mask, structuringElement);
-
+    cv::inRange(hsvChannels[1], 105,255, hsvChannels[1]);
     cv::dilate(hsvChannels[1], hsvChannels[1], structuringElement);
     cv::erode(hsvChannels[1], hsvChannels[1], structuringElement);
 
+    // imshow("hsv s'", hsvChannels[1]);
 
-    cv::inRange(hlsChannels[1], 185,255, hlsChannels[1]);
+    cv::inRange(hlsChannels[2], 35,100, hlsChannels[2]);
+    cv::dilate(hlsChannels[2], hlsChannels[2], structuringElement);
+    cv::erode(hlsChannels[2], hlsChannels[2], structuringElement);
+    // imshow("hls s'", hlsChannels[2]);
+
+    cv::inRange(hlsChannels[1], 180,255, hlsChannels[1]);
+    //imshow("hls l'", hlsChannels[1]);
 
     cv::Mat mask;
-    cv::bitwise_or(hsvChannels[1], hlsChannels[1], mask);
+    // cv::bitwise_or(hlsChannels[2], hlsChannels[1], mask);
+    // cv::bitwise_or(sobely, sobelx, sobely);
+    cv::bitwise_or(sobely, hsvChannels[1], mask);
+    // cv::bitwise_or(mask, sobely, mask);
 
-    // imshow("hsvfilter", hsvFilter);
-    binaryImage = DetectEdges(mask);
+    cv::Mat edges = DetectEdges(hlsChannels[2]);
+    cv::bitwise_or(edges, hlsChannels[1], binaryImage);
+
     imshow("binary", binaryImage);
 
     return binaryImage;
@@ -364,8 +369,10 @@ std::vector<double> ComputerVision::ExponentalMovingAverage(std::vector<double> 
 
 void ComputerVision::PredictTurn(cv::Mat src){
     cv::Point2f srcP[4] = { 
-        cv::Point2f(src.cols * 0.35, src.rows * 0.45),
-        cv::Point2f(src.cols * 0.68, src.rows * 0.45),
+        cv::Point2f(src.cols * 0.35, src.rows * 0.45), // IRL
+        cv::Point2f(src.cols * 0.68, src.rows * 0.45), // IRL
+        // cv::Point2f(src.cols * 0.15, src.rows * 0.6), // Assetto
+        // cv::Point2f(src.cols * 0.85, src.rows * 0.6), // Assetto
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
@@ -401,6 +408,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
     std::vector<cv::Point2f> rightLanePoints;
     std::vector<cv::Point2f> leftLanePoints;
     std::vector<cv::Point2f> centerLanePoints;
+    int imageCenter = warped.cols / 2.0f;
 
     for (int x = 0; x < warped.rows ; x++)
     {
@@ -412,13 +420,10 @@ void ComputerVision::PredictTurn(cv::Mat src){
         positionL.y = x;
         positionL.x = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
 
-        int imageCenter = warped.cols / 2.0f;
         int laneLeft = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
         int laneRight = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
 
         int laneCenterX = (laneLeft + laneRight) / 2;
-        laneOffset = imageCenter - laneCenterX;
-        normalisedLaneOffset = 2 * (double(laneOffset - laneLeft) / double(laneRight - laneLeft)) - 1;
         
         if(x != 0){
             cv::line(warpedOverlay, leftLanePoints[leftLanePoints.size() -1], positionR, cv::Scalar(0,255,255),5);
@@ -430,6 +435,16 @@ void ComputerVision::PredictTurn(cv::Mat src){
         centerLanePoints.push_back(cv::Point(laneCenterX, x));
     }
    
+    int laneLeft = (fitL[2] * pow(src.rows, 2) + (fitL[1] * src.rows) + fitL[0]);
+    int laneRight = (fitR[2] * pow(src.rows, 2) + (fitR[1] * src.rows) + fitR[0]);
+
+    int laneCenterX = (laneLeft + laneRight) / 2;
+    laneOffset = imageCenter - laneCenterX;
+    normalisedLaneOffset = 2 * (double(imageCenter - laneLeft) / double(laneRight - laneLeft)) - 1;
+    // std::cout<< "laneCenter= "<< laneCenterX << std::endl;
+    // std::cout<< "laneoffset= "<< laneOffset << std::endl;
+    // std::cout<< "laneleft= "<< laneLeft << std::endl;
+    // std::cout<< "laneright= "<< laneRight << std::endl;
     cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
     cv::addWeighted(warpedOverlay, 1, warped, 1,  0, warped);
     imshow("warped", warped);
@@ -476,7 +491,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
         cv::fillPoly(overlay, arr, cv::Scalar(0, 255, 100));
         cv::addWeighted(frame, 1, overlay, 0.5, 0, frame);
     }
-
+    cv::line(frame, cv::Point(src.cols/2, src.rows), cv::Point(src.cols/2, src.rows - 100), cv::Scalar(255, 128, 128), 3);
     cv::namedWindow("Turn");
     imshow("Turn", frame);
 }

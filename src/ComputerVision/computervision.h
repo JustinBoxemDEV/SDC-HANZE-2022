@@ -37,7 +37,7 @@ class ComputerVision{
         std::vector<double> ExponentalMovingAverage(std::vector<double> &lastAveragedFit, std::vector<double> fit, double beta);
     public:
         ComputerVision(){
-            structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(9, 9));
+            structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6, 6));
         }
         double getNormalisedLaneOffset(){ return normalisedLaneOffset; }
         double getLaneOffset(){ return laneOffset; }
