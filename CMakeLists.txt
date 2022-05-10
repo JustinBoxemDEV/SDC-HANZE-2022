@@ -15,7 +15,7 @@ set(MAIN_SOURCE_DIR "src")
 set(Torch_DIR /usr/local/include/libtorch/share/cmake/Torch)
 
 find_package( OpenCV REQUIRED )
-find_package(Torch REQUIRED)
+# find_package(Torch REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 file(GLOB_RECURSE CPP_HEADERS ${MAIN_SOURCE_DIR}/*.hpp)
