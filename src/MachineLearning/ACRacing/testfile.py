@@ -47,6 +47,7 @@ def setMask(hsv, lower, upper):
     return mask
 
 def setColor(frame, mask, color):
+    print(mask>0)
     frame[mask>0]=color
     return frame
 
