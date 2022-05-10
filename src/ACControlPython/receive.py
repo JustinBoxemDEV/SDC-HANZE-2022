@@ -22,6 +22,7 @@ def handle_traffic(client_socket):
         readable, _, _ = select.select([client_socket], [], [], 0.5)
         for readable_socket in readable:
             data = readable_socket.recv(1024)
+        
             # Combine the first two bytes to get the arbitration id
             arbitration_id, = unsignedShortStruct.unpack(data[:2])
             yield arbitration_id, data[2:]
