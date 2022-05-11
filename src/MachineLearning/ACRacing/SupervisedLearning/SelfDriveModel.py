@@ -45,8 +45,6 @@ class SelfDriveModel(nn.Module):
 
 model = SelfDriveModel()
 
-# trainging_set = torchvision.datasets.TTAssenDataset()
-
 img = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")
 # img = img[30:510, 10:650]
 
