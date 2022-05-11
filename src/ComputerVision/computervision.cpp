@@ -38,12 +38,12 @@ cv::Mat ComputerVision::DetectEdges(cv::Mat src){
 cv::Mat ComputerVision::MaskImage(cv::Mat src){
     mask = cv::Mat::zeros(src.size(), src.type());
     cv::Point pts[4] = {
-        cv::Point(0, src.rows * 0.8),
+        cv::Point(0, src.rows * 0.7),
         cv::Point(0, src.rows * 0.45), // IRL
         cv::Point(src.cols, src.rows * 0.45), // IRL
         // cv::Point(0, src.rows * 0.6), // Assetto
         // cv::Point(src.cols, src.rows * 0.6), // Assetto
-        cv::Point(src.cols, src.rows * 0.8),
+        cv::Point(src.cols, src.rows * 0.7),
     };
     cv::fillConvexPoly(mask, pts, 4, cv::Scalar(255, 0,0));
     cv::bitwise_and(mask, src , masked);
@@ -369,12 +369,12 @@ std::vector<double> ComputerVision::ExponentalMovingAverage(std::vector<double> 
 
 void ComputerVision::PredictTurn(cv::Mat src){
     cv::Point2f srcP[4] = { 
-        cv::Point2f(src.cols * 0.35, src.rows * 0.45), // IRL
-        cv::Point2f(src.cols * 0.68, src.rows * 0.45), // IRL
+        cv::Point2f(src.cols * 0.15, src.rows * 0.48), // IRL
+        cv::Point2f(src.cols * 0.85, src.rows * 0.48), // IRL
         // cv::Point2f(src.cols * 0.15, src.rows * 0.6), // Assetto
         // cv::Point2f(src.cols * 0.85, src.rows * 0.6), // Assetto
-        cv::Point2f(src.cols, src.rows * 0.8),
-        cv::Point2f(0, src.rows * 0.8),
+        cv::Point2f(src.cols, src.rows * 0.6),
+        cv::Point2f(0, src.rows * 0.6),
     };
     // cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\straight.png");
     // cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,255),img);
@@ -398,9 +398,21 @@ void ComputerVision::PredictTurn(cv::Mat src){
 
     std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX , rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX , rectY, rectHeight, rectwidth));
-
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
+
+    bool approximateLeft = false;
+    bool approximateRight = false;
+
+    if(rightLinePixels.empty() && !leftLinePixels.empty()){
+        fitR = fitL;
+        approximateRight = true;
+    }
+
+    if(leftLinePixels.empty() && !rightLinePixels.empty()){
+        fitL = fitR;
+        approximateLeft = true;
+    }
 
     fitR = ExponentalMovingAverage(lastKnownAveragedFitR, fitR, 0.95);
     fitL = ExponentalMovingAverage(lastKnownAveragedFitL, fitL, 0.95);
@@ -414,14 +426,14 @@ void ComputerVision::PredictTurn(cv::Mat src){
     {
         cv::Point2f positionR;
         positionR.y = x;
-        positionR.x = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
+        positionR.x = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0] + ((approximateRight) ? 700: 0)) ;
 
         cv::Point2f positionL;
         positionL.y = x;
-        positionL.x = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
+        positionL.x = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0] - ((approximateLeft) ? 700: 0));
 
-        int laneLeft = (fitL[2] * pow(x, 2) + (fitL[1] * x) + fitL[0]);
-        int laneRight = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0]);
+        int laneLeft = (fitL[2] * pow(x, 2) + (fitL[1] *  x) + fitL[0] - ((approximateLeft) ? 700: 0));
+        int laneRight = (fitR[2] * pow(x, 2) + (fitR[1] * x) + fitR[0] + ((approximateRight) ? 700: 0));
 
         int laneCenterX = (laneLeft + laneRight) / 2;
         
@@ -435,8 +447,8 @@ void ComputerVision::PredictTurn(cv::Mat src){
         centerLanePoints.push_back(cv::Point(laneCenterX, x));
     }
    
-    int laneLeft = (fitL[2] * pow(src.rows, 2) + (fitL[1] * src.rows) + fitL[0]);
-    int laneRight = (fitR[2] * pow(src.rows, 2) + (fitR[1] * src.rows) + fitR[0]);
+    int laneLeft = (fitL[2] * pow(src.rows, 2) + (fitL[1] * src.rows) + fitL[0] - ((approximateLeft) ? 700: 0));
+    int laneRight = (fitR[2] * pow(src.rows, 2) + (fitR[1] * src.rows) + fitR[0] + ((approximateRight) ? 700: 0));
 
     int laneCenterX = (laneLeft + laneRight) / 2;
     laneOffset = imageCenter - laneCenterX;
