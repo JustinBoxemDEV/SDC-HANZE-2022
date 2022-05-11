@@ -151,37 +151,82 @@ std::vector<cv::Point2f> ComputerVision::SlidingWindow(cv::Mat image, cv::Rect w
     std::vector<cv::Point2f> points;
     const cv::Size imgSize = image.size();
     
-    while (window.y >= 0){
-        if (window.x < 0)
-            window.x = 0;
-        if (window.x + window.width >= imgSize.width)
-            window.x = imgSize.width - window.width - 1;
-        float currentX = window.x + window.width * 0.5f;
-        cv::Mat roi = image(window);         
-        std::vector<cv::Point2f> locations;
-        
-        findNonZero(roi, locations);      
+    //Box Points (relative from mean point)
+    std::vector<cv::Point2f> relativePoints = {
+        cv::Point2f (-window.width, -(window.height /2)), //Top Left
+        cv::Point2f (0, -(window.height /2)), //Top Middle
+        cv::Point2f (window.width, -(window.height /2)), //Top Right
+        cv::Point2f (-(window.width / 2), 0), // Bottom Left
+        cv::Point2f (window.width / 2, 0)   //Bottom Right
+    };
+
+    bool completed = false;
+    std::vector<cv::Point2f> pixels;
+    int count =0;
+    std::deque<cv::Point> lastPositions;
+
+    while (window.y - window.height >= 0 && !completed){
+        if (window.x <= window.width * 1.5 || window.x + window.width * 1.5 >= imgSize.width){
+            completed = true;
+            break;
+        }
+
+        int pixelsFound = 0;
         float avgX = 0.0f;
-        
-        for (int i = 0; i < locations.size(); ++i) {
-            float x = locations[i].x;
-            avgX += window.x + x;
-            cv::Point point(window.y + locations[i].y,window.x + locations[i].x);
-            points.push_back(point);
+        float avgY = 0.0f;
+
+        for(auto relativePosition : relativePoints){
+            cv::Rect box = window;
+            box.x += relativePosition.x - window.width/2;            
+            box.y += relativePosition.y - window.height/2;    
+       
+            cv::Mat roi = image(box);     
+
+            cv::rectangle(warpedOverlay,box, (128,128,128));
+
+            findNonZero(roi, pixels);     
+            for (int i = 0; i < pixels.size(); i++) {
+                avgX += box.x + pixels[i].x;
+                avgY += box.y + pixels[i].y;
+
+                cv::Point point(box.y + pixels[i].y,box.x + pixels[i].x);
+                points.push_back(point);
+                pixelsFound++;
+            }
+            pixels.clear();
         }
         
-        avgX = locations.empty() ? currentX : avgX / locations.size();
-        cv::Point point(avgX, window.y + window.height * 0.5f);
-        // if(locations.empty()){
-        //     points.push_back(point);
-        // }
+        avgX = pixelsFound == 0 ? window.x : avgX / pixelsFound;
+        avgY = pixelsFound == 0 ? window.y : avgY / pixelsFound;
+    
+        if(pixelsFound == 0){
+            window.y -= window.height;
+        }else if(!lastPositions.empty() && (lastPositions.front() == cv::Point(avgX, avgY) || lastPositions.back() == cv::Point(avgX, avgY))){
+            completed = true;
+        }else{
+            window.y = avgY;
+        }
+        window.x = avgX;
+        lastPositions.push_front(cv::Point(window.x, window.y));
 
-        cv::rectangle(image,window, (255,255,255));
-        window.y -= window.height;
-        window.x += (point.x - currentX);
-        
+        if(lastPositions.size() > 2){
+            lastPositions.pop_back();
+        }
     }
-    return points;
+
+    struct ComparePoints {
+        bool operator()(const cv::Point2f & a, const cv::Point2f & b) const {
+            return a.x < b.x || (a.x == b.x && a.y < b.y); 
+        }
+    };
+
+    std::set<cv::Point2f, ComparePoints> uniquePoints;
+    for(int i = 0; i < points.size(); i++){
+        uniquePoints.emplace(points[i]);
+    }
+
+    std::vector<cv::Point2f> uniquePointsVector(uniquePoints.begin(), uniquePoints.end());
+    return uniquePointsVector;
 }
 
 cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
@@ -331,16 +376,16 @@ void ComputerVision::PredictTurn(cv::Mat src){
         cv::Point2f(src.cols, src.rows * 0.8),
         cv::Point2f(0, src.rows * 0.8),
     };
-    // cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\curveHard.png", cv::COLOR_BGR2GRAY);
-    // cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,250),img);
+    // cv::Mat img = cv::imread("E:\\Development\\Stage\\SDC-HANZE-2022\\assets\\images\\straight.png");
+    // cv::inRange(img, cv::Scalar(10,10,10), cv::Scalar(255,255,255),img);
     homography = cv::getPerspectiveTransform(srcP, dstP);
     
     invert(homography, invertedPerspectiveMatrix);
 
     cv::warpPerspective(src, warped, homography, cv::Size(src.cols, src.rows));
 
-    int rectHeight = 80;
-    int rectwidth = 30;
+    int rectHeight = 50;
+    int rectwidth = 40;
     int rectY = src.rows - rectHeight;
 
     std::vector<int> histogram = Histogram(warped);
@@ -349,16 +394,16 @@ void ComputerVision::PredictTurn(cv::Mat src){
     int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
     int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
 
-    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
-    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX - rectHeight/2, rectY, rectHeight, rectwidth));
+    warpedOverlay = cv::Mat::zeros(warped.size(), frame.type());
+
+    std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX , rectY, rectHeight, rectwidth));
+    std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX , rectY, rectHeight, rectwidth));
 
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
 
     fitR = ExponentalMovingAverage(lastKnownAveragedFitR, fitR, 0.95);
     fitL = ExponentalMovingAverage(lastKnownAveragedFitL, fitL, 0.95);
-
-    cv::Mat lineOverlayWarped = cv::Mat::zeros(warped.size(), frame.type());
 
     std::vector<cv::Point2f> rightLanePoints;
     std::vector<cv::Point2f> leftLanePoints;
@@ -381,14 +426,15 @@ void ComputerVision::PredictTurn(cv::Mat src){
         int laneCenterX = (laneLeft + laneRight) / 2;
         
         if(x != 0){
-            cv::line(lineOverlayWarped, leftLanePoints[leftLanePoints.size() -1], positionR, cv::Scalar(0,255,255),5);
-            cv::line(lineOverlayWarped, rightLanePoints[rightLanePoints.size() -1], positionL, cv::Scalar(255,255,0), 5);
-            cv::line(lineOverlayWarped, centerLanePoints[centerLanePoints.size() -1], cv::Point(laneCenterX, x), cv::Scalar(255,0,0), 4);
+            cv::line(warpedOverlay, leftLanePoints[leftLanePoints.size() -1], positionR, cv::Scalar(0,255,255),5);
+            cv::line(warpedOverlay, rightLanePoints[rightLanePoints.size() -1], positionL, cv::Scalar(255,255,0), 5);
+            cv::line(warpedOverlay, centerLanePoints[centerLanePoints.size() -1], cv::Point(laneCenterX, x), cv::Scalar(255,0,0), 4);
         }
         leftLanePoints.push_back(positionR);
         rightLanePoints.push_back(positionL);
         centerLanePoints.push_back(cv::Point(laneCenterX, x));
     }
+   
     int laneLeft = (fitL[2] * pow(src.rows, 2) + (fitL[1] * src.rows) + fitL[0]);
     int laneRight = (fitR[2] * pow(src.rows, 2) + (fitR[1] * src.rows) + fitR[0]);
 
@@ -400,7 +446,7 @@ void ComputerVision::PredictTurn(cv::Mat src){
     // std::cout<< "laneleft= "<< laneLeft << std::endl;
     // std::cout<< "laneright= "<< laneRight << std::endl;
     cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
-    cv::addWeighted(warped, 1, lineOverlayWarped, 1, 0, warped);
+    cv::addWeighted(warpedOverlay, 1, warped, 1,  0, warped);
     imshow("warped", warped);
 
     //----DRAW STUF -----

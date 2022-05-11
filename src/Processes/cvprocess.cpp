@@ -85,8 +85,8 @@ void CVProcess::ProcessFrame(cv::Mat src) {
 
     double pidout = pid.PIDController_update(normalisedLaneOffset);
 
-    std::cout << "pidout = "<< pidout << std::endl;
-    std::cout << "normilised lane offset = "<< normalisedLaneOffset << std::endl;
+    // std::cout << "pidout = "<< pidout << std::endl;
+    // std::cout << "normilised lane offset = "<< normalisedLaneOffset << std::endl;
 
     if(pidout >= -1 && pidout <=1) {
         CommunicationStrategy::actuators.steeringAngle = static_cast<float>(pidout);
