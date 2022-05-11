@@ -44,7 +44,7 @@
 __pycache__
 
 # Models are too big to push
-src/MachineLearning/ACRacing/training
+src/MachineLearning/ACRacing/Reinforcement Learning/training
 
 # Videos are too big to push
 src/MachineLearning/ACRacing/TestImges
