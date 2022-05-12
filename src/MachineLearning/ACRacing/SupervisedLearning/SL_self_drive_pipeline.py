@@ -1,3 +1,4 @@
+from operator import mod
 import torch
 from load_data import get_dataloader
 import tqdm
@@ -8,11 +9,13 @@ from SelfDriveModel import SelfDriveModel
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, 
                 num_epochs: int = 5, batch_size: int = 8, dev: str = "cuda:0"):
                 
-    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size)
+    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True)
     # valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size)
 
     # model = None
     model = SelfDriveModel()
+    model.to(dev)
+    # model.train()
 
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     # scheduler = optimizer
@@ -35,15 +38,15 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
             optimizer.zero_grad()
 
             # TODO: use moddel outputs instead of test data
-            # outputs = model(input_images)
+            outputs = model(input_images)
             
-            # example output for testing pipeline
-            outputs = [[0., 0., 0.],[0., 0., 0.],[0., 0., 0.],
-                        [0., 0., 0.],[0., 0., 0.],[0., 0., 0.],
-                        [0., 0., 0.],[0., 0., 0.]]
-            outputs = np.array(outputs)
-            outputs = torch.from_numpy(outputs)
-            outputs = outputs.to(dev)
+            # example output for testing pipeline (batch size 8)
+            # outputs = [[0., 0., 0.],[0., 0., 0.],[0., 0., 0.],
+            #             [0., 0., 0.],[0., 0., 0.],[0., 0., 0.],
+            #             [0., 0., 0.],[0., 0., 0.]]
+            # outputs = np.array(outputs)
+            # outputs = torch.from_numpy(outputs)
+            # outputs = outputs.to(dev)
 
             loss_fn = torch.nn.CrossEntropyLoss()
             loss = loss_fn(outputs, actions)
@@ -59,6 +62,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 total_loss = 0
         
         # if epoch % 2 == 0:
+        #      model.eval()
         #     # run_validation(valid_loader=valid_loader)
         #     pass
     return
@@ -66,6 +70,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
 
 @torch.no_grad()
 def run_testing(test_img_dir: str, test_actions_csv: str):
+    # TODO: everything 
     test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=8)
 
     model = None
