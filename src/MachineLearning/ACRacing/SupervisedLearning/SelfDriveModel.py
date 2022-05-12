@@ -43,19 +43,19 @@ class SelfDriveModel(nn.Module):
 # --------------------------------------------------------
 # For testing
 
-model = SelfDriveModel()
+# model = SelfDriveModel()
 
-img = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")
-# img = img[30:510, 10:650]
+# img = cv2.imread("src/MachineLearning/ACRacing/TestImges/ac480p.png")
+# # img = img[30:510, 10:650]
 
-# cv2.imshow("img", img)
-# cv2.waitKey(0)
-img = torch.tensor(img)
-print("Img shape:", img.shape)
-print("Img size:", img.size())
-output = model.forward(img)
+# # cv2.imshow("img", img)
+# # cv2.waitKey(0)
+# img = torch.tensor(img)
+# print("Img shape:", img.shape)
+# print("Img size:", img.size())
+# output = model.forward(img)
 
-print(output)
+# print(output)
 
 # TODO: Fix shape (shape '[509, 3, 66, 200]' is invalid for input of size 972699)
 

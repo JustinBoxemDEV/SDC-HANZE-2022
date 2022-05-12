@@ -4,7 +4,7 @@ import torch.utils.data
 import albumentations as A
 from transforms import ToTensor
 
-def get_dataloader(img_folder: str, act_csv: str, batch_size: int):
+def get_dataloader(img_folder: str, act_csv: str, batch_size: int, randomsunflare=False):
     t = []
     albu_t = []
 
