@@ -22,7 +22,7 @@ class SelfDriveModel(nn.Module):
         )
 
         self.linear_layers = nn.Sequential(
-            nn.Linear(in_features=48, out_features=100),
+            nn.Linear(in_features=48*234*418, out_features=100),
             nn.ELU(),
             # nn.Dropout(p=0.4),
             nn.Linear(in_features=100, out_features=64),
@@ -38,6 +38,7 @@ class SelfDriveModel(nn.Module):
         x = x.view(x.size(0), 3, 480, 848)
         print("X shape after transform:", x.shape)
         output = self.conv_layers(x)
+        print(output.shape)
         output = output.view(output.size(0), -1)
         print("X shape after second transform:", x.shape)
         output = self.linear_layers(output)
@@ -84,4 +85,4 @@ class SelfDriveModel(nn.Module):
 
 # print('\n\nModel params:')
 # for param in model.parameters():
-#     print(param)
+#     print(param.shape)
