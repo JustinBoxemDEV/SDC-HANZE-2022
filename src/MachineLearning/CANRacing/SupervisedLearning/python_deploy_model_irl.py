@@ -55,20 +55,21 @@ def main(model):
 
         
         # TODO: fix sending messages to CAN :(
-        # bus = can.Bus(interface='socketcan', channel='can0', bitrate=500000)
+        bus = can.Bus(interface='socketcan', channel='can0', bitrate=500000)
 
-        # acc_msg = can.Message(arbitration_id=0x120, is_extended_id=True, data=[throttle, 0, 1, 0, 0, 0, 0, 0])
-        # acc_task = bus.send_periodic(acc_msg, CAN_MSG_SENDING_SPEED)
+        acc_msg = can.Message(arbitration_id=0x120, is_extended_id=True, data=[throttle, 0, 1, 0, 0, 0, 0, 0])
+        acc_task = bus.send_periodic(acc_msg, CAN_MSG_SENDING_SPEED)
         
-        # steering_msg = can.Message(arbitration_id=0x12c, is_extended_id=True, data=[steering_angle, 0, 0, 0, 0, 0, 0, 0]) # idk how to send this data
-        # steering_task = bus.send_periodic(steering_msg, CAN_MSG_SENDING_SPEED)
+        steering_msg = can.Message(arbitration_id=0x12c, is_extended_id=True, data=[0, 0, 0, 0, 0, 0, 0, 0])
+        steering_msg.data = list(bytearray(struct.pack("f", float(steering_angle))) + bytearray(4))
+        steering_task = bus.send_periodic(steering_msg, CAN_MSG_SENDING_SPEED)
 
-        # brake_msg = can.Message(arbitration_id=0x126, is_extended_id=True, data=[brake, 0, 0, 0, 0, 0, 0, 0])
-        # brake_task = bus.send_periodic(brake_msg, CAN_MSG_SENDING_SPEED)
+        brake_msg = can.Message(arbitration_id=0x126, is_extended_id=True, data=[brake, 0, 0, 0, 0, 0, 0, 0])
+        brake_task = bus.send_periodic(brake_msg, CAN_MSG_SENDING_SPEED)
 
-        # acc_task.start()
-        # steering_task.start()
-        # brake_task.start()
+        acc_task.start()
+        steering_task.start()
+        brake_task.start()
 
         end_time = time.time()
         time_diff = end_time - start_time

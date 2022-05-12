@@ -165,4 +165,4 @@ def run(training=False):
 
 
 if __name__ == "__main__":
-    run(training=False)
+    run(training=True)
