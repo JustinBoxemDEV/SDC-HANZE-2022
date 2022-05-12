@@ -79,8 +79,8 @@ def run_validation(valid_loader, model, epoch, dev):
 
     if avg_loss < run_validation.best_loss:
         # save_dict = {"model": model.state_dict(), "loss": avg_loss, "epoch": epoch, "type": str(type(model))}
-        # torch.save(save_dict, "C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/ACRacing/SupervisedLearning/models/SelfDriveModel.pt") # Doesn't work for some reason
-        torch.save(model, "C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/ACRacing/SupervisedLearning/models/SLSelfDriveModel.pt")
+        # torch.save(save_dict, "C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SelfDriveModel.pt") # Doesn't work for some reason
+        torch.save(model, "C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt")
         print(f"Saving model with loss: {avg_loss}")
         run_validation.best_loss = avg_loss
     return
@@ -88,11 +88,13 @@ def run_validation(valid_loader, model, epoch, dev):
 
 @torch.no_grad()
 def run_testing(test_img_dir: str, test_actions_csv: str, dev="cuda:0"):
-    test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=8)
+    test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=8, normalize=True)
 
-    model = SelfDriveModel()
-    model.load_state_dict(torch.load("C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/ACRacing/SupervisedLearning/models/SLSelfDriveModel.pt"))
+    # model = SelfDriveModel()
+    # model.load_state_dict(torch.load("C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt"))
     # print(f"Loaded model with loss: {model['loss']}")
+
+    model = torch.load("C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt")
     model.eval()
     model.to(dev)
 
@@ -121,14 +123,14 @@ def run_testing(test_img_dir: str, test_actions_csv: str, dev="cuda:0"):
 def run(training=False):
     if training:
         run_training(train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/training/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/training/douwe_data_images_18-11-2021_14-59-21_2.csv", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/training/douwe_data_images_18-11-2021_14-59-21_2.csv",
                     # TEST AND VALIDATION DATA IS CURRENTLY THE SAME DUE TO LACK OF DATA
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation/", 
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/douwe_data_images_18-11-2021 15-12-21.csv",
                     num_epochs=1, batch_size=8, dev="cuda:0")
 
         # try to free up GPU memory
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
     run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
                 test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/douwe_data_images_18-11-2021 15-12-21.csv", 
@@ -138,4 +140,4 @@ def run(training=False):
 
 
 if __name__ == "__main__":
-    run(training=True)
+    run(training=False)
