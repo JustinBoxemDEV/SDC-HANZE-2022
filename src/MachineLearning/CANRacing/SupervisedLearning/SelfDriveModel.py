@@ -37,6 +37,7 @@ class SelfDriveModel(nn.Module):
         output = self.conv_layers(x)
         output = output.view(output.size(0), -1)
         output = self.linear_layers(output)
+        output = output.type(torch.cuda.DoubleTensor)
         return output
 
 # --------------------------------------------------------
