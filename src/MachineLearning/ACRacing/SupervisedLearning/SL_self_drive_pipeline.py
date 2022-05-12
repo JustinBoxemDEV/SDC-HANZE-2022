@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from load_data import get_dataloader
 import tqdm
 import numpy as np
+from SelfDriveModel import SelfDriveModel
 
 @torch.no_grad()
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, 
@@ -25,37 +26,57 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
         # print(f"Index: {i}")
         # print("Image names:", batch['img_names']) # contains 8 images if batch_size = 8
 
-    model = None
+    # scheduler = optimizer
+    # model = None
+    model = SelfDriveModel()
 
-    optimizer = adam
-    scheduler = optimizer
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    # scheduler = optimizer
+
+    last_loss = 0
+    total_loss = 0
 
     print("Training...")
     for epoch in range(0, num_epochs):
-        print(f"Executing epoch {epoch}!")
+        # print(f"Executing epoch {epoch}!")
 
         for idx, batch in enumerate(train_loader):
-            print(f"Executing batch number {idx}!")
+            # print(f"Executing batch number {idx}!")
 
-            print("Images in batch:", batch['image'])
-            print("Ground truth actions in batch:", batch['actions'])
+            # print("Images in batch:", batch['image'])
+            # print("Ground truth actions in batch:", batch['actions'])
 
-            # input_data, actions = batch['image'].to(dev), batch['actions'].to(dev)
+            input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
 
-            # steer, throttle, brake = (0.0, 0, 0) # TODO: model predictions
+            optimizer.zero_grad()
 
-            # loss = 0 # TODO: calculate loss
+            # TODO: use moddel outputs instead of test data
+            # outputs = model(input_images)
+            
+            # example output for testing pipeline
+            outputs = [[0., 0., 0.],[0., 0., 0.],[0., 0., 0.],
+                        [0., 0., 0.],[0., 0., 0.],[0., 0., 0.],
+                        [0., 0., 0.],[0., 0., 0.]]
+            outputs = np.array(outputs)
+            outputs = torch.from_numpy(outputs)
+            outputs = outputs.to(dev)
 
-            # back prop?
+            loss_fn = torch.nn.CrossEntropyLoss()
+            loss = loss_fn(outputs, actions)
+            # loss.backward()
 
-            # loss_sum += loss
-            # loss_cnt+=1
+            optimizer.step()
+
+            total_loss += loss.item()
+
+            if idx % 1000 == 999:
+                last_loss = total_loss / 1000 # loss per batch
+                print(f'Batch {idx+1} loss: {last_loss}')
+                total_loss = 0
         
-        # TODO: calc avg loss
-        # TODO: tune learning rate?
-        if epoch % 2 == 0:
-            # run_validation(valid_loader=valid_loader)
-            pass
+        # if epoch % 2 == 0:
+        #     # run_validation(valid_loader=valid_loader)
+        #     pass
     return
 
 
@@ -72,7 +93,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str):
         print("Images in batch:", batch['image'])
         print("Ground truth actions in batch:", batch['actions'])
         
-        # steer, throttle, brake = (0.0, 0, 0) # TODO: model prediction
+        # TODO: model prediction
     return
 
 
@@ -87,7 +108,7 @@ def run(training=False):
         run_training(train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/training/", 
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/training/douwe_data_images_18-11-2021_14-59-21_2.csv", 
                     valid_img_dir="", valid_actions_csv="", # dont have validation images right now (maybe data images 18-11-2021 11-07-14)
-                    num_epochs=1, batch_size=32, dev="cuda:0")
+                    num_epochs=1, batch_size=8, dev="cuda:0")
 
     # try to free up GPU memory
     torch.cuda.empty_cache()
@@ -102,3 +123,4 @@ if __name__ == "__main__":
                      train_actions_csv="D:\\SL_data\\training\\data images 18-11-2021 14-59-21.csv", 
                      valid_img_dir="", valid_actions_csv="", # dont have validation images right now (maybe data images 18-11-2021 11-07-14)
                      num_epochs=1, batch_size=32, dev="cuda:0")
+    run(training=True)
