@@ -1,18 +1,34 @@
 import torch
+import skimage.io
+from matplotlib import pyplot as plt
 from load_data import get_dataloader
 import tqdm
+import numpy as np
 
 @torch.no_grad()
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, 
                 num_epochs: int = 5, batch_size: int = 8, dev: str = "cuda:0"):
                 
-    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size)
+    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, random_sun_flare=True)
     # valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size)
+
+    for i, batch in enumerate(train_loader): # dataloader contains all images
+        plt.figure(f"Image index:{i}")
+
+        image = np.array(batch['image'][0])
+
+        skimage.io.imshow(image)
+        plt.show()
+
+        # print("Image:", batch['image'])
+        # print("Actions:", batch['actions'])
+        # print(f"Index: {i}")
+        # print("Image names:", batch['img_names']) # contains 8 images if batch_size = 8
 
     model = None
 
-    # optimizer = adam
-    # scheduler = optimizer
+    optimizer = adam
+    scheduler = optimizer
 
     print("Training...")
     for epoch in range(0, num_epochs):
@@ -82,4 +98,7 @@ def run(training=False):
 
 
 if __name__ == "__main__":
-    run(training=False)
+    run_training(train_img_dir="D:\\SL_data\\training", 
+                     train_actions_csv="D:\\SL_data\\training\\data images 18-11-2021 14-59-21.csv", 
+                     valid_img_dir="", valid_actions_csv="", # dont have validation images right now (maybe data images 18-11-2021 11-07-14)
+                     num_epochs=1, batch_size=32, dev="cuda:0")
