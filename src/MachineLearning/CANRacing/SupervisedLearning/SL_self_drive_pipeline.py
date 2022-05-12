@@ -137,14 +137,14 @@ def run(training=False):
                     train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/training/", 
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/training/douwe_data_images_18-11-2021_14-59-21_2.csv",
                     
-                    # FOR DEBUGGING
+                    # 8 IMAGE DATASET FOR DEBUGGING
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
 
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation/", 
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/douwe_data_images_18-11-2021 15-12-21.csv",
                     
-                    # FOR DEBUGGING
+                    # 8 IMAGE DATASET FOR DEBUGGING
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
                     num_epochs=2, amp_on=False, batch_size=3, dev="cuda:0")
@@ -156,7 +156,7 @@ def run(training=False):
     #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/data images 18-11-2021 13-45-33", 
     #             dev="cuda:0")
 
-    # FOR DEBUGGING
+    # 8 IMAGE DATASET FOR DEBUGGING
     # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
     #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv", 
     #             dev="cpu")
@@ -165,4 +165,4 @@ def run(training=False):
 
 
 if __name__ == "__main__":
-    run(training=True)
+    run(training=False)

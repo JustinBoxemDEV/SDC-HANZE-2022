@@ -79,7 +79,7 @@ def main(model):
 if __name__ == '__main__':
     device = torch.device("cpu")
     model = SelfDriveModel()
-    model.load_state_dict(torch.load("src/MachineLearning/CANRacing/models/SLSelfDriveModelv2.pt", 
+    model.load_state_dict(torch.load("src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt", 
                             map_location=device))
     
     model.to("cpu")
