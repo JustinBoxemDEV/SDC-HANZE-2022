@@ -4,13 +4,13 @@ import torch.utils.data
 import albumentations as A
 from transforms import ToTensor, Normalizer
 
-def get_dataloader(img_folder: str, act_csv: str, batch_size: int, random_sun_flare=False, horizontal_flip=False, motion_blur=False, random_shadow=False, random_brightness_contrast=False, random_gamma=False, normalize=True):
+def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=True,
+                    random_sun_flare=False, horizontal_flip=False, motion_blur=False, random_shadow=False, 
+                    random_brightness_contrast=False, random_gamma=False):
     t = []
     albu_t = []
 
     # Add transforms here!
-    # t.append(ToTensor())
-
     if normalize:
         t.append(Normalizer(0, 255))
     if(random_sun_flare):
@@ -26,8 +26,7 @@ def get_dataloader(img_folder: str, act_csv: str, batch_size: int, random_sun_fl
     if(random_gamma):
         albu_t.append(A.RandomGamma(gamma_limit=(80, 120), p=0.5))
 
-    print(albu_t)
-
+    t.append(ToTensor())
     dataset = TTAssenDataset(root_dir=img_folder, csv_file=act_csv, 
                                 transforms=transforms.Compose(t), albu_transforms=A.Compose(albu_t))
                                 

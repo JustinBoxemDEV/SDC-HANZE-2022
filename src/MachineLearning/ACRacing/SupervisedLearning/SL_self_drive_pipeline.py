@@ -11,7 +11,7 @@ from SelfDriveModel import SelfDriveModel
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, 
                 num_epochs: int = 5, batch_size: int = 8, dev: str = "cuda:0"):
                 
-    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, random_sun_flare=False, normalize=True)
+    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True, random_sun_flare=False)
     # valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size)
 
     # --------------------
@@ -29,12 +29,9 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
         # print(f"Index: {i}")
         # print("Image names:", batch['img_names']) # contains 8 images if batch_size = 8
     # -------------------------
-
-    # model = None
-
     model = SelfDriveModel()
     model.to(dev)
-    # model.train()
+    model.train()
 
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     # scheduler = optimizer
