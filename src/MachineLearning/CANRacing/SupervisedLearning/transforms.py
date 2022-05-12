@@ -3,6 +3,7 @@ from numpy import transpose
 import numpy as np
 from typing import Dict, Union
 
+# SCUFFED FIX FOR USING TRANSFORMS ON DEPLOYMENT
 deploy = False
 
 class ToTensor(object):
@@ -42,7 +43,7 @@ class Normalizer(object):
         Normalize the input array
 
         :param sample: a dictionary with the 'images' array of shape [b, h, w, c]
-        and the 'actions' array of shape [b, N, 5] containing [y1, x1, y2, x2, class_id] for N actions
+        and the 'actions' array of shape [b, N, 5] for N actions
 
         :return: A dictionary with converted 'image', 'actions'
         """

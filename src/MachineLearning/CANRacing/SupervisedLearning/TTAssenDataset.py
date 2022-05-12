@@ -3,18 +3,15 @@ import pandas as pd
 import os
 import skimage.io
 import numpy as np
-from matplotlib import pyplot as plt
-from transforms import ToTensor
-import albumentations as A
-import torchvision.transforms as transforms
+
 
 class TTAssenDataset(torch.utils.data.Dataset):
 
     def __init__(self, root_dir: str, csv_file: str,
                     transforms=None, albu_transforms=None):
         """
-        Param csv_file (string): Path to the csv file with annotations
-        Param root_dir (string): Directory with all the images
+        Param csv_file (string): Path to the csv file with actions
+        Param root_dir (string): Path to folder containing directory with all the images
         Param transform (callable, optional) Optional transform to be applied on a sample
         """
         self.actions_frames = pd.read_csv(csv_file)
@@ -49,29 +46,3 @@ class TTAssenDataset(torch.utils.data.Dataset):
             sample = self.transforms(sample)
 
         return sample
-
-# ----------------------------------------------------------------------------------------------------
-# For testing
-
-# ttAssen_dataset = TTAssenDataset(csv_file='C:/Users/Sabin/Documents/SDC/RDW_Data/douwe_data_images_18-11-2021_14-59-21_2.csv',
-#                                     root_dir='C:/Users/Sabin/Documents/SDC/RDW_Data/',
-#                                     transforms=None, albu_transforms=None)
-
-# fig = plt.figure("Dataset samples")
-
-# for i in range(len(ttAssen_dataset)):
-#     sample = ttAssen_dataset[i]
-
-#     # print(sample)
-#     # print(i, sample['image'].shape, sample['actions'].shape)
-
-#     ax = plt.subplot(1, 4, i + 1) # show first 4 samples
-#     plt.tight_layout()
-#     ax.set_title(f'Sample #{i}')
-#     # ax.axis('off')
-#     ax.set_xlabel(f"Actions:{sample['actions']}")
-#     plt.imshow(sample['image'])
-
-#     if i == 3:
-#         plt.show()
-#         break

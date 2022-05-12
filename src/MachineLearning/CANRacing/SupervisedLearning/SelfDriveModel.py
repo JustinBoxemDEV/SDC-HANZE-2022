@@ -18,7 +18,7 @@ class SelfDriveModel(nn.Module):
             nn.ELU(),
             nn.Conv2d(36, 48, kernel_size=3, stride=1)
             # nn.ELU(),
-            # nn.Dropout(p=0.5)
+            # nn.Dropout(p=0.5) # TODO: test if this helps
         )
 
         self.linear_layers = nn.Sequential(
