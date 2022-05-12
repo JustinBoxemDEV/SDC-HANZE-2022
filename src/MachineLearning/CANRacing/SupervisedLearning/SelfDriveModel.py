@@ -33,11 +33,12 @@ class SelfDriveModel(nn.Module):
         )
 
     def forward(self, x):
-        x = x.view(x.size(0), 3, 480, 848)
+        x = x.view(1, 3, 480, 848) # x.size(0)
         output = self.conv_layers(x)
-        output = output.view(output.size(0), -1)
+        output = output.view(1, -1) # output.size(0)
         output = self.linear_layers(output)
-        output = output.type(torch.cuda.DoubleTensor)
+
+        output = output.type(torch.cuda.DoubleTensor) # comment this if you use CPU (for deployment) 
         return output
 
 # --------------------------------------------------------

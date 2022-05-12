@@ -29,20 +29,14 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     print("Training...")
     for epoch in range(0, num_epochs):
         loss_sum, loss_cnt  = 0, 0
-        # print(f"Executing epoch {epoch}!")  
-        
 
         for idx, batch in enumerate(tqdm(train_loader)):
             optimizer.zero_grad()
-            # print(f"Executing batch number {idx}!")
 
             input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
             
-            # print("Images in batch:", batch['image'])
-            # print("Ground truth actions in batch:", batch['actions'])
-        
             if amp_on:
-                # THIS IS EXPERIMENTAL, SET IT TO FALSE DURING TRAINING FOR NOW
+                # AMP IS EXPERIMENTAL, SET IT TO FALSE DURING TRAINING
                 with torch.cuda.amp.autocast():
                     outputs = model(input_images)
                     loss = loss_fn(outputs, actions)
@@ -53,8 +47,6 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 scaler.update()
             else:
                 outputs = model(input_images)
-                # print("Prediction:", outputs)
-                # print("Ground truth:", actions)
 
                 loss = loss_fn(outputs, actions)
                 loss.backward()
@@ -71,7 +63,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
 
         print(f"Avg loss on epoch {epoch} is {avg_loss}")
 
-        if epoch % 2 == 0:
+        if epoch % 1 == 0:
             model.eval()
             run_validation(valid_loader=valid_loader, epoch=epoch, model=model, dev=dev)
             model.train()
@@ -98,10 +90,9 @@ def run_validation(valid_loader, model, epoch, dev):
 
     avg_loss = loss_sum / loss_cnt
 
-    if avg_loss < run_validation.best_loss:
-        # save_dict = {"model": model.state_dict(), "loss": avg_loss, "epoch": epoch, "type": str(type(model))}
-        # torch.save(save_dict, "C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SelfDriveModel.pt") # Doesn't work for some reason
-        torch.save(model, "C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SLSelfDriveModelv2.pt")
+    if avg_loss < run_validation.best_loss:      
+        torch.save(model.state_dict(), "src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt")
+        
         print(f"Saving model at epoch {epoch} with loss {avg_loss}")
         run_validation.best_loss = avg_loss
     return
@@ -109,13 +100,13 @@ def run_validation(valid_loader, model, epoch, dev):
 
 @torch.no_grad()
 def run_testing(test_img_dir: str, test_actions_csv: str, dev="cuda:0"):
-    test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=8, normalize=True)
+    test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=True)
 
-    # model = SelfDriveModel()
-    # model.load_state_dict(torch.load("C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt"))
-    # print(f"Loaded model with loss: {model['loss']}")
-
-    model = torch.load("C:/Users/Sabin/Documents/vsc_cpp_projects/SDC-stuff/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SLSelfDriveModelv2.pt")
+    device = torch.device("cpu")
+    model = SelfDriveModel()
+    model.load_state_dict(torch.load("src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt", 
+                            map_location=device))
+    
     model.eval()
     model.to(dev)
 
@@ -123,7 +114,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, dev="cuda:0"):
 
     print("Testing...")
     for idx, batch in enumerate(tqdm(test_loader)):
-        input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
+        input_images, actions = batch['image'].to(device), batch['actions'].to(device)
 
         outputs = model(input_images)
 
@@ -142,19 +133,33 @@ def run_testing(test_img_dir: str, test_actions_csv: str, dev="cuda:0"):
 
 def run(training=False):
     if training:
-        run_training(train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/training/", 
+        run_training(
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/training/", 
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/training/douwe_data_images_18-11-2021_14-59-21_2.csv",
-                    # TEST AND VALIDATION DATA IS CURRENTLY THE SAME DUE TO LACK OF DATA
+                    
+                    # FOR DEBUGGING
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
+
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation/", 
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/douwe_data_images_18-11-2021 15-12-21.csv",
+                    
+                    # FOR DEBUGGING
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
                     num_epochs=2, amp_on=False, batch_size=3, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
 
-    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/douwe_data_images_18-11-2021 15-12-21.csv", 
-                dev="cuda:0")
+    # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
+    #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/data images 18-11-2021 13-45-33", 
+    #             dev="cuda:0")
+
+    # FOR DEBUGGING
+    # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
+    #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv", 
+    #             dev="cpu")
 
     print("Done!")
 

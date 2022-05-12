@@ -3,19 +3,26 @@ from numpy import transpose
 import numpy as np
 from typing import Dict, Union
 
+deploy = False
+
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors for GPU acceleration"""
 
     def __call__(self, sample):
-        image, actions = sample['image'], sample['actions']
+        if deploy:
+            sample = sample.transpose((2, 0, 1))
+            sample = torch.from_numpy(sample)
+            return sample
+        else:
+            image, actions = sample['image'], sample['actions']
 
-        # swap color axis because
-        # numpy image: H x W x C
-        # Tensor image: C x H x W
-        # print("Image in totensor:", image)
-        image = image.transpose((2, 0, 1))
-        return {'image': torch.from_numpy(image),
-                'actions': torch.from_numpy(actions)}
+            # swap color axis because
+            # numpy image: H x W x C
+            # Tensor image: C x H x W
+            image = image.transpose((2, 0, 1))
+            return {'image': torch.from_numpy(image),
+                    'actions': torch.from_numpy(actions)}
+
 
 class Normalizer(object):
     """
@@ -27,10 +34,6 @@ class Normalizer(object):
         :param mean: list of mean values (one for each channel)
         :param std: list of stddev values (one for each channel)
         """
-        # if mean is None:
-        #    mean = [[[0.485, 0.456, 0.406]]]
-        # if std is None:
-        #    std = [[[0.229, 0.224, 0.225]]]
         self.mean = np.array(mean)
         self.std = np.array(std)
 
@@ -43,5 +46,10 @@ class Normalizer(object):
 
         :return: A dictionary with converted 'image', 'actions'
         """
-        image, actions = sample['image'], sample['actions']
-        return {'image': ((image.astype(np.float32) - self.mean) / self.std), 'actions': actions}
+        if deploy:
+            return (sample.astype(np.float32) - self.mean) / self.std
+        else:    
+            image, actions = sample['image'], sample['actions']
+            return {'image': ((image.astype(np.float32) - self.mean) / self.std), 'actions': actions}
+
+        
