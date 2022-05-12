@@ -1,15 +1,19 @@
+# To update requirements.txt: https://github.com/bndr/pipreqs
+
+# Used with python 3.7.13
+# First run: conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch 
+# to prevent "Torch not compiled with CUDA enabled" 
+# Then run pip install requirements.txt
+
 import torch
-import skimage.io
-from matplotlib import pyplot as plt
 from load_data import get_dataloader
 from tqdm import tqdm
-import numpy as np
 from SelfDriveModel import SelfDriveModel
 from utilities import static_var
 
 
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, 
-                num_epochs: int = 5, batch_size: int = 8, amp_on = False, dev: str = "cuda:0"):
+                num_epochs: int = 5, batch_size: int = 1, amp_on = False, dev: str = "cuda:0"):
                 
     train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True) # set transforms to true here for data augmentation
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=True)
@@ -36,7 +40,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
             input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
             
             if amp_on:
-                # AMP IS EXPERIMENTAL, SET IT TO FALSE DURING TRAINING
+                # AMP IS EXPERIMENTAL FOR FASTER TRAINING, SET IT TO FALSE DURING TRAINING
                 with torch.cuda.amp.autocast():
                     outputs = model(input_images)
                     loss = loss_fn(outputs, actions)
@@ -63,7 +67,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
 
         print(f"Avg loss on epoch {epoch} is {avg_loss}")
 
-        if epoch % 1 == 0:
+        if epoch % 2 == 0:
             model.eval()
             run_validation(valid_loader=valid_loader, epoch=epoch, model=model, dev=dev)
             model.train()
@@ -147,7 +151,7 @@ def run(training=False):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
-                    num_epochs=2, amp_on=False, batch_size=3, dev="cuda:0")
+                    num_epochs=100, amp_on=False, batch_size=1, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
