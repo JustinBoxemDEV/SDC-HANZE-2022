@@ -1,8 +1,9 @@
 import csv
 import struct
+import cv2
 
-readf = open('C:\\Users\\douwe\\Desktop\\data images 18-11-2021 11-07-14.csv')
-writef = open('C:\\Users\\douwe\Desktop\\test.csv', 'w')
+readf = open('/home/douwe/Desktop/data/data_images_18-11-2021_15-12-21.csv')
+writef = open('/home/douwe/Desktop/data/test.csv', 'w')
 
 fields=('Steer', 'Throttle', 'Brake', 'Image')
 
@@ -13,11 +14,8 @@ writer.writeheader()
 header = next(reader)
 
 for row in reader:
-    print(row)
-
     text = str(row)
     text = text.replace("\"", "").replace("[", "").replace("]", "").replace("\'", "")
-    print(text)
 
     # print(text)
     # text = text.replace(";", "")
@@ -31,11 +29,25 @@ for row in reader:
     steeringData.reverse()
     steeringBytes = bytes(steeringData)
 
-    print(steeringBytes)
-
     steerFloat = struct.unpack('f', steeringBytes[0:4])
     steerFloat = str(steerFloat).replace("(", "").replace(")", "").replace(",", "")
     steerFloat = float(steerFloat)
+
+    imageFloat = image.replace(".png", ".jpg").split("/")
+    # print(imageFloat)
+    imageName = imageFloat[1]
+    # print(imageName)
+    
+    imageSource = '/home/douwe/Desktop/data/'+imageFloat[0]+'/'+imageFloat[1]
+    
+    rdwimage = cv2.imread(imageSource)
+    
+    if((steerFloat > 0.1) or (steerFloat < -0.1)):  
+        imageDestination = '/home/douwe/Desktop/data/bochten/'+imageName
+        cv2.imwrite(imageDestination, rdwimage)
+    if(steerFloat == 0):
+        imageDestination = '/home/douwe/Desktop/data/rechte stukken/'+imageName
+        cv2.imwrite(imageDestination, rdwimage)
 
     throttle = data[1].replace("\"", "").split(",")[0]
     if(len(throttle) == 0):
@@ -44,7 +56,6 @@ for row in reader:
        throttle = int(throttle) 
        throttle = throttle * 1.75438596491
        throttle = int(round(throttle))
-       print(throttle)
     
     brake = data[2].replace("\"", "").split(",")[0]
     if(len(brake) == 0):
