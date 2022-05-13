@@ -76,7 +76,7 @@ def main(model):
 if __name__ == '__main__':
     device = torch.device("cpu")
     model = SelfDriveModel()
-    model.load_state_dict(torch.load("/home/sab/Documents/Projects/SDC-HANZE-2022/src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt", 
+    model.load_state_dict(torch.load("/src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt", 
                             map_location=device))
     
     model.to("cpu")
