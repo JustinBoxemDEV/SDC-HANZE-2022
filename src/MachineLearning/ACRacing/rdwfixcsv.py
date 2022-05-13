@@ -24,9 +24,13 @@ if(validation):
     writer = csv.DictWriter(writevalidation, fieldnames=fields, lineterminator='\n')
     writer.writeheader()
     
+    imageArray = []
     images = '/home/douwe/Desktop/data/bochten/'
+    for imageFolder in os.listdir(images):
+        imageArray.append(imageFolder)
+    
     for row in reader:
-        for imageFolder in os.listdir(images):
+        for imageFolder in imageArray:
             text = str(row)
             text = text.replace("\"", "").replace("[", "").replace("]", "").replace("\'", "")
 
@@ -36,21 +40,22 @@ if(validation):
             data = text.split("|")
 
             image = data[4].replace("\"", "").replace(".png", ".jpg")
-            steering = data[0].replace("\"", "").split(",")
-            steering.reverse()
-            steeringData = [int(x) for x in steering]
-            steeringData.reverse()
-            steeringBytes = bytes(steeringData)
-
-            steerFloat = struct.unpack('f', steeringBytes[0:4])
-            steerFloat = str(steerFloat).replace("(", "").replace(")", "").replace(",", "")
-            steerFloat = float(steerFloat)
 
             imageFloat = image.split("/")
             
             if(imageFloat[1] == imageFolder):
+                imageArray.remove(imageFolder)
+                steering = data[0].replace("\"", "").split(",")
+                steering.reverse()
+                steeringData = [int(x) for x in steering]
+                steeringData.reverse()
+                steeringBytes = bytes(steeringData)
+
+                steerFloat = struct.unpack('f', steeringBytes[0:4])
+                steerFloat = str(steerFloat).replace("(", "").replace(")", "").replace(",", "")
+                steerFloat = float(steerFloat)
                 print("True")
-            
+
                 # print(imageFloat)
                 # imageName = imageFloat[1]
                 # print(imageName)
