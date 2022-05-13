@@ -22,7 +22,7 @@ for row in reader:
 
     data = text.split("|")
 
-    image = data[4].replace("\"", "")
+    image = data[4].replace("\"", "").replace(".png", ".jpg")
     steering = data[0].replace("\"", "").split(",")
     steering.reverse()
     steeringData = [int(x) for x in steering]
@@ -33,7 +33,7 @@ for row in reader:
     steerFloat = str(steerFloat).replace("(", "").replace(")", "").replace(",", "")
     steerFloat = float(steerFloat)
 
-    imageFloat = image.replace(".png", ".jpg").split("/")
+    imageFloat = image.split("/")
     # print(imageFloat)
     imageName = imageFloat[1]
     # print(imageName)
