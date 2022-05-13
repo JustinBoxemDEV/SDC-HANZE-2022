@@ -9,6 +9,8 @@
 # 1. rescale input images to smaller size
 # 2. sort out images for training set (variation in images)
 # 3. Optimize pipeline (speed) https://pytorch.org/docs/stable/amp.html
+# 4. Remove brake from the NN
+# 5. Limit NN output values
 
 import torch
 from load_data import get_dataloader
@@ -126,6 +128,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, dev="cuda:0"):
         input_images, actions = batch['image'].to(device), batch['actions'].to(device)
 
         outputs = model(input_images)
+        print(outputs)
 
         loss_fn = torch.nn.MSELoss()
         loss = loss_fn(outputs, actions)
@@ -166,9 +169,9 @@ def run(training=False):
     #             dev="cuda:0")
 
     # 8 IMAGE DATASET FOR DEBUGGING
-    # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
-    #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv", 
-    #             dev="cpu")
+    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
+                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv", 
+                dev="cpu")
 
     print("Done!")
 
