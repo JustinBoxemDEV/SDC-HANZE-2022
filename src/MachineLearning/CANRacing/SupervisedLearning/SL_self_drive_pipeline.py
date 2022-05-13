@@ -5,6 +5,11 @@
 # to prevent "Torch not compiled with CUDA enabled" 
 # Then run pip install requirements.txt
 
+# TODO: 
+# 1. rescale input images to smaller size
+# 2. sort out images for training set (variation in images)
+# 3. Optimize pipeline (speed) https://pytorch.org/docs/stable/amp.html
+
 import torch
 from load_data import get_dataloader
 from tqdm import tqdm
@@ -67,7 +72,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
 
         print(f"Avg loss on epoch {epoch} is {avg_loss}")
 
-        if epoch % 2 == 0:
+        if epoch % 1 == 0:
             model.eval()
             run_validation(valid_loader=valid_loader, epoch=epoch, model=model, dev=dev)
             model.train()
@@ -151,7 +156,7 @@ def run(training=False):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
-                    num_epochs=100, amp_on=False, batch_size=1, dev="cuda:0")
+                    num_epochs=100, amp_on=False, batch_size=2, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
