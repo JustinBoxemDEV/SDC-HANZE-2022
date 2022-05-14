@@ -36,7 +36,11 @@ class TTAssenDataset(torch.utils.data.Dataset):
 
         actions = np.array([steer, throttle, brake])
 
-        sample = {'image': image, 'actions': actions, 'img_names': img_name}
+        image = np.resize(image, (480, 640, 3)).astype(np.float32) # resize images here!
+
+        # TODO: Slice images (remove unnecessary data)
+
+        sample = {'image': image, 'actions': actions}
 
         # Augmentation transforms which use the albumentations library
         if self.albu_transforms:
@@ -45,4 +49,6 @@ class TTAssenDataset(torch.utils.data.Dataset):
         if self.transforms:
             sample = self.transforms(sample)
 
+        sample['img_names'] = img_name
+        
         return sample

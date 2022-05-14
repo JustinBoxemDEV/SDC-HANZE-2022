@@ -1,4 +1,4 @@
-# magic
+# some decorator magic
 
 def static_var(**kwargs):
     def decorate(func):

@@ -1,6 +1,4 @@
-#/usr/bin/env python3
-
-# ! ONLY COMPATIBLE WITH WINDOWS DUE TO WIN32GUI, NOT USED IN OUR PROJECT
+# For deploying the .pt model on the kart (python version)
 
 import time
 import struct

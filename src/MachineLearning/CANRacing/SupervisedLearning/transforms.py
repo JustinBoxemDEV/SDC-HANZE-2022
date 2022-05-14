@@ -3,8 +3,8 @@ from numpy import transpose
 import numpy as np
 from typing import Dict, Union
 
-# SCUFFED FIX FOR USING TRANSFORMS ON DEPLOYMENT
-deploy = True
+# SCUFFED FIX FOR USING TRANSFORMS ON DEPLOYMENT IN PYTHON
+deploy = False
 
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors for GPU acceleration"""
