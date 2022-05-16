@@ -25,7 +25,7 @@ from tensorboardfuncs import create_tb, tb_show_text, tb_show_loss, tb_show_imag
 from tbprep import draw_pred_and_traget_npy
 import skimage.io 
 
-def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, 
+def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name="SLSelfDriveModel",
                 num_epochs: int = 5, batch_size: int = 1, amp_on = False, dev: str = "cuda:0"):
                 
     train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True) # set transforms to true here for data augmentation (only in training!)
@@ -86,14 +86,14 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
 
         if epoch % 2 == 0:
             model.eval()
-            run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, dev=dev)
+            run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, dev=dev, model_name=model_name)
             model.train()
     return
 
 
 @static_var(best_loss=99999)
 @torch.no_grad()
-def run_validation(valid_loader, model, writer, epoch, dev):
+def run_validation(valid_loader, model, writer, epoch, dev, model_name):
     loss_fn = torch.nn.MSELoss()
     loss_sum, loss_cnt = 0, 0
     for i, batch in enumerate(tqdm(valid_loader)):
@@ -117,7 +117,7 @@ def run_validation(valid_loader, model, writer, epoch, dev):
     tb_show_loss(avg_loss, epoch, "tb_validation", "loss", writer)
 
     if avg_loss < run_validation.best_loss:      
-        torch.save(model.state_dict(), "src/MachineLearning/CANRacing/models/SLSelfDriveModelTestTB.pt")
+        torch.save(model.state_dict(), f"src/MachineLearning/CANRacing/models/{model_name}.pt")
         print(f"\033[92mSaving model at epoch {epoch} with loss {avg_loss}\033[0m")
 
         run_validation.best_loss = avg_loss
@@ -125,14 +125,14 @@ def run_validation(valid_loader, model, writer, epoch, dev):
 
 
 @torch.no_grad()
-def run_testing(test_img_dir: str, test_actions_csv: str, wait=True, dev="cpu"):
+def run_testing(test_img_dir: str, test_actions_csv: str, model_name="SLSelfDriveModel", wait=True, dev="cpu"):
     test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=True)
 
     # maybe redundant
     device = torch.device("cpu")
 
     model = SelfDriveModel()
-    model.load_state_dict(torch.load("src/MachineLearning/CANRacing/models/SLSelfDriveModelBochten140522.pt", 
+    model.load_state_dict(torch.load(f"src/MachineLearning/CANRacing/models/{model_name}.pt", 
                             map_location=device))
     model.eval()
     model.to(dev)
@@ -150,8 +150,6 @@ def run_testing(test_img_dir: str, test_actions_csv: str, wait=True, dev="cpu"):
         input_images, actions = batch['image'].to(device), batch['actions'].to(device)
 
         outputs = model(input_images)
-    
-        # print(f"Predicted steering {outputs[0][0]} and throttle {outputs[0][1]} for image {img_name[0][66:]} with steering {actions[0][0]} and throttle {actions[0][1]}")
 
         # draw image name, prediction and target on image
         img_with_data = draw_pred_and_traget_npy(np_image, filename=img_name[0][66:], predicted_actions=outputs, target_actions=actions, dataformats="HWC")
@@ -173,38 +171,57 @@ def run_testing(test_img_dir: str, test_actions_csv: str, wait=True, dev="cpu"):
     return
 
 
-def run(training=False):
+def run(training=False, experiment=False):
     if training:
         run_training(
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_1_bochten/training", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_1_bochten/training/train_data_images_18-11-2021_14-59-21_2.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
 
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_1_bochten/validation", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_1_bochten/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
-                    num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
+                    model_name="SLSelfDriveModel1", num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
-    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_1_bochten/validation", 
-                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_1_bochten/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                wait=True, dev="cpu") # test on cpu
+    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
+                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                model_name="SLSelfDriveModelBochten140522", wait=True, dev="cpu") # test on cpu
 
     # 8 IMAGE DATASET FOR DEBUGGING
     # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
     #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv", 
-    #             dev="cpu") 
+    #             model_name="SLSelfDriveModel8IMG", dev="cpu") 
+
+    if experiment:
+        # 90% turns
+        run_training(
+                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
+                train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+                valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
+                valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                model_name="SLSelfDriveModel90p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
+
+        torch.cuda.empty_cache()
+
+        # 95% turns
+        run_training(
+                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
+                train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+                valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
+                valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                model_name="SelfDriveModel95p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
 
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=False)
+    run(training=False, experiment=False)

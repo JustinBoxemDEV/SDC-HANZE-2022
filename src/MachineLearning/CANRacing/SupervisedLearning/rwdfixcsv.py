@@ -1,13 +1,14 @@
 # Douwe script for splitting images with turns
 
 import csv
+import shutil
 import struct
 import cv2
 import os
 from os import listdir
 
-readf = open('/home/douwe/Desktop/data/data_images_18-11-2021_15-12-21.csv')
-writef = open('/home/douwe/Desktop/data/test.csv', 'w')
+readf = open('C:/Users/Sabin/Documents/SDC/RDW_Data/new/good_data images 18-11-2021 12-53-47.csv', "r")
+writef = open('C:/Users/Sabin/Documents/SDC/RDW_Data/bochten/douwe_good_data images 18-11-2021 12-53-47.csv', 'w')
 
 twentytwo = False
 twentyone = True 
@@ -45,32 +46,37 @@ if(twentyone):
         # print(imageFloat)
         imageName = imageFloat[1]
         # print(imageName)
+        # print(imageFloat)
         
-        imageSource = '/home/douwe/Desktop/data/'+imageFloat[0]+'/'+imageFloat[1]
-        
-        rdwimage = cv2.imread(imageSource)
-        
-        if((steerFloat > 0.1) or (steerFloat < -0.1)):  
-            imageDestination = '/home/douwe/Desktop/data/bochten/'+imageName
-            cv2.imwrite(imageDestination, rdwimage)
-        if(steerFloat == 0):
-            imageDestination = '/home/douwe/Desktop/data/rechte stukken/'+imageName
-            cv2.imwrite(imageDestination, rdwimage)
+        # good_images 18-11-2021 12-53-47/
+        imageSource = 'C:/Users/Sabin/Documents/SDC/RDW_Data/new/'+imageFloat[0]+'/'+imageFloat[1]
+        print(imageSource)
+        if os.path.exists(imageSource):
+            rdwimage = cv2.imread(imageSource)
+            
+            if((steerFloat > 0.1) or (steerFloat < -0.1)):  
+                imageDestination = 'C:/Users/Sabin/Documents/SDC/RDW_Data/bochten/good_images 18-11-2021 12-53-47/'+imageName
+                shutil.copy(imageSource, imageDestination)
+            if(steerFloat == 0):
+                imageDestination = 'C:/Users/Sabin/Documents/SDC/RDW_Data/recht/good_images 18-11-2021 12-53-47/'+imageName
+                shutil.copy(imageSource, imageDestination)
 
-        throttle = data[1].replace("\"", "").split(",")[0]
-        if(len(throttle) == 0):
-            throttle = 0
-        else:
-            throttle = int(throttle) 
-            throttle = throttle * 1.75438596491
-            throttle = int(round(throttle))
-        
-        brake = data[2].replace("\"", "").split(",")[0]
-        if(len(brake) == 0):
-            brake = 0
-        else:
-            brake = int(brake)
-        writer.writerow({'Steer': steerFloat, 'Throttle': throttle, 'Brake': brake, 'Image': image})
+            throttle = data[1].replace("\"", "").split(",")[0]
+            if(len(throttle) == 0):
+                throttle = 0
+            else:
+                throttle = int(throttle) 
+                throttle = throttle * 1.75438596491
+                throttle = int(round(throttle))
+            
+            brake = data[2].replace("\"", "").split(",")[0]
+            if(len(brake) == 0):
+                brake = 0
+            else:
+                brake = int(brake)
+            
+            if((steerFloat > 0.1) or (steerFloat < -0.1)): 
+                writer.writerow({'Steer': steerFloat, 'Throttle': throttle, 'Brake': brake, 'Image': image})
 
 if(twentytwo):
     for row in reader:
