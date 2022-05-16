@@ -70,7 +70,7 @@ void CVProcess::ProcessFrame(cv::Mat src) {
 
     cv::Mat binaryImage = cVision.CreateBinaryImage(gammaCorrected);
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
-
+    
     cVision.PredictTurn(maskedImage);
     
     double curveRadiusR = cVision.getRightEdgeCurvature();
