@@ -36,7 +36,7 @@ class TTAssenDataset(torch.utils.data.Dataset):
 
         actions = np.array([steer, throttle, brake])
 
-        image = np.resize(image, (480, 640, 3)).astype(np.float32) # resize images here!
+        image = np.resize(image, (480, 848, 3)).astype(np.float32) # resize images here!
 
         # TODO: Slice images (remove unnecessary data)
 

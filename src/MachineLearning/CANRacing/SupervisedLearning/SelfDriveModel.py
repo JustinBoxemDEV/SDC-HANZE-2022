@@ -31,6 +31,6 @@ class SelfDriveModel(nn.Module):
         # print(output.shape)
         output = output.view(output.size(0), -1) # output.size(0) if training, 1 if deploying
         output = self.linear_layers(output)
-        output = output.type(torch.cuda.DoubleTensor) # comment this if you use CPU (for deployment) TODO: dynamic fix
+        # output = output.type(torch.cuda.DoubleTensor) # comment this if you use CPU (for deployment) TODO: dynamic fix
         return output
 
