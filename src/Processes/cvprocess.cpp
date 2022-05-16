@@ -54,16 +54,16 @@ void CVProcess::Run(){
 }
 
 void CVProcess::ProcessFrame(cv::Mat src) {
-    if(mediaInput->mediaType == MediaSource::realtime || mediaInput->mediaType == MediaSource::video) {
-        cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 792.13574, 0, 319.5, 0, 792.13574, 239.5, 0, 0, 1);
-        cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.0905006, -0.55128, 0, 0, 0);
+    // if(mediaInput->mediaType == MediaSource::realtime || mediaInput->mediaType == MediaSource::video) {
+    //     cv::Mat cameraMatrix = (cv::Mat1d(3,3) << 792.13574, 0, 319.5, 0, 792.13574, 239.5, 0, 0, 1);
+    //     cv::Mat distortionCoefficients = (cv::Mat1d(1, 5) << 0.0905006, -0.55128, 0, 0, 0);
 
-        cv::Mat temp = src.clone();
-        cv::undistort(temp, src, cameraMatrix, distortionCoefficients);
+    //     cv::Mat temp = src.clone();
+    //     cv::undistort(temp, src, cameraMatrix, distortionCoefficients);
 
-        cv::imshow("distorted image", temp);
-        cv::imshow("undistorted image", src);
-    }
+    //     cv::imshow("distorted image", temp);
+    //     cv::imshow("undistorted image", src);
+    // }
 
     cv::Mat gammaCorrected = cVision.GammaCorrection(src, gamma );
     cVision.SetFrame(gammaCorrected);
