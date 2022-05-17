@@ -1,28 +1,34 @@
 # To update requirements.txt: https://github.com/bndr/pipreqs
 
-# Used with python 3.7.13
-# First run: conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch 
-# to prevent "Torch not compiled with CUDA enabled" 
+# SETUP THE PIPELINE:
+# Download python 3.7.13
+# Create a conda environment and run: conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch 
+# to prevent "Torch not compiled with CUDA enabled" (This step is only needed if you plan on training on GPU)
 # Then run pip install requirements.txt
 
 # TODO: 
-# 1. rescale input images to smaller size
-# 2. sort out images for training set (variation in images)
-# 3. Optimize pipeline (speed) https://pytorch.org/docs/stable/amp.html
-# 4. Remove brake from the NN
-# 5. Limit NN output values
+# 1. Rescale input images to smaller size✔️, then crop to remove unnecessary data
+# 2. Sort out images for training set (variation in images, several datasets)
+# 3. Optimize pipeline speed https://pytorch.org/docs/stable/amp.html (✔️ implemented but not sure if it works)
+# 4. Remove brake from the NN (will have to remove brake from .csv for this)
+# 5. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
+# 6. Reduce size of the NN? (layers) ✔️
+# 7. Spin up a tensorboard with metrics and image + prediction (for reviewing training/testing) ✔️
 
 import torch
 from load_data import get_dataloader
 from tqdm import tqdm
 from SelfDriveModel import SelfDriveModel
-from utilities import static_var
+from utilities import static_var, wait_forever
+import numpy as np
+from tensorboardfuncs import create_tb, tb_show_text, tb_show_loss, tb_show_image
+from tbprep import draw_pred_and_traget_npy
+import skimage.io 
 
-
-def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, 
+def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name="SLSelfDriveModel",
                 num_epochs: int = 5, batch_size: int = 1, amp_on = False, dev: str = "cuda:0"):
                 
-    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True) # set transforms to true here for data augmentation
+    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True) # set transforms to true here for data augmentation (only in training!)
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=True)
 
     model = SelfDriveModel()
@@ -33,7 +39,10 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
         scaler = torch.cuda.amp.GradScaler()
 
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=15, factor=0.1)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.1)
+
+    # in cmd: tensorboard --logdir="<directory name>" to look back at the tensorboard
+    writer = create_tb(log_dir="src/MachineLearning/CANRacing/tensorboard_training_log", wait=True)
 
     loss_fn = torch.nn.MSELoss()
 
@@ -41,13 +50,13 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     for epoch in range(0, num_epochs):
         loss_sum, loss_cnt  = 0, 0
 
-        for idx, batch in enumerate(tqdm(train_loader)):
+        for i, batch in enumerate(tqdm(train_loader)):
             optimizer.zero_grad()
 
             input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
             
             if amp_on:
-                # AMP IS EXPERIMENTAL FOR FASTER TRAINING, SET IT TO FALSE DURING TRAINING
+                # AMP IS EXPERIMENTAL FOR FASTER TRAINING
                 with torch.cuda.amp.autocast():
                     outputs = model(input_images)
                     loss = loss_fn(outputs, actions)
@@ -58,42 +67,48 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 scaler.update()
             else:
                 outputs = model(input_images)
-
                 loss = loss_fn(outputs, actions)
                 loss.backward()
+
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 0.1)
                 optimizer.step()
+            
 
             loss_sum += loss.item()
             loss_cnt += 1
 
         avg_loss = loss_sum / loss_cnt
 
+        tb_show_loss(avg_loss, epoch, "training_loss", writer)
+
         # Tune learning rate
         scheduler.step(avg_loss, epoch)
 
-        print(f"Avg loss on epoch {epoch} is {avg_loss}")
-
         if epoch % 1 == 0:
             model.eval()
-            run_validation(valid_loader=valid_loader, epoch=epoch, model=model, dev=dev)
+            run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, dev=dev, model_name=model_name)
             model.train()
     return
 
 
 @static_var(best_loss=99999)
 @torch.no_grad()
-def run_validation(valid_loader, model, epoch, dev):
+def run_validation(valid_loader, model, writer, epoch, dev, model_name):
+    loss_fn = torch.nn.MSELoss()
     loss_sum, loss_cnt = 0, 0
-    for _, batch in enumerate(tqdm(valid_loader)):
+    for i, batch in enumerate(tqdm(valid_loader)):
 
         input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
 
         outputs = model(input_images)
 
-        # TODO: show image in tensorboard
+        if loss_cnt == 0:
+            # TODO: show validation images in TB (somehow ends up as 3, 480, 3 after draw_pred_and_target_nmpy (asarray function line 24))
+            # img_with_data = draw_pred_and_traget_npy(input_images[i].cpu().numpy(), filename=batch['img_names'][0][66:], predicted_actions=outputs, target_actions=actions, dataformats="CWH")
+            # tb_show_image(img_with_data, epoch=epoch+i, name="Validation images", dataformats="CWH", writer=writer)
+            tb_show_text(text=f"File name: {batch['img_names'][0][58:]}     Predicted steering: {outputs[0][0]}   Target actions: {actions[0][0]}", epoch=epoch, name="Runtime validation metrics", writer=writer)
+            tb_show_text(text=f"File name: {batch['img_names'][0][58:]}     Predicted throttle: {outputs[0][1]}   Target actions: {actions[0][1]}", epoch=epoch, name="Runtime validation metrics", writer=writer)
 
-        loss_fn = torch.nn.MSELoss()
         loss = loss_fn(outputs, actions)
 
         loss_sum += loss.cpu().item()
@@ -101,80 +116,116 @@ def run_validation(valid_loader, model, epoch, dev):
 
     avg_loss = loss_sum / loss_cnt
 
+    tb_show_loss(avg_loss, epoch, "tb_validation", writer)
+
     if avg_loss < run_validation.best_loss:      
-        torch.save(model.state_dict(), "src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt")
-        
-        print(f"Saving model at epoch {epoch} with loss {avg_loss}")
+        model_dir = f"src/MachineLearning/CANRacing/models/{model_name}.pt"
+        torch.save(model.state_dict(), model_dir)
+        print(f"\033[92mSaving model at epoch {epoch} with loss {avg_loss}\033[0m")
+
         run_validation.best_loss = avg_loss
     return
 
 
 @torch.no_grad()
-def run_testing(test_img_dir: str, test_actions_csv: str, dev="cuda:0"):
+def run_testing(test_img_dir: str, test_actions_csv: str, model_name="SLSelfDriveModel", wait=True, dev="cpu"):
     test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=True)
 
+    # maybe redundant
     device = torch.device("cpu")
+
     model = SelfDriveModel()
-    model.load_state_dict(torch.load("src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt", 
+    model.load_state_dict(torch.load(f"src/MachineLearning/CANRacing/models/{model_name}.pt", 
                             map_location=device))
-    
     model.eval()
     model.to(dev)
 
     loss_sum, loss_cnt = 0, 0
+    writer = create_tb(log_dir="src/MachineLearning/CANRacing/tensorboard_testing_log", wait=wait)
 
     print("Testing...")
     for idx, batch in enumerate(tqdm(test_loader)):
+        img_name = batch['img_names']
+
+        np_image = skimage.io.imread(img_name[0])
+        np_image = ((np_image / np.max(np_image)) * 255).astype(np.uint8)
+
         input_images, actions = batch['image'].to(device), batch['actions'].to(device)
 
         outputs = model(input_images)
-        print(outputs)
+
+        # draw image name, prediction and target on image
+        img_with_data = draw_pred_and_traget_npy(np_image, filename=img_name[0][66:], predicted_actions=outputs, target_actions=actions, dataformats="HWC")
+        
+        # show image, image name, prediction and target in tensorboard
+        tb_show_image(img=img_with_data, epoch=idx, name="Test images", dataformats="HWC", writer=writer)
 
         loss_fn = torch.nn.MSELoss()
         loss = loss_fn(outputs, actions)
 
-        # print(f"Batch loss: {loss}")
-        loss_sum += loss.cpu().item()
+        loss_sum += loss.item()
         loss_cnt += 1
         
     avg_loss = loss_sum / loss_cnt
-    print("Avg loss:", avg_loss)
+    tb_show_text(avg_loss, idx, name="tb_testing", writer=writer)
 
+    if wait:
+        wait_forever("Press CTRL+C to close tensorboard.")
     return
 
 
-def run(training=False):
+def run(training=False, experiment=False):
+    torch.cuda.empty_cache()
     if training:
         run_training(
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/training/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/training/douwe_data_images_18-11-2021_14-59-21_2.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
 
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/douwe_data_images_18-11-2021 15-12-21.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
-                    num_epochs=100, amp_on=False, batch_size=2, dev="cuda:0")
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    model_name="SLSelfDriveModel1", num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
-    # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-    #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/data images 18-11-2021 13-45-33", 
-    #             dev="cuda:0")
+    # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
+    #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+    #             model_name="SLSelfDriveModel95p", wait=True, dev="cpu") # test on cpu
 
     # 8 IMAGE DATASET FOR DEBUGGING
-    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
-                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv", 
-                dev="cpu")
+    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
+                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
+                model_name="SLSelfDriveModel8IMG", dev="cpu") 
+
+    if experiment:
+        # 90% turns DONE
+        # run_training(
+        #         train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
+        #         train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+        #         valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
+        #         valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+        #         model_name="SLSelfDriveModel90p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
+
+        # torch.cuda.empty_cache()
+
+        # 95% turns
+        run_training(
+                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/training", 
+                train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+                valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
+                valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                model_name="SLSelfDriveModel95p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
 
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=True)
+    run(training=False, experiment=False)

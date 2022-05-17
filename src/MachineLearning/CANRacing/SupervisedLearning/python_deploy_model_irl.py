@@ -1,20 +1,12 @@
-#/usr/bin/env python3
+# For deploying the .pt model on the kart (python version)
 
-# ! ONLY COMPATIBLE WITH WINDOWS DUE TO WIN32GUI, NOT USED IN OUR PROJECT
-
-import time
 import struct
-import os
-import socket
 import numpy as np
 import cv2
 import torch
-from PIL import ImageGrab
 from SelfDriveModel import SelfDriveModel
 from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
-import skimage.io
-import matplotlib.pyplot as plt
 import can
 
 CAN_MSG_SENDING_SPEED = .040 # 25Hz
