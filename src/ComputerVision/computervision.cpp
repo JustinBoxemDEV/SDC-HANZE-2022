@@ -431,35 +431,36 @@ void ComputerVision::PredictTurn(cv::Mat src)
     int rectwidth = 40;
     int rectY = src.rows - rectHeight;
 
-    std::vector<int> histogram = Histogram(warped);
-    std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.5);
-    std::vector<int> rightHist(histogram.begin() + src.cols * 0.5, histogram.end());
-    int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
-    int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
+    // std::vector<int> histogram = Histogram(warped, 75);
+    // std::vector<int> leftHist(histogram.begin(), histogram.begin() + src.cols * 0.5);
+    // std::vector<int> rightHist(histogram.begin() + src.cols * 0.5, histogram.end());
+    // int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin();
+    // int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + src.cols * 0.5;
 
-    // int offset = rectHeight * 1.5;
-    // std::vector<int> histogram = Histogram(warped);
+    //----
+    int offset = rectHeight * 1.5;
+    std::vector<int> histogram = Histogram(warped, 75);
 
-    // cv::dnn::dnn4_v20210301::MatShape::iterator lRangeStart = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : lastKnownHistogramMaxL - offset);
-    // cv::dnn::dnn4_v20210301::MatShape::iterator lRangeEnd = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? src.cols * 0.5 : lastKnownHistogramMaxL + offset);
+    cv::dnn::dnn4_v20211220::MatShape::iterator lRangeStart = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : (lastKnownHistogramMaxL - offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator lRangeEnd = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? src.cols * 0.5 : (lastKnownHistogramMaxL + offset));
 
-    // cv::dnn::dnn4_v20210301::MatShape::iterator rRangeStart = histogram.begin()  + ((lastKnownHistogramMaxR == 0) ?  src.cols * 0.5 : lastKnownHistogramMaxR - offset);
-    // cv::dnn::dnn4_v20210301::MatShape::iterator rRangeEnd =  ((lastKnownHistogramMaxR == 0) ? histogram.end() : histogram.begin() + lastKnownHistogramMaxR + offset);
+    cv::dnn::dnn4_v20211220::MatShape::iterator rRangeStart = histogram.begin()  + ((lastKnownHistogramMaxR == 0) ?  src.cols * 0.5 : (lastKnownHistogramMaxR - offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator rRangeEnd =  ((lastKnownHistogramMaxR == 0) ? histogram.end() : histogram.begin() + (lastKnownHistogramMaxR + offset));
 
-    // std::vector<int> leftHist(lRangeStart, lRangeEnd);
-    // std::vector<int> rightHist(rRangeStart, rRangeEnd);
+    std::vector<int> leftHist(lRangeStart, lRangeEnd);
+    std::vector<int> rightHist(rRangeStart, rRangeEnd);
 
-    // int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : lastKnownHistogramMaxL - offset);
-    // int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + ((lastKnownHistogramMaxR == 0) ? src.cols * 0.5  : lastKnownHistogramMaxR - offset);
+    int leftMaxX = std::max_element(leftHist.begin(), leftHist.end()) - leftHist.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : (lastKnownHistogramMaxL - offset));
+    int rightMaxX = std::max_element(rightHist.begin(), rightHist.end()) - rightHist.begin() + ((lastKnownHistogramMaxR == 0) ? src.cols * 0.5  : (lastKnownHistogramMaxR - offset));
 
-    // lastKnownHistogramMaxR = rightMaxX;
-    // lastKnownHistogramMaxL = leftMaxX;
+    lastKnownHistogramMaxR = rightMaxX;
+    lastKnownHistogramMaxL = leftMaxX;
 
     warpedOverlay = cv::Mat::zeros(warped.size(), frame.type());
 
     std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX, rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX, rectY, rectHeight, rectwidth));
-    rightLinePixels.clear();
+    
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);
 
@@ -478,8 +479,16 @@ void ComputerVision::PredictTurn(cv::Mat src)
         approximateLeft = true;
     }
 
-    fitR = ExponentalMovingAverage(lastKnownAveragedFitR, fitR, 0.95);
-    fitL = ExponentalMovingAverage(lastKnownAveragedFitL, fitL, 0.95);
+    if(leftLinePixels.empty()){
+        lastKnownHistogramMaxL = 0;
+    }
+
+    if(rightLinePixels.empty()){
+        lastKnownHistogramMaxR = 0;
+    }
+
+    fitR = ExponentalMovingAverage(lastKnownAveragedFitR, fitR, 0.90);
+    fitL = ExponentalMovingAverage(lastKnownAveragedFitL, fitL, 0.90);
 
     std::vector<cv::Point2f> rightLanePoints;
     std::vector<cv::Point2f> leftLanePoints;
