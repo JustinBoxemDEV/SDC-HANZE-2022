@@ -201,18 +201,18 @@ def run(training=False, experiment=False):
     #             model_name="SLSelfDriveModel95p", wait=True, dev="cpu") # test on cpu
 
     # 8 IMAGE DATASET FOR DEBUGGING
-    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
-                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                model_name="SLSelfDriveModel8IMG", dev="cpu") 
+    run_testing(test_img_dir="/run/media/sab/SabineX/SDC/sdc_data/RDW_Data/test_dataset", 
+                test_actions_csv="/run/media/sab/SabineX/SDC/sdc_data/RDW_Data/test_dataset/test_csv.csv", 
+                model_name="SLSelfDriveModel90p", dev="cpu") 
 
     if experiment:
-        # 90% turns DONE
-        # run_training(
-        #         train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
-        #         train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
-        #         valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
-        #         valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-        #         model_name="SLSelfDriveModel90p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
+        # 90% turns
+        run_training(
+                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
+                train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+                valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
+                valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                model_name="SLSelfDriveModel90p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
 
         # torch.cuda.empty_cache()
 
