@@ -182,28 +182,28 @@ def run(training=False, experiment=False):
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
 
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     model_name="SLSelfDriveModel1", num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
         # torch.cuda.empty_cache()
 
-    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
-                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                model_name="SLSelfDriveModel95p", wait=True, dev="cpu") # test on cpu
+    # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
+    #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+    #             model_name="SLSelfDriveModel95p", wait=True, dev="cpu") # test on cpu
 
     # 8 IMAGE DATASET FOR DEBUGGING
-    # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
-    #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv", 
-    #             model_name="SLSelfDriveModel8IMG", dev="cpu") 
+    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
+                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
+                model_name="SLSelfDriveModel8IMG", dev="cpu") 
 
     if experiment:
         # 90% turns DONE
