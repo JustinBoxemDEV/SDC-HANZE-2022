@@ -42,7 +42,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.1)
 
     # in cmd: tensorboard --logdir="<directory name>" to look back at the tensorboard
-    writer = create_tb(tb_name="tb_training_log", log_dir="src/MachineLearning/CANRacing/tensorboard_training_log", wait=True)
+    writer = create_tb(log_dir="src/MachineLearning/CANRacing/tensorboard_training_log", wait=True)
 
     loss_fn = torch.nn.MSELoss()
 
@@ -84,7 +84,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
         # Tune learning rate
         scheduler.step(avg_loss, epoch)
 
-        if epoch % 2 == 0:
+        if epoch % 1 == 0:
             model.eval()
             run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, dev=dev, model_name=model_name)
             model.train()
@@ -103,9 +103,11 @@ def run_validation(valid_loader, model, writer, epoch, dev, model_name):
         outputs = model(input_images)
 
         if loss_cnt == 0:
-            # TODO: show validation images in TB
-            # tb_show_image(img=img_with_data, epoch=idx, name="Test images", dataformats="HWC", writer=writer)
-            pass
+            # TODO: show validation images in TB (somehow ends up as 3, 480, 3 after draw_pred_and_target_nmpy (asarray function line 24))
+            # img_with_data = draw_pred_and_traget_npy(input_images[i].cpu().numpy(), filename=batch['img_names'][0][66:], predicted_actions=outputs, target_actions=actions, dataformats="CWH")
+            # tb_show_image(img_with_data, epoch=epoch+i, name="Validation images", dataformats="CWH", writer=writer)
+            tb_show_text(text=f"File name: {batch['img_names'][0][58:]}     Predicted steering: {outputs[0][0]}   Target actions: {actions[0][0]}", epoch=epoch, name="Runtime validation metrics", writer=writer)
+            tb_show_text(text=f"File name: {batch['img_names'][0][58:]}     Predicted throttle: {outputs[0][1]}   Target actions: {actions[0][1]}", epoch=epoch, name="Runtime validation metrics", writer=writer)
 
         loss = loss_fn(outputs, actions)
 
@@ -114,10 +116,11 @@ def run_validation(valid_loader, model, writer, epoch, dev, model_name):
 
     avg_loss = loss_sum / loss_cnt
 
-    tb_show_loss(avg_loss, epoch, "tb_validation", "loss", writer)
+    tb_show_loss(avg_loss, epoch, "tb_validation", writer)
 
     if avg_loss < run_validation.best_loss:      
-        torch.save(model.state_dict(), f"src/MachineLearning/CANRacing/models/{model_name}.pt")
+        model_dir = f"src/MachineLearning/CANRacing/models/{model_name}.pt"
+        torch.save(model.state_dict(), model_dir)
         print(f"\033[92mSaving model at epoch {epoch} with loss {avg_loss}\033[0m")
 
         run_validation.best_loss = avg_loss
@@ -172,21 +175,22 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name="SLSelfDriv
 
 
 def run(training=False, experiment=False):
+    torch.cuda.empty_cache()
     if training:
         run_training(
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
 
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set",
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_set/test_csv.csv",
                     model_name="SLSelfDriveModel1", num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
@@ -194,7 +198,7 @@ def run(training=False, experiment=False):
 
     run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
                 test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                model_name="SLSelfDriveModelBochten140522", wait=True, dev="cpu") # test on cpu
+                model_name="SLSelfDriveModel95p", wait=True, dev="cpu") # test on cpu
 
     # 8 IMAGE DATASET FOR DEBUGGING
     # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_set", 
@@ -202,23 +206,23 @@ def run(training=False, experiment=False):
     #             model_name="SLSelfDriveModel8IMG", dev="cpu") 
 
     if experiment:
-        # 90% turns
-        run_training(
-                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
-                train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
-                valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
-                valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                model_name="SLSelfDriveModel90p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
+        # 90% turns DONE
+        # run_training(
+        #         train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
+        #         train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+        #         valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
+        #         valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+        #         model_name="SLSelfDriveModel90p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
 
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
         # 95% turns
         run_training(
-                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
+                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/training", 
                 train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
                 valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
                 valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                model_name="SelfDriveModel95p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
+                model_name="SLSelfDriveModel95p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
 
     print("Done!")
 

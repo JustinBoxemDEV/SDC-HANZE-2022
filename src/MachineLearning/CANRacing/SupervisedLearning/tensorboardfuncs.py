@@ -51,7 +51,7 @@ def tb_show_text(text, epoch=0, name: str = "text", writer: SummaryWriter = None
     if writer is None:
         print("No writer")
 
-    writer.add_text(name, str(text), epoch)
+    writer.add_text(tag=name, text_string=str(text), global_step=epoch)
     writer.flush()
 
     return
