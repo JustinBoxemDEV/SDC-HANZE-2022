@@ -6,8 +6,10 @@ import cv2
 import os
 from os import listdir
 
-readf = open('C:/Users/Sabin/Documents/SDC/RDW_Data/new/good_data images 18-11-2021 12-53-47.csv', "r")
-writef = open('C:/Users/Sabin/Documents/SDC/RDW_Data/bochten/douwe_good_data images 18-11-2021 12-53-47.csv', 'w')
+csvName = "data images 18-11-2021 15-12-21.csv"
+
+readf = open("C:\\users\\douwe\\Desktop\\"+csvName, "r")
+writef = open("C:\\Users\\douwe\\Desktop\\new data\\"+csvName, 'w')
 
 twentytwo = False
 twentyone = True 
@@ -19,7 +21,7 @@ reader = csv.reader(readf)
 
 writer.writeheader()
 header = next(reader)
-  
+
 if(twentyone):
     for row in reader:
         text = str(row)
@@ -41,25 +43,21 @@ if(twentyone):
         imageFloat = image.split("/")
         imageName = imageFloat[1]
 
-        imageSource = 'C:/Users/Sabin/Documents/SDC/RDW_Data/new/'+imageFloat[0]+'/'+imageFloat[1]
-
-        if os.path.exists(imageSource):
-            throttle = data[1].replace("\"", "").split(",")[0]
-            if(len(throttle) == 0):
-                throttle = 0
-            else:
-                throttle = int(throttle) 
-                throttle = throttle * 1.75438596491
-                throttle = int(round(throttle))
-            
-            brake = data[2].replace("\"", "").split(",")[0]
-            if(len(brake) == 0):
-                brake = 0
-            else:
-                brake = int(brake)
-            
-            if((steerFloat > 0.1) or (steerFloat < -0.1)): 
-                writer.writerow({'Steer': steerFloat, 'Throttle': throttle, 'Brake': brake, 'Image': image})
+        throttle = data[1].replace("\"", "").split(",")[0]
+        if(len(throttle) == 0):
+            throttle = 0
+        else:
+            throttle = int(throttle) 
+            throttle = throttle * 1.75438596491
+            throttle = int(round(throttle))
+        
+        brake = data[2].replace("\"", "").split(",")[0]
+        if(len(brake) == 0):
+            brake = 0
+        else:
+            brake = int(brake)
+        
+        writer.writerow({'Steer': steerFloat, 'Throttle': throttle, 'Brake': brake, 'Image': image})
 
 if(twentytwo):
     for row in reader:
