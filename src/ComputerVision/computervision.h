@@ -32,8 +32,8 @@ class ComputerVision{
         std::vector<double> lastKnownAveragedFitR;
         std::vector<double> lastKnownAveragedFitL;
 
-        int lastKnownHistogramMaxR;
-        int lastKnownHistogramMaxL;
+        int lastKnownHistogramMaxR = 0;
+        int lastKnownHistogramMaxL = 0;
     private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
