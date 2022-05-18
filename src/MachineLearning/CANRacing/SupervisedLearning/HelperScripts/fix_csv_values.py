@@ -1,18 +1,14 @@
 # Douwe script for fixing csv values
 import csv
-import shutil
 import struct
-import cv2
-import os
-from os import listdir
 
-csvName = "data images 18-11-2021 15-12-21.csv"
+csvName = "data images 22-03-2022 13-47-20"
 
-readf = open("C:\\users\\douwe\\Desktop\\"+csvName, "r")
-writef = open("C:\\Users\\douwe\\Desktop\\new data\\"+csvName, 'w')
+readf = open(f"C:/Users/Sabin/Documents/SDC/SL_data/zips/{csvName}.csv", "r")
+writef = open(f"C:/Users/Sabin/Documents/SDC/SL_data/zips/new_{csvName}.csv", 'w')
 
-twentytwo = False
-twentyone = True 
+twentytwo = True
+twentyone = False 
 
 fields=('Steer', 'Throttle', 'Brake', 'Image')
 
@@ -82,8 +78,6 @@ if(twentytwo):
             throttle = int(round(throttle))
         
         brake = float(data[2])
-        print("brake: ")
-        print(brake)
         brake = int(brake * 100)
     
         writer.writerow({'Steer': steering, 'Throttle': throttle, 'Brake': brake, 'Image': image})

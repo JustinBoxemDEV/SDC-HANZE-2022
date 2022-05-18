@@ -2,47 +2,56 @@
 
 import csv
 import shutil
-import cv2
 import os
-from os import listdir
 
-readf = open('C:/Users/Sabin/Documents/SDC/RDW_Data/new/good_data images 18-11-2021 12-53-47.csv', "r")
-writef = open('C:/Users/Sabin/Documents/SDC/RDW_Data/bochten/douwe_good_data images 18-11-2021 12-53-47.csv', 'w')
+csvName = "new_data images 18-11-2021 14-59-21"
+foldername = "good_images 18-11-2021 14-59-21"
+
+readf = open(f"D:/SDC/sdc_data/RDW_Data/new/{csvName}.csv", "r")
 
 fields=('Steer', 'Throttle', 'Brake', 'Image')
 
-writer = csv.DictWriter(writef, fieldnames=fields, lineterminator='\n')
 reader = csv.reader(readf)
 
-writer.writeheader()
 header = next(reader)
   
 for row in reader:
     text = str(row)
     data = text.split(",")
-
+    data[0] = data[0].replace("\"", "").replace("[", "").replace("]", "").replace("\'", "").replace(" ", "")
+    data[1] = data[1].replace("\"", "").replace("[", "").replace("]", "").replace("\'", "").replace(" ", "")
+    data[2] = data[2].replace("\"", "").replace("[", "").replace("]", "").replace("\'", "").replace(" ", "")
+    
     steering = float(data[0])
     throttle = int(data[1])
     brake = int(data[2])
-    imagePath = data[3]
+    imagePath = data[3].replace("\"", "").replace("[", "").replace("]", "").replace("\'", "")[1:]
 
     imageDirectory = imagePath.split("/")[0]
     imageName = imagePath.split("/")[1]
 
-    # good_images 18-11-2021 12-53-47/
-    imageSource = 'C:/Users/Sabin/Documents/SDC/RDW_Data/new/'+imagePath
+    imageSource = f"D:/SDC/sdc_data/RDW_Data/new/{foldername}/{imagePath[27:]}"
+    # print(imageSource)
+    # print(os.path.exists(imageSource))
 
     if os.path.exists(imageSource):
-        rdwimage = cv2.imread(imageSource)
-        
-        if((steering > 0.1) or (steering < -0.1)):  
-            imageDestination = 'C:/Users/Sabin/Documents/SDC/RDW_Data/bochten/good_images 18-11-2021 12-53-47/'+imageName
-            shutil.copy(imageSource, imageDestination)
+        imageDestinationbochten = f"D:/SDC/sdc_data/RDW_Data/bochten/{foldername}/"
+        imageDestinationrecht = f"D:/SDC/sdc_data/RDW_Data/recht/{foldername}/"
+
+        if not os.path.exists(imageDestinationbochten):
+            print(f"Creating bochten folder: {imageDestinationbochten}")
+            os.mkdir(f"D:/SDC/sdc_data/RDW_Data/bochten/{foldername}")
+
+        if not os.path.exists(imageDestinationrecht):
+            print(f"Creating recht folder: {imageDestinationrecht}")
+            os.mkdir(f"D:/SDC/sdc_data/RDW_Data/recht/{foldername}/")
+
+        if((steering > 0.1) or (steering < -0.1)):
+            # print("copying to bochten!: ", imageDestinationbochten+imageName)
+            shutil.copy(imageSource, imageDestinationbochten+imageName)
         if(steering == 0):
-            imageDestination = 'C:/Users/Sabin/Documents/SDC/RDW_Data/recht/good_images 18-11-2021 12-53-47/'+imageName
-            shutil.copy(imageSource, imageDestination)
+            # print("copying to recht!:", imageDestinationrecht+imageName)
+            shutil.copy(imageSource, imageDestinationrecht+imageName)
 
-        writer.writerow({'Steer': steering, 'Throttle': throttle, 'Brake': brake, 'Image': imagePath})
-
-writef.close()
 readf.close()
+print("Done")
