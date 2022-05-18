@@ -7,13 +7,11 @@
 # Then run pip install requirements.txt
 
 # TODO: 
-# 1. Rescale input images to smaller size✔️, then crop to remove unnecessary data
-# 2. Sort out images for training set (variation in images, several datasets)
-# 3. Optimize pipeline speed https://pytorch.org/docs/stable/amp.html (✔️ implemented but not sure if it works)
-# 4. Remove brake from the NN (will have to remove brake from .csv for this)
-# 5. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 6. Reduce size of the NN? (layers) ✔️
-# 7. Spin up a tensorboard with metrics and image + prediction (for reviewing training/testing) ✔️
+# 1. Sort out images for training set (variation in images, several datasets)
+# 2. Optimize pipeline speed https://pytorch.org/docs/stable/amp.html (✔️ implemented but not sure if it works)
+# 3. Remove brake from the NN (will have to remove brake from .csv for this)
+# 4. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
+
 
 import torch
 from load_data import get_dataloader
@@ -21,8 +19,7 @@ from tqdm import tqdm
 from SelfDriveModel import SelfDriveModel
 from utilities import static_var, wait_forever
 import numpy as np
-from tensorboardfuncs import create_tb, tb_show_text, tb_show_loss, tb_show_image
-from tbprep import draw_pred_and_traget_npy
+from tensorboard_visualize import create_tb, tb_show_text, tb_show_loss, tb_show_image, draw_pred_and_traget_npy
 import skimage.io 
 
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name="SLSelfDriveModel",
@@ -174,7 +171,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name="SLSelfDriv
     return
 
 
-def run(training=False, experiment=False):
+def run(training=False):
     torch.cuda.empty_cache()
     if training:
         run_training(
@@ -194,7 +191,7 @@ def run(training=False, experiment=False):
                     model_name="SLSelfDriveModel1", num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
-        # torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
 
     # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
     #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
@@ -203,29 +200,10 @@ def run(training=False, experiment=False):
     # 8 IMAGE DATASET FOR DEBUGGING
     run_testing(test_img_dir="/run/media/sab/SabineX/SDC/sdc_data/RDW_Data/test_dataset", 
                 test_actions_csv="/run/media/sab/SabineX/SDC/sdc_data/RDW_Data/test_dataset/test_csv.csv", 
-                model_name="SLSelfDriveModel90p", dev="cpu") 
-
-    if experiment:
-        # 90% turns
-        run_training(
-                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training", 
-                train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
-                valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
-                valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                model_name="SLSelfDriveModel90p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
-
-        # torch.cuda.empty_cache()
-
-        # 95% turns
-        run_training(
-                train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/training", 
-                train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
-                valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_90p_turns/validation", 
-                valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_95p_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                model_name="SLSelfDriveModel95p", num_epochs=35, amp_on=False, batch_size=4, dev="cuda:0")
+                model_name="SLSelfDriveModel1", dev="cpu") 
 
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=False, experiment=False)
+    run(training=False)

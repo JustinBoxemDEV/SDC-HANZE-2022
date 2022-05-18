@@ -42,8 +42,7 @@ class Normalizer(object):
         """
         Normalize the input array
 
-        :param sample: a dictionary with the 'images' array of shape [b, h, w, c]
-        and the 'actions' array of shape [b, N, 5] for N actions
+        :param sample A dictionary with the 'images' array of shape [b, h, w, c] and the 'actions' array of shape [b, N, 5] for N actions
 
         :return: A dictionary with converted 'image', 'actions'
         """

@@ -7,6 +7,20 @@ from transforms import ToTensor, Normalizer
 def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=False,
                     random_sun_flare=False, horizontal_flip=False, motion_blur=False, random_shadow=False, 
                     random_brightness_contrast=False, random_gamma=False):
+    """
+    Returns a dataloader (pytorch) which can sample images from the dataset
+
+    :param img_folder The folder containing the database images
+    :param act_csv The csv containing the actions with their corresponding image name
+    :param batch_size The size of each batch that will be sampled at a time
+    :parm normalize Normalize the images (reccomended to keep this on True)
+    :parm random_sun_flare Add a random sun flare to the images in the sample based on a percentace chance
+    :param horizontal_flip Horizontally flip the images in the sample based on a percentace chance (actions need to be inverted if this is used, not implemented yet)
+    :param motion_blur Apply motion blur to the images in the sample based on a percentace chance
+    :param random_shadow Apply a random shadow to the images in the sample based on a percentace chance
+    :param random_brightness_contrast Apply a random brightness and contrast in a range to the images in the sample based on a percentace chance
+    :param random_gamma Apply a random gamma in a range to the images in the sample based on a percentace chance
+    """
     t = []
     albu_t = []
 
