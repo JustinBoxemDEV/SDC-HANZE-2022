@@ -4,7 +4,7 @@ import numpy as np
 from typing import Dict, Union
 
 # SCUFFED FIX FOR USING TRANSFORMS ON DEPLOYMENT IN PYTHON
-deploy = True
+deploy = False
 
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors for GPU acceleration"""

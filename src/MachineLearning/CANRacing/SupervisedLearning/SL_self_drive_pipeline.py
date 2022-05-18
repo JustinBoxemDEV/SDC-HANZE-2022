@@ -8,7 +8,7 @@
 
 # TODO: 
 # 1. Sort out images for training set (variation in images, several datasets)
-# 2. Optimize pipeline speed https://pytorch.org/docs/stable/amp.html (✔️ implemented but not sure if it works)
+# 2. Improve pipeline speed https://pytorch.org/docs/stable/amp.html (✔️ implemented but not enough memory to run it)
 # 3. Remove brake from the NN (will have to remove brake from .csv for this)
 # 4. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
 
@@ -175,19 +175,19 @@ def run(training=False):
     torch.cuda.empty_cache()
     if training:
         run_training(
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
 
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     model_name="SLSelfDriveModel1", num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
@@ -198,12 +198,12 @@ def run(training=False):
     #             model_name="SLSelfDriveModel95p", wait=True, dev="cpu") # test on cpu
 
     # 8 IMAGE DATASET FOR DEBUGGING
-    run_testing(test_img_dir="/run/media/sab/SabineX/SDC/sdc_data/RDW_Data/test_dataset", 
-                test_actions_csv="/run/media/sab/SabineX/SDC/sdc_data/RDW_Data/test_dataset/test_csv.csv", 
+    run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
+                test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
                 model_name="SLSelfDriveModel1", dev="cpu") 
 
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=False)
+    run(training=True)
