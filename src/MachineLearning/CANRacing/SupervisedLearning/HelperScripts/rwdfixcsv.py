@@ -21,6 +21,7 @@ reader = csv.reader(readf)
 writer.writeheader()
 header = next(reader)
   
+  
 if(twentyone):
     for row in reader:
         text = str(row)
