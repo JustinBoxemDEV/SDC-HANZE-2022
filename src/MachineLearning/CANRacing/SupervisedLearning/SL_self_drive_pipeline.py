@@ -156,7 +156,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
     tb_show_loss(avg_loss, epoch, "tb_validation", writer)
 
     if avg_loss < run_validation.best_loss:      
-        model_dir = f"src/MachineLearning/CANRacing/models/{model_name} {now}.pt"
+        model_dir = f"assets/models/{model_name} {now}.pt"
         torch.save(model.state_dict(), model_dir)
         print(f"\033[92mSaving model {model_name} {now} at epoch {epoch} with loss {avg_loss}\033[0m")
 
@@ -172,15 +172,14 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
 
     :param test_img_dir The directory containing the images
     :param test_actions_csv The path to the testing csv containing the actions and corresponding image name
-    :param model_name The name of the model to be tested. Default SLSelfDriveModel
+    :param model_name The name of the model to be tested. If you run testing right after training you can use trained_model_name (return value of run_training), otherwise insert a string with the model name
     :param wait Boolean if the program should be kept running to continue showing the tensorboard after testing is finished
     :param dev The device to run the pipeline on, default CPU
     """
-    print(model_name)
     test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=True)
 
     model = SelfDriveModel()
-    model.load_state_dict(torch.load(f"src/MachineLearning/CANRacing/models/{model_name}.pt", 
+    model.load_state_dict(torch.load(f"assets/models/{model_name}.pt", 
                             map_location=dev))
     model.eval()
     model.to(dev)
@@ -196,6 +195,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
 
         np_image = skimage.io.imread(img_name[0])
         np_image = ((np_image / np.max(np_image)) * 255).astype(np.uint8)
+        np_image = np_image[160:325,0:848] # crop to match visualization to what the nn sees
 
         input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
 
@@ -243,10 +243,10 @@ def run(training=False, testing=True):
         torch.cuda.empty_cache()
 
     if testing:
-        # if you run testing right after training you can use trained_model_name for the model_name parameter
+        # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
         run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
                     test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                    model_name=trained_model_name, wait=True, dev="cpu")
+                    model_name="SLSelfDriveModel 2022-05-20_01-14-38", wait=True, dev="cpu")
 
         # 8 IMAGE DATASET FOR DEBUGGING
         # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
