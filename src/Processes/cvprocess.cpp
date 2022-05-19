@@ -61,6 +61,7 @@ void CVProcess::Run(){
 
 void CVProcess::ProcessFrame(cv::Mat src){
     if(mediaInput->mediaType == MediaSource::realtime_ml) {
+        imshow("camera", src);
         model->Inference(src);
     } else {
         cv::Mat gammaCorrected = cVision.GammaCorrection(src, gamma );
