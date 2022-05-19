@@ -40,8 +40,8 @@ class TTAssenDataset(torch.utils.data.Dataset):
         image = np.resize(image, (480, 848, 3)).astype(np.float32) # resize images here!
 
         # TODO: Slice images (remove unnecessary data)
-        # sample = {'image': image[185:300,0:848], 'actions': actions}
-        sample = {'image': image, 'actions': actions}
+        sample = {'image': image[185:300,0:848], 'actions': actions}
+        # sample = {'image': image, 'actions': actions}
 
         # Augmentation transforms which use the albumentations library
         if self.albu_transforms:
