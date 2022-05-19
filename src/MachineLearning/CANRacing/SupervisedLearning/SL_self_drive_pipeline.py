@@ -3,8 +3,8 @@ This pipeline is an implementation of a self driving neural network using pytorc
 Training is done on the GPU and testing is done on the CPU.
 
 SETUP THE PIPELINE:
-1. Create a conda environment with python 3.7.13 and run: conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch 
-    to prevent "Torch not compiled with CUDA enabled" (This step is only needed if you plan on training on GPU)
+1. Create a conda environment with python 3.7.13 
+    and run: conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch  (to prevent "Torch not compiled with CUDA enabled", this step is only needed if you plan on training on GPU)
 2. Then run pip install requirements.txt
 
 To update requirements.txt: https://github.com/bndr/pipreqs
