@@ -11,6 +11,7 @@
 # 2. Improve pipeline speed https://pytorch.org/docs/stable/amp.html (✔️ implemented but not enough memory to run it)
 # 3. Remove brake from the NN (will have to remove brake from .csv for this)
 # 4. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
+# 5. Accept video input in C++ for testing on real kart (RDW)
 
 
 import torch
@@ -19,7 +20,7 @@ from tqdm import tqdm
 from SelfDriveModel import SelfDriveModel
 from utilities import static_var, wait_forever
 import numpy as np
-from tensorboard_visualize import create_tb, tb_show_text, tb_show_loss, tb_show_image, draw_pred_and_traget_npy
+from tensorboard_visualize import create_tb, tb_show_text, tb_show_loss, tb_show_image, draw_pred_and_target_npy
 import skimage.io 
 
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name="SLSelfDriveModel",
@@ -152,7 +153,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name="SLSelfDriv
         outputs = model(input_images)
 
         # draw image name, prediction and target on image
-        img_with_data = draw_pred_and_traget_npy(np_image, filename=img_name[0][66:], predicted_actions=outputs, target_actions=actions, dataformats="HWC")
+        img_with_data = draw_pred_and_target_npy(np_image, filename=img_name[0][66:], predicted_actions=outputs, target_actions=actions, dataformats="HWC")
         
         # show image, image name, prediction and target in tensorboard
         tb_show_image(img=img_with_data, epoch=idx, name="Test images", dataformats="HWC", writer=writer)

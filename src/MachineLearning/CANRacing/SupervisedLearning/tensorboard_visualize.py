@@ -92,7 +92,7 @@ def tb_show_image(img: np.ndarray, epoch, name: str = "images", dataformats="CHW
     writer.add_image(name, img_tensor=img, global_step=epoch, dataformats=dataformats)
     writer.flush()
 
-def draw_pred_and_traget_npy(img: np.ndarray, filename: str, predicted_actions, target_actions, dataformats="HWC"):
+def draw_pred_and_target_npy(img: np.ndarray, filename: str, predicted_actions, target_actions, dataformats="HWC"):
     """Draws the image name in red, the predicted actions in blue, and the target actions in green in the top left corner of the image.
     This function only accepts numpy arrays.
 
