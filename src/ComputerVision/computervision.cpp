@@ -4,6 +4,14 @@
 
 #define METER_PER_PIXEL 0.0092
 
+int MetersToPixels(float meters){
+    return int(meters / METER_PER_PIXEL);
+}
+
+float PixelsToMeters(int pixels){
+    return pixels * METER_PER_PIXEL;
+}
+
 void ComputerVision::SetFrame(cv::Mat src)
 {
     frame = src;
@@ -282,23 +290,40 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src)
     // cv::dilate(hsvFilter, hsvFilter, structuringElement);
     // cv::erode(hsvFilter, hsvFilter, structuringElement);
 
-    cv::Mat sobelx;
+    // cv::Mat sobelx;
     cv::Mat sobely;
-    cv::Mat sobelxy;
+    // cv::Mat sobelxy;
 
     cv::Mat gray;
     cv::cvtColor(denoisedImage, gray, cv::COLOR_BGR2GRAY);
-    Sobel(gray, sobelx, CV_64F, 1, 0);
+    // Sobel(gray, sobelx, CV_64F, 1, 0);
     Sobel(gray, sobely, CV_64F, 0, 1);
-    Sobel(gray, sobelxy, CV_64F, 1, 1);
-    cv::inRange(sobely, 80, 255, sobely);
-    cv::inRange(sobelx, 20, 70, sobelx);
-    // imshow("soby'", sobely);
+    // Sobel(gray, sobelxy, CV_64F, 1, 1);
+
+    int thresholdDown = 85;
+    int thresholdUp =150;
+    int thresholdDelta = thresholdDown - thresholdUp;
+    cv::Mat thresholdedResult = cv::Mat::zeros(sobely.size(), CV_64F);
+    for (int y = 0; y < sobely.rows; y++){
+        int threshold = thresholdUp + thresholdDelta * y / sobely.rows;
+        for (int x = 0; x < sobely.cols; x++)
+        {
+            double color = sobely.at<double>(cv::Point(x,y)) ; 
+            if(color >= threshold){
+                thresholdedResult.at<double>(cv::Point(x,y)) = 255;
+            }
+        }
+    } 
+    imshow("threshold", thresholdedResult);
+
+    cv::inRange(sobely, 80, 255, sobely); //80 255
+    // cv::inRange(sobelx, 20, 70, sobelx);
+    imshow("soby'", sobely);
     // imshow("sobx'", sobelx);
 
-    convertScaleAbs(sobelx, sobelx);
+    // convertScaleAbs(sobelx, sobelx);
     convertScaleAbs(sobely, sobely);
-    convertScaleAbs(sobelxy, sobelxy);
+    // convertScaleAbs(sobelxy, sobelxy);
     // imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
@@ -374,7 +399,7 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src)
     cv::Mat edges = DetectEdges(hlsChannels[2]);
     cv::bitwise_or(edges, hlsChannels[1], binaryImage);
 
-    imshow("binary", binaryImage);
+    // imshow("binary", binaryImage);
 
     return binaryImage;
 }
@@ -443,15 +468,13 @@ void ComputerVision::PredictTurn(cv::Mat src)
     int offset = rectHeight * 1.5;
     std::vector<int> histogram = Histogram(warped, 75);
     //dnn4_v20211220 on linux
-    cv::dnn::dnn4_v20210301::MatShape::iterator lRangeStart = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : (lastKnownHistogramMaxL - offset));
-    cv::dnn::dnn4_v20210301::MatShape::iterator lRangeEnd = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? src.cols * 0.5 : (lastKnownHistogramMaxL + offset));
+    //dnn4_v20210301 on windows
+    cv::dnn::dnn4_v20211220::MatShape::iterator lRangeStart = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : (lastKnownHistogramMaxL - offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator lRangeEnd = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? src.cols * 0.5 : (lastKnownHistogramMaxL + offset));
 
-    cv::dnn::dnn4_v20210301::MatShape::iterator rRangeStart = histogram.begin()  + ((lastKnownHistogramMaxR == 0) ?  src.cols * 0.5 : (lastKnownHistogramMaxR - offset));
-    cv::dnn::dnn4_v20210301::MatShape::iterator rRangeEnd =  ((lastKnownHistogramMaxR == 0) ? histogram.end() : histogram.begin() + (lastKnownHistogramMaxR + offset));
-    int indexls = std::distance(histogram.begin(), lRangeStart);
-    int indexle = std::distance(histogram.begin(), lRangeEnd);
-    int indexrs = std::distance(histogram.begin(), rRangeStart);
-    int indexre = std::distance(histogram.begin(), rRangeEnd);
+    cv::dnn::dnn4_v20211220::MatShape::iterator rRangeStart = histogram.begin()  + ((lastKnownHistogramMaxR == 0) ?  src.cols * 0.5 : (lastKnownHistogramMaxR - offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator rRangeEnd =  ((lastKnownHistogramMaxR == 0) ? histogram.end() : histogram.begin() + (lastKnownHistogramMaxR + offset));
+    
     std::vector<int> leftHist(lRangeStart, lRangeEnd);
     std::vector<int> rightHist(rRangeStart, rRangeEnd);
 
@@ -538,7 +561,7 @@ void ComputerVision::PredictTurn(cv::Mat src)
     // std::cout<< "laneright= "<< laneRight << std::endl;
     cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
     cv::addWeighted(warpedOverlay, 1, warped, 1, 0, warped);
-    imshow("warped", warped);
+    // imshow("warped", warped);
 
     //----DRAW STUF -----
     std::vector<cv::Point2f> outPts;
