@@ -224,19 +224,11 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
 def run(training=False, testing=True):
     torch.cuda.empty_cache()
     if training:
-        trained_model_name = run_training(train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
+        trained_model_name = run_training(
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
-                    
-                    # 8 IMAGE DATASET FOR DEBUGGING
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                    
-                    # 8 IMAGE DATASET FOR DEBUGGING
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     model_name="SLSelfDriveModel", num_epochs=1, amp_on=True, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
@@ -247,11 +239,6 @@ def run(training=False, testing=True):
         run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
                     test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
                     model_name="SLSelfDriveModel 2022-05-20_01-14-38", wait=True, dev="cpu")
-
-        # 8 IMAGE DATASET FOR DEBUGGING
-        # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
-        #             test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-        #             model_name="SLSelfDriveModel", dev="cpu") 
 
     print("Done!")
 
