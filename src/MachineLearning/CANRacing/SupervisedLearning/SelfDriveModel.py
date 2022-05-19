@@ -17,7 +17,7 @@ class SelfDriveModel(nn.Module):
         )
 
         self.linear_layers = nn.Sequential(
-            nn.Linear(in_features=64*234*418, out_features=64),
+            nn.Linear(in_features=64*77*418, out_features=64),
             nn.ELU(),
             # nn.Dropout(p=0.4),
             nn.Linear(in_features=64, out_features=10),
@@ -26,7 +26,7 @@ class SelfDriveModel(nn.Module):
         )
 
     def forward(self, x):
-        x = x.view(x.size(0), 3, 480, 848) # x.size(0) if training, 1 if deploying
+        x = x.view(x.size(0), 3, 165, 848) # x.size(0) if training, 1 if deploying
         output = self.conv_layers(x)
         # print(output.shape)
         output = output.view(output.size(0), -1) # output.size(0) if training, 1 if deploying
