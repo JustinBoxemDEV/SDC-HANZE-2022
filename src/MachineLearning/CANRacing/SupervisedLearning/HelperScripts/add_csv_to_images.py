@@ -15,7 +15,7 @@ for bochtDir in os.listdir("/home/douwe/Documents/bochten"):
                 images.append(image)
             readf = open(f"/home/douwe/Documents/all csv/"+csvFile, "r")
             reader = csv.reader(readf)
-            with open("/home/douwe/Documents/python generated csv/"+csvFile, "w") as writef:
+            with open("/home/douwe/Documents/python generated csv/"+bochtDir+".csv", "w") as writef:
                 header = next(reader)
                 writer = csv.writer(writef)
                 
