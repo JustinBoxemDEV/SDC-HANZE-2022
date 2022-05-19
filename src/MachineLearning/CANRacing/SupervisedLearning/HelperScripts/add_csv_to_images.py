@@ -2,9 +2,7 @@
 
 import csv
 import os
-  
-fields=('Data')
-  
+    
 for bochtDir in os.listdir("/home/douwe/Documents/bochten"):
     images = []
     directoryName = str(bochtDir)
