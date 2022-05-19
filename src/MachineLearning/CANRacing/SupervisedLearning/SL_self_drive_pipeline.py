@@ -18,7 +18,6 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # 5. Dynamic training/testing variables (in model 29, 32, 34)
 # 6. Show validaiton images in tensorboard
 
-
 import torch
 from load_data import get_dataloader
 from tqdm import tqdm
@@ -29,8 +28,10 @@ from tensorboard_visualize import create_tb, tb_show_text, tb_show_loss, tb_show
 import skimage.io
 import torch.utils.data
 from torch.utils.tensorboard import SummaryWriter
+from datetime import datetime
+import os
 
-def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name: str ="SLSelfDriveModel",
+def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name: str ="SLSelfDriveModel 2022-05-20_00-46-45",
                 num_epochs: int = 5, batch_size: int = 1, amp_on: bool = False, dev: str = "cuda:0"):
                 
     """
@@ -41,7 +42,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     :param train_actions_csv The path to the training csv containing the actions and corresponding image name
     :param valid_img_dir: The directory containing the images
     :param valid_actions_csv The path to the validation csv containing the actions and corresponding image name
-    :param model_name The name of the model to be trained. This is the name the model will be saved under. Default SLSelfDriveModel
+    :param model_name The name of the model to be trained. This is the name the model will be saved under. Default SLSelfDriveModel 2022-05-20_00-46-45 (Has to include the timestamp!)
     :param num_epochs The amount of epochs to train for
     :param batch_size The amount of images to process at a time
     :param amp_on Boolean if amp should be enabled (should improve training speed, however it is experimental and your mileage may vary) Source: https://pytorch.org/docs/stable/amp.html
@@ -61,8 +62,13 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.1)
 
+    now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+
+    logdir_path = os.path.join("src/MachineLearning/CANRacing/tensorboards/", model_name + " " +
+        now, "tensorboard_training_log")
+
     # in cmd: tensorboard --logdir="<directory name>" to look back at the tensorboard
-    writer = create_tb(log_dir=f"src/MachineLearning/CANRacing/tensorboards/{model_name}/tensorboard_training_log", wait=True)
+    writer = create_tb(log_dir=logdir_path, wait=True)
 
     loss_fn = torch.nn.MSELoss()
 
@@ -105,14 +111,14 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
 
         if epoch % 1 == 0:
             model.eval()
-            run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, dev=dev, model_name=model_name)
+            run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, model_name=model_name, now=now, dev=dev)
             model.train()
-    return
+    return f"{model_name} {now}"
 
 
 @static_var(best_loss=99999)
 @torch.no_grad()
-def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Module, epoch: int, writer: SummaryWriter, model_name: str, dev: str):
+def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Module, epoch: int, writer: SummaryWriter, model_name: str,  now, dev: str):
     """
     Validate the model during training. The predictions and ground truth will be shown in tensorboard.
     Save model if the current loss is lower than the previous lowest loss.
@@ -122,6 +128,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
     :param epoch The current epoch
     :param writer The writer that writes to your current training tensorboard
     :param model_name The name of the model
+    :param now Timestamp at start of the pipeline used for saving model
     :param dev The device to run the pipeline on, default GPU
     """
     loss_fn = torch.nn.MSELoss()
@@ -149,9 +156,9 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
     tb_show_loss(avg_loss, epoch, "tb_validation", writer)
 
     if avg_loss < run_validation.best_loss:      
-        model_dir = f"src/MachineLearning/CANRacing/models/{model_name}.pt"
+        model_dir = f"src/MachineLearning/CANRacing/models/{model_name} {now}.pt"
         torch.save(model.state_dict(), model_dir)
-        print(f"\033[92mSaving model at epoch {epoch} with loss {avg_loss}\033[0m")
+        print(f"\033[92mSaving model {model_name} {now} at epoch {epoch} with loss {avg_loss}\033[0m")
 
         run_validation.best_loss = avg_loss
     return
@@ -169,6 +176,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
     :param wait Boolean if the program should be kept running to continue showing the tensorboard after testing is finished
     :param dev The device to run the pipeline on, default CPU
     """
+    print(model_name)
     test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=True)
 
     model = SelfDriveModel()
@@ -178,7 +186,9 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
     model.to(dev)
 
     loss_sum, loss_cnt = 0, 0
-    writer = create_tb(log_dir=f"src/MachineLearning/CANRacing/tensorboards/{model_name}/tensorboard_testing_log", wait=wait)
+
+    logdir_path = os.path.join("src/MachineLearning/CANRacing/tensorboards/", model_name, "tensorboard_testing_log")
+    writer = create_tb(log_dir=logdir_path, wait=wait)
 
     print("Testing...")
     for idx, batch in enumerate(tqdm(test_loader)):
@@ -214,7 +224,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
 def run(training=False, testing=True):
     torch.cuda.empty_cache()
     if training:
-        run_training(train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
+        trained_model_name = run_training(train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
                     
                     # 8 IMAGE DATASET FOR DEBUGGING
@@ -227,15 +237,16 @@ def run(training=False, testing=True):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="SLSelfDriveModel", num_epochs=100, amp_on=True, batch_size=4, dev="cuda:0")
+                    model_name="SLSelfDriveModel", num_epochs=1, amp_on=True, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
 
     if testing:
+        # if you run testing right after training you can use trained_model_name for the model_name parameter
         run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
                     test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                    model_name="SLSelfDriveModel", wait=True, dev="cpu")
+                    model_name=trained_model_name, wait=True, dev="cpu")
 
         # 8 IMAGE DATASET FOR DEBUGGING
         # run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
@@ -246,4 +257,4 @@ def run(training=False, testing=True):
 
 
 if __name__ == "__main__":
-    run(training=True, testing=False)
+    run(training=True, testing=True)
