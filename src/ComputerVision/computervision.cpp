@@ -206,13 +206,13 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     Sobel(gray, sobelxy, CV_64F, 1, 1);
     cv::inRange(sobely, 50,255, sobely);
     cv::inRange(sobelx, 20,70, sobelx);
-    imshow("soby'", sobely);
-    imshow("sobx'", sobelx);
+    // imshow("soby'", sobely);
+    // imshow("sobx'", sobelx);
 
     convertScaleAbs(sobelx, sobelx);
     convertScaleAbs(sobely, sobely);
     convertScaleAbs(sobelxy, sobelxy);
-    imshow("sobxy'", sobelxy);
+    // imshow("sobxy'", sobelxy);
 
     // cv::Mat rgb;
     // cv::cvtColor(src, rgb, cv::COLOR_BGR2RGB);
@@ -288,7 +288,7 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src){
     cv::Mat edges = DetectEdges(mask);
     cv::bitwise_or(edges, mask, binaryImage);
 
-    imshow("binary", binaryImage);
+    // imshow("binary", binaryImage);
 
     return binaryImage;
 }
@@ -330,7 +330,7 @@ void ComputerVision::PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines){
 
     std::vector<cv::Point2f> rightLinePixels = SlidingWindow(warped, cv::Rect(rightMaxX - rectHeight, rectY, rectHeight, rectwidth));
     std::vector<cv::Point2f> leftLinePixels = SlidingWindow(warped, cv::Rect(leftMaxX - rectHeight, rectY, rectHeight, rectwidth));
-    imshow("warped", warped);
+    // imshow("warped", warped);
 
     std::vector<double> fitR = Polynomial::Polyfit(rightLinePixels, 2);
     std::vector<double> fitL = Polynomial::Polyfit(leftLinePixels, 2);

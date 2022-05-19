@@ -38,7 +38,7 @@
 /out
 
 # Log files
-/logs
+**/logs
 
 # Python
 __pycache__
@@ -53,3 +53,5 @@ assets/videos/outpyTestdag5.mp4
 
 src/MachineLearning/CANRacing/saved_tbs
 src/MachineLearning/CANRacing/tensorboard_testing_log
+
+assets/models

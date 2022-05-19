@@ -31,6 +31,9 @@ int main(int argc, char** argv) {
         }else if(arg == "-realtime"){
             std::cout << "realtime" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::realtime;
+        }else if(arg == "-realtimeml"){
+            std::cout << "realtime machine learning" << std::endl;
+            mediaInput.mediaType = CVProcess::MediaSource::realtime_ml;
         }else if(arg == "-assetto"){
             std::cout << "assetto" << std::endl;
             std::cout << arg << std::endl;
@@ -42,7 +45,7 @@ int main(int argc, char** argv) {
         cursor++;
     }
     CanProcess *canprocess = new CanProcess(&mediaInput);
-        if(arg == "-realtime" || arg == "") {
+        if(arg == "-realtime" || arg == "-realtimeml" || arg == "") {
             CVProcess *cvprocess = new CVProcess(&mediaInput);
             application.RegisterProcess(cvprocess);
             #ifdef linux
