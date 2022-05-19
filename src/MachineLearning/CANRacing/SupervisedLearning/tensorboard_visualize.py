@@ -3,8 +3,10 @@ import numpy as np
 from tensorboard import program
 import numpy as np
 from PIL import Image, ImageDraw
+import shutil
+import os
 
-def launch_tb(log_dir, wait=True):
+def launch_tb(log_dir: str, wait=True):
     """
     Automatically spins up a tensorboard at localhost:600x (Default 6006, increases by 1 if in use)
 
@@ -29,7 +31,7 @@ def create_tb(log_dir, wait=True):
     :param wait Boolean if the program should continue to run after finishing to keep the tensorboard alive for examination
     """
     # remove if already exists
-    # shutil.rmtree(os.path.abspath(log_dir), ignore_errors=True)
+    shutil.rmtree(os.path.abspath(log_dir), ignore_errors=True)
 
     writer = SummaryWriter(log_dir=log_dir)
 
@@ -37,14 +39,14 @@ def create_tb(log_dir, wait=True):
     
     return writer
 
-def tb_show_text(text, epoch=0, name: str = "text", writer: SummaryWriter = None):
+def tb_show_text(text: str, epoch: int = 0, name: str = "text", writer: SummaryWriter = None):
     """
     Send text to tensorboard
 
     :param text A string with text
     :param epoch The current epoch (Optional)
     :param name Name of the text header to be sent to tensorboard
-    :param writer The writer to be written to
+    :param writer The writer that writes to your current training tensorboard
     """
     if writer is None:
         print("No writer")
@@ -54,14 +56,14 @@ def tb_show_text(text, epoch=0, name: str = "text", writer: SummaryWriter = None
 
     return
 
-def tb_show_loss(loss, epoch, name: str = "loss", writer: SummaryWriter = None):
+def tb_show_loss(loss, epoch: int, name: str = "loss", writer: SummaryWriter = None):
     """
     Send the loss to tensorboard
 
     :param loss The loss
     :param epoch The current epoch
     :param name Name of the scalar to be sent to tensorboard
-    :param writer  The writer to be written to
+    :param writer  The writer that writes to your current training tensorboard
     """
     if writer is None:
         print("No writer")
@@ -72,7 +74,7 @@ def tb_show_loss(loss, epoch, name: str = "loss", writer: SummaryWriter = None):
 
     return
 
-def tb_show_image(img: np.ndarray, epoch, name: str = "images", dataformats="CHW", writer=None):
+def tb_show_image(img: np.ndarray, epoch: int, name: str = "images", dataformats="CHW", writer: SummaryWriter = None):
     """
     Send an image to tensorboard
 
@@ -80,7 +82,7 @@ def tb_show_image(img: np.ndarray, epoch, name: str = "images", dataformats="CHW
     :param epoch The current epoch
     :param name The name of the heading
     :param dataformats The shape of the image, CHW or HWC
-    :param writer The writer to be written to
+    :param writer The writer that writes to your current training tensorboard
     """
     if dataformats == "CHW":
         img = np.moveaxis(img, 0, 2)
@@ -93,7 +95,8 @@ def tb_show_image(img: np.ndarray, epoch, name: str = "images", dataformats="CHW
     writer.flush()
 
 def draw_pred_and_target_npy(img: np.ndarray, filename: str, predicted_actions, target_actions, dataformats="HWC"):
-    """Draws the image name in red, the predicted actions in blue, and the target actions in green in the top left corner of the image.
+    """
+    Draws the image name in red, the predicted actions in blue, and the target actions in green in the top left corner of the image.
     This function only accepts numpy arrays.
 
     :param img The image as an npy array

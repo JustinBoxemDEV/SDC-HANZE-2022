@@ -11,7 +11,7 @@ class TTAssenDataset(torch.utils.data.Dataset):
                     transforms=None, albu_transforms=None):
         """
         :param root_dir (string): Path to folder containing directory with all the images
-        :param csv_file (string): Path to the csv file with actions
+        :param csv_file (string): Path to the csv file with actions and corresponding image names
         :param transform (callable, optional) Optional transform to be applied on a sample
         :param albu_transforms (callable, optional) Optional trasform from the albumentations library to be applied on a sample
         """
@@ -39,9 +39,8 @@ class TTAssenDataset(torch.utils.data.Dataset):
 
         image = np.resize(image, (480, 848, 3)).astype(np.float32) # resize images here!
 
-        # TODO: Slice images (remove unnecessary data)
-        sample = {'image': image[185:300,0:848], 'actions': actions}
-        # sample = {'image': image, 'actions': actions}
+        # Slice the images to remove noise
+        sample = {'image': image[160:325,0:848], 'actions': actions}
 
         # Augmentation transforms which use the albumentations library
         if self.albu_transforms:
