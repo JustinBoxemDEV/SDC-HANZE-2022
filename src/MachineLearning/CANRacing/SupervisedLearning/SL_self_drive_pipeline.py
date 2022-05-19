@@ -257,4 +257,4 @@ def run(training=False, testing=True):
 
 
 if __name__ == "__main__":
-    run(training=True, testing=True)
+    run(training=True, testing=False)
