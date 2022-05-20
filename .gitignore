@@ -38,7 +38,7 @@
 /out
 
 # Log files
-/logs
+**/logs
 
 # Python
 __pycache__
@@ -52,3 +52,5 @@ assets/models
 src/MachineLearning/ACRacing/TestImges
 
 src/MachineLearning/CANRacing/tensorboards
+src/MachineLearning/CANRacing/saved_tbs
+src/MachineLearning/CANRacing/tensorboard_testing_log

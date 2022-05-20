@@ -72,7 +72,7 @@ void CANStrategy::init(const char* canType) {
 
     actuators.steeringAngle = 0.0;
     CANStrategy::steer();
-    std::cout << "Test steering" << std::endl;
+    // std::cout << "Test steering" << std::endl;
 };
 
 void CANStrategy::throttle(int amount, int direction) {
