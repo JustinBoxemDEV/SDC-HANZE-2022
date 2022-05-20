@@ -1,5 +1,3 @@
-# Douwe script for splitting images with turns
-
 import csv
 import os
 
@@ -19,7 +17,6 @@ for imageDir in os.listdir("/home/douwe/Documents/recht"):
                     text = row
                     data = str(text).split(",")
                     imagePath = data[3].replace("\"", "").replace("[", "").replace("]", "").replace("\'", "")[1:]
-                    
                     imageDirectory = imagePath.split("/")[0]
                     imageName = imagePath.split("/")[1]
                     for image in images:                
