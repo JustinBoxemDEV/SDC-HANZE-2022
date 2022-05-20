@@ -2,18 +2,17 @@
 
 import csv
 import os
-    
-for bochtDir in os.listdir("/home/douwe/Documents/bochten"):
+
+for imageDir in os.listdir("/home/douwe/Documents/recht"):
     images = []
-    directoryName = str(bochtDir)
     for csvFile in os.listdir("/home/douwe/Documents/all csv"):
         name = str(csvFile).replace("new_data images", "").replace(".csv", "")
-        if(bochtDir.__contains__(name)):
-            for image in os.listdir("/home/douwe/Documents/bochten/"+bochtDir):
+        if(imageDir.__contains__(name)):
+            for image in os.listdir("/home/douwe/Documents/recht/"+imageDir):
                 images.append(image)
             readf = open(f"/home/douwe/Documents/all csv/"+csvFile, "r")
             reader = csv.reader(readf)
-            with open("/home/douwe/Documents/python generated csv/"+bochtDir+".csv", "w") as writef:
+            with open("/home/douwe/Documents/python generated csv/"+imageDir+".csv", "w") as writef:
                 header = next(reader)
                 writer = csv.writer(writef)
                 
@@ -28,7 +27,6 @@ for bochtDir in os.listdir("/home/douwe/Documents/bochten"):
                         if(imageName == image):
                             writer.writerow(row)
                             images.remove(imageName)
-
                 readf.close()
                 writef.close()
-                print("Done " + bochtDir + " : " + csvFile)
+                print("Done " + imageDir + " : " + csvFile)
