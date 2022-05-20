@@ -1,16 +1,16 @@
 import csv
 import os
 
-for imageDir in os.listdir("/home/douwe/Documents/recht"):
+for imageDir in os.listdir("D:\\SDC Data\\all images"):
     images = []
-    for csvFile in os.listdir("/home/douwe/Documents/all csv"):
+    for csvFile in os.listdir("D:\\SDC Data\\good csv"):
         name = str(csvFile).replace("new_data images", "").replace(".csv", "")
         if(imageDir.__contains__(name)):
-            for image in os.listdir("/home/douwe/Documents/recht/"+imageDir):
+            for image in os.listdir("D:\\SDC Data\\all images\\"+imageDir):
                 images.append(image)
-            readf = open(f"/home/douwe/Documents/all csv/"+csvFile, "r")
+            readf = open("D:\\SDC Data\\good csv\\"+csvFile, "r")
             reader = csv.reader(readf)
-            with open("/home/douwe/Documents/python generated csv/"+imageDir+".csv", "w") as writef:
+            with open("D:\\SDC Data\\python generated csv\\"+imageDir+".csv", "w", newline="\n") as writef:
                 header = next(reader)
                 writer = csv.writer(writef)
                 for row in reader:
