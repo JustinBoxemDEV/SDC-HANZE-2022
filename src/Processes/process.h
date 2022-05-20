@@ -9,6 +9,7 @@ class Process
         enum class MediaSource {
             video,
             realtime,
+            realtime_ml,
             assetto,
             terminal
         };
