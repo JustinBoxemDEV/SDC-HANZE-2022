@@ -2,13 +2,13 @@
 import csv
 import struct
 
-csvName = "data images 22-03-2022 13-47-20"
+# csvName = "data images 22-03-2022 13-47-20"
 
-readf = open(f"C:/Users/Sabin/Documents/SDC/SL_data/zips/{csvName}.csv", "r")
-writef = open(f"C:/Users/Sabin/Documents/SDC/SL_data/zips/new_{csvName}.csv", 'w')
+readf = open("D:\SDC Data\data images 30-03-2022 15-22-30.csv", "r")
+writef = open("D:\SDC Data\good_data images 30-03-2022 15-22-30.csv", 'w')
 
-twentytwo = True
-twentyone = False 
+twentytwo = False
+twentyone = True
 
 fields=('Steer', 'Throttle', 'Brake', 'Image')
 
@@ -44,8 +44,8 @@ if(twentyone):
             throttle = 0
         else:
             throttle = int(throttle) 
-            throttle = throttle * 1.75438596491
-            throttle = int(round(throttle))
+            # throttle = throttle * 1.75438596491
+            # throttle = int(round(throttle))
         
         brake = data[2].replace("\"", "").split(",")[0]
         if(len(brake) == 0):
@@ -73,13 +73,17 @@ if(twentytwo):
         if(len(throttle) == 0):
             throttle = 0
         else:
-            throttle = float(throttle) 
-            throttle = int(throttle * 100)
-            throttle = int(round(throttle))
+            throttle = int(throttle)
+
+        brake = data[2].replace("\"", "").split(",")[0]
         
-        brake = float(data[2])
-        brake = int(brake * 100)
+        if(len(throttle)==0):
+            brake = 0
+        else:
+            brake = int(brake)
     
+        print(steering, "," + throttle + "," + brake + "," + image)
+
         writer.writerow({'Steer': steering, 'Throttle': throttle, 'Brake': brake, 'Image': image})
 
 writef.close()
