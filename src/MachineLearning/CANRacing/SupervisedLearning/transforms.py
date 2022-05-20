@@ -3,7 +3,7 @@ from numpy import transpose
 import numpy as np
 from typing import Dict, Union
 
-# SCUFFED FIX FOR USING TRANSFORMS ON DEPLOYMENT IN PYTHON
+# Scuffed fix for using transforms on deployment in python. Leave on false unless you are using python_deploy_model.py
 deploy = False
 
 class ToTensor(object):

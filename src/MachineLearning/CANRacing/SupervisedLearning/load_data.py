@@ -8,18 +8,18 @@ def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=Fal
                     random_sun_flare=False, horizontal_flip=False, motion_blur=False, random_shadow=False, 
                     random_brightness_contrast=False, random_gamma=False):
     """
-    Returns a dataloader (pytorch) which can sample images from the dataset
+    Returns a dataloader (pytorch) which can sample images from the dataset. This dataloader will perform data augmentations based on the passed parameters.
 
     :param img_folder The folder containing the database images
     :param act_csv The csv containing the actions with their corresponding image name
     :param batch_size The size of each batch that will be sampled at a time
-    :parm normalize Normalize the images (reccomended to keep this on True)
-    :parm random_sun_flare Add a random sun flare to the images in the sample based on a percentace chance
-    :param horizontal_flip Horizontally flip the images in the sample based on a percentace chance (actions need to be inverted if this is used, not implemented yet)
-    :param motion_blur Apply motion blur to the images in the sample based on a percentace chance
-    :param random_shadow Apply a random shadow to the images in the sample based on a percentace chance
-    :param random_brightness_contrast Apply a random brightness and contrast in a range to the images in the sample based on a percentace chance
-    :param random_gamma Apply a random gamma in a range to the images in the sample based on a percentace chance
+    :parm normalize Boolean if the images should be normalized (reccomended to keep this on True)
+    :parm random_sun_flare Boolean if a random sun flare should be added to the images in a sample based on a percentace chance
+    :param horizontal_flip Boolean if the images in a sample should be horizontally flipped based on a percentace chance (actions need to be inverted if this is used, not implemented yet)
+    :param motion_blur Boolean if motion blur should be applied to the images in a sample based on a percentace chance
+    :param random_shadow Boolean if a random shadow should be applied to the images in a sample based on a percentace chance
+    :param random_brightness_contrast Boolean if a range of random brightness and contrast should be applied to the images in a sample based on a percentace chance
+    :param random_gamma Boolean if a random gamma in a range should be applied to the images in a sample based on a percentace chance
     """
     t = []
     albu_t = []
