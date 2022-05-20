@@ -2,10 +2,10 @@ import torch.nn as nn
 import torch
 
 class SelfDriveModel(nn.Module):
-
-    def __init__(self):
+    def __init__(self, gpu=True):       # Temporary GPU parameter as lazy fix for training on gpu and testing on cpu
         super(SelfDriveModel, self).__init__()
-
+        self.gpu = gpu 
+        
         self.conv_layers = nn.Sequential(
             nn.Conv2d(3, 24, kernel_size=5, stride=2),
             nn.ELU(),
@@ -26,11 +26,22 @@ class SelfDriveModel(nn.Module):
         )
 
     def forward(self, x):
-        x = x.view(x.size(0), 3, 165, 848) # x.size(0) if training, 1 if deploying      (for full image use 3, 480, 848)
+        if self.gpu:
+            x = x.view(x.size(0), 3, 165, 848) # x.size(0) if training, 1 if testing        (for full image use 3, 480, 848)
+        else:
+            x = x.view(1, 3, 165, 848)
+
         output = self.conv_layers(x)
         # print(output.shape)
-        output = output.view(output.size(0), -1) # output.size(0) if training, 1 if deploying
+
+        if self.gpu:
+            output = output.view(output.size(0), -1) # output.size(0) if training, 1 if testing
+        else:
+            output = output.view(1, -1)
+
         output = self.linear_layers(output)
-        output = output.type(torch.cuda.DoubleTensor) # comment this if you use CPU (for deployment) TODO: dynamic fix
+
+        if self.gpu:
+            output = output.type(torch.cuda.DoubleTensor) # comment this if you use CPU (for deployment) TODO: dynamic fix
         return output
 

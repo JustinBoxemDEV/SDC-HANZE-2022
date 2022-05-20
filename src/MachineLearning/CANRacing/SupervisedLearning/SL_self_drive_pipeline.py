@@ -16,6 +16,7 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
 # 4. Dynamic training/testing variables (in model 29, 32, 34)
 # 5. (Laurens) Accept video input in C++ for testing on real kart (RDW)
+# 6. Implement early stopping (after 10 epochs of no improvement)
 
 import torch
 from load_data import get_dataloader
@@ -183,7 +184,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
     """
     test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=True)
 
-    model = SelfDriveModel()
+    model = SelfDriveModel(gpu=False)
     model.load_state_dict(torch.load(f"assets/models/{model_name}.pt", 
                             map_location=dev))
     model.eval()
@@ -199,6 +200,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
         img_name = batch['img_names']
 
         np_image = skimage.io.imread(img_name[0])
+        # undo normalization for visualization
         np_image = ((np_image / np.max(np_image)) * 255).astype(np.uint8)
         np_image = np_image[160:325,0:848] # crop to match visualization to what the nn sees
 
@@ -207,7 +209,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
         outputs = model(input_images)
 
         # draw image name, prediction and target on image
-        img_with_data = draw_pred_and_target_npy(np_image, filename=img_name[0][66:], predicted_actions=outputs, target_actions=actions, dataformats="HWC")
+        img_with_data = draw_pred_and_target_npy(np_image, filename=img_name[0][66:], predicted_actions=outputs[0], target_actions=actions[0], dataformats="HWC")
         
         # show image, image name, prediction and target in tensorboard
         tb_show_image(img=img_with_data, epoch=idx, name="Test images", dataformats="HWC", writer=writer)
@@ -262,10 +264,10 @@ def run(training=False, testing=True):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
                     test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name="SLSelfDriveModel 2022-05-20_14-26-49", wait=True, dev="cpu")
+                    model_name=trained_model_name, wait=True, dev="cpu")
 
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=True, testing=False)
+    run(training=True, testing=True)
