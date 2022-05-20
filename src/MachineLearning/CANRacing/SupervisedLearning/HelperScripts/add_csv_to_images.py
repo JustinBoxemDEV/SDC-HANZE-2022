@@ -15,7 +15,6 @@ for imageDir in os.listdir("/home/douwe/Documents/recht"):
             with open("/home/douwe/Documents/python generated csv/"+imageDir+".csv", "w") as writef:
                 header = next(reader)
                 writer = csv.writer(writef)
-                
                 for row in reader:
                     text = row
                     data = str(text).split(",")
