@@ -45,7 +45,7 @@ void CVProcess::Run(){
         if(frame.empty()){
             break;
         }
-
+   
         ProcessFrame(frame);
         if (cv::waitKey(100/60)>0){
             break;
@@ -64,7 +64,6 @@ void CVProcess::ProcessFrame(cv::Mat src) {
         cv::imshow("distorted image", temp);
         cv::imshow("undistorted image", src);
     }
-
     cv::Mat gammaCorrected = cVision.GammaCorrection(src, gamma );
     cVision.SetFrame(gammaCorrected);
 

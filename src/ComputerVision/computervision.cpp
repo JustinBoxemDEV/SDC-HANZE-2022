@@ -445,8 +445,9 @@ void ComputerVision::PredictTurn(cv::Mat src){
     // std::cout<< "laneoffset= "<< laneOffset << std::endl;
     // std::cout<< "laneleft= "<< laneLeft << std::endl;
     // std::cout<< "laneright= "<< laneRight << std::endl;
-    cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
-    cv::addWeighted(warpedOverlay, 1, warped, 1,  0, warped);
+    std::cout << "test" << std::endl;
+    // cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
+    // cv::addWeighted(warpedOverlay, 1, warped, 1,  0, warped);
     imshow("warped", warped);
 
     //----DRAW STUF -----

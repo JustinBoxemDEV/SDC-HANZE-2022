@@ -31,7 +31,7 @@ cv::Mat ScreenSource::GetFrameMat(){
     DeleteObject(hbitmap);
     DeleteDC(memdc);
     ReleaseDC(hwndDesktop, hdc);
-
+    
     return src;
 }
 
