@@ -16,8 +16,6 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
 # 4. Accept video input in C++ for testing on real kart (RDW)
 # 5. Dynamic training/testing variables (in model 29, 32, 34)
-# 6. Show validaiton images in tensorboard
-# 7. Add training/validation loss graph
 
 import torch
 from load_data import get_dataloader
@@ -108,7 +106,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
         tb_show_loss(avg_loss, epoch, "tb_training_loss", writer)
 
         # Tune learning rate
-        scheduler.step(avg_loss, epoch)
+        scheduler.step(avg_loss)
 
         if epoch % 1 == 0:
             model.eval()
