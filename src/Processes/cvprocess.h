@@ -9,6 +9,10 @@
 #include "../MediaSources/streamsource.h"
 #include <filesystem>
 
+#ifdef linux
+#include "../MachineLearning/model.h"
+#endif
+
 namespace fs = std::filesystem;
 
 class CVProcess : public Process
@@ -19,6 +23,9 @@ class CVProcess : public Process
         ComputerVision cVision;
         PIDController pid{0.20,0.4211,0.0414};
         void ProcessFrame(cv::Mat src);
+        #ifdef linux
+        Model *model;
+        #endif
     public:
         CVProcess(MediaInput *input);
         float gamma = 2; 

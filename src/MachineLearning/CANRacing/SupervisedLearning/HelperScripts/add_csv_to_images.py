@@ -14,8 +14,7 @@ for imageDir in os.listdir("/home/douwe/Documents/recht"):
                 header = next(reader)
                 writer = csv.writer(writef)
                 for row in reader:
-                    text = row
-                    data = str(text).split(",")
+                    data = str(row).split(",")
                     imagePath = data[3].replace("\"", "").replace("[", "").replace("]", "").replace("\'", "")[1:]
                     imageDirectory = imagePath.split("/")[0]
                     imageName = imagePath.split("/")[1]
