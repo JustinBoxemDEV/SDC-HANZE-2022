@@ -141,7 +141,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
         if loss_cnt == 0:
             # TODO: show validation images in TB (somehow ends up as 3, 480, 3 after draw_pred_and_target_nmpy (asarray function line 24))
-            # img_with_data = draw_pred_and_traget_npy(input_images[i].cpu().numpy(), filename=batch['img_names'][0][66:], predicted_actions=outputs, target_actions=actions, dataformats="CWH")
+            # img_with_data = draw_pred_and_target_npy(input_images[i].cpu().numpy(), filename=batch['img_names'][0][66:], predicted_actions=outputs, target_actions=actions, dataformats="CWH")
             # tb_show_image(img_with_data, epoch=epoch+i, name="Validation images", dataformats="CWH", writer=writer)
             tb_show_text(text=f"File name: {batch['img_names'][0][58:]}     Predicted steering: {outputs[0][0]}   Target actions: {actions[0][0]}", epoch=epoch, name="Runtime validation metrics", writer=writer)
             tb_show_text(text=f"File name: {batch['img_names'][0][58:]}     Predicted throttle: {outputs[0][1]}   Target actions: {actions[0][1]}", epoch=epoch, name="Runtime validation metrics", writer=writer)
@@ -225,20 +225,23 @@ def run(training=False, testing=True):
     torch.cuda.empty_cache()
     if training:
         trained_model_name = run_training(
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/training/train_data_images_18-11-2021_14-59-21_2.csv",
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/rdw/", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/rdw/all_images.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/rdw/", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/rdw/all_images.csv",
+
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/rdw/data images 30-03-2022 15-17-40.csv",
                     model_name="SLSelfDriveModel", num_epochs=1, amp_on=True, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
 
     if testing:
-        # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_only_turns/validation/val_data_images_18-11-2021_15-12-21_2.csv",
-                    model_name="SLSelfDriveModel 2022-05-20_01-14-38", wait=True, dev="cpu")
+        # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name (note: testing after training does not work currently)
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/data images 12-04-2022 12-00-56.csv",
+                    model_name="SLSelfDriveModel 2022-05-20_23-14-38", wait=True, dev="cpu")
 
     print("Done!")
 
