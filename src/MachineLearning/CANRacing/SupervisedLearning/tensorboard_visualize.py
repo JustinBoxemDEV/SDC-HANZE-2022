@@ -113,10 +113,10 @@ def draw_pred_and_target_npy(img: np.ndarray, filename: str, predicted_actions, 
     
     draw = ImageDraw.Draw(img)
     draw.text((10, 10), str(f"Filename: {filename}"), fill=(255, 0, 0))
-    draw.text((10, 20), str(f"Predicted steering: {predicted_actions[0][0]}"), fill=(0, 255, 255))
-    draw.text((10, 30), str(f"Target steering: {target_actions[0][0]}"), fill=(0, 255, 0))
-    draw.text((10, 40), str(f"Predicted throttle: {predicted_actions[0][1]}"), fill=(0, 255, 255))
-    draw.text((10, 50), str(f"Target throttle: {target_actions[0][1]}"), fill=(0, 255, 0))
+    draw.text((10, 20), str(f"Predicted steering: {predicted_actions[0]}"), fill=(0, 255, 255))
+    draw.text((10, 30), str(f"Target steering: {target_actions[0]}"), fill=(0, 255, 0))
+    draw.text((10, 40), str(f"Predicted throttle: {predicted_actions[1]}"), fill=(0, 255, 255))
+    draw.text((10, 50), str(f"Target throttle: {target_actions[1]}"), fill=(0, 255, 0))
     img_with_preds = np.asarray(img, dtype="uint8") # convert back to numpy array
 
     return img_with_preds

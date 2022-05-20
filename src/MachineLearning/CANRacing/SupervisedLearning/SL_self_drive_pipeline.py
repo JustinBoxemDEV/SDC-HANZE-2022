@@ -141,14 +141,15 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
         outputs = model(input_images)
 
-        
-        # send image to cpu, make it a numpy array and undo normalization for visualization purposes
-        image = input_images[i].cpu().numpy()
-        np_image = ((image / np.max(image)) * 255).astype(np.uint8)
+        # Show all images and predictions from validation batch
+        for idx, image in enumerate(input_images):
+            # send image to cpu, make it a numpy array and undo normalization for visualization purposes
+            np_image = image.cpu().numpy()
+            np_image = ((np_image / np.max(np_image)) * 255).astype(np.uint8)
 
-        # Show first image and prediction in the validation batch
-        img_with_data = draw_pred_and_target_npy(np_image, filename=batch['img_names'][i][66:], predicted_actions=outputs, target_actions=actions, dataformats="CHW")
-        tb_show_image(img_with_data, epoch=epoch+i, name="Validation images", dataformats="HWC", writer=writer)
+            # Show image and prediction from the validation batch
+            img_with_data = draw_pred_and_target_npy(np_image, filename=batch['img_names'][idx][66:], predicted_actions=outputs[idx], target_actions=actions[idx], dataformats="CHW")
+            tb_show_image(img_with_data, epoch=(epoch*4)+idx, name="Validation images", dataformats="HWC", writer=writer) # TODO: Fix the step (epoch) of this, change 4 to dynamic size of input_images or something
 
         loss = loss_fn(outputs, actions)
 
@@ -214,7 +215,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
         loss_fn = torch.nn.MSELoss()
         loss = loss_fn(outputs, actions)
 
-        loss_sum += loss.item()
+        loss_sum += loss.cpu().item()
         loss_cnt += 1
         
     avg_loss = loss_sum / loss_cnt
