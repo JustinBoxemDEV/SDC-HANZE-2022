@@ -252,7 +252,7 @@ def run(training=False, testing=True):
         torch.cuda.empty_cache()
 
     if testing:
-        # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name (note: testing after training does not work currently)
+        # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
         run_testing(
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/data images 12-04-2022 12-00-56.csv",
