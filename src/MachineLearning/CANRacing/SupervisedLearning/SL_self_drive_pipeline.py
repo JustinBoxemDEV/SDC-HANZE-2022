@@ -14,8 +14,8 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # 1. Sort out images for training set (variation in images, several datasets)
 # 2. Remove brake from the NN (will have to remove brake from .csv for this)
 # 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 4. Accept video input in C++ for testing on real kart (RDW)
-# 5. Dynamic training/testing variables (in model 29, 32, 34)
+# 4. Dynamic training/testing variables (in model 29, 32, 34)
+# 5. (Laurens) Accept video input in C++ for testing on real kart (RDW)
 
 import torch
 from load_data import get_dataloader
@@ -218,7 +218,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
         loss_cnt += 1
         
     avg_loss = loss_sum / loss_cnt
-    tb_show_text(avg_loss, idx, name="tb_testing", writer=writer)
+    tb_show_text(text=f"Testing loss (MSE): {avg_loss}", name="tb_testing_loss", writer=writer)
 
     if wait:
         wait_forever("Press CTRL+C to close tensorboard.")
@@ -261,7 +261,7 @@ def run(training=False, testing=True):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
                     test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name="SLSelfDriveModel 2022-05-20_01-14-38", wait=True, dev="cpu")
+                    model_name="SLSelfDriveModel 2022-05-20_14-26-49", wait=True, dev="cpu")
 
     print("Done!")
 
