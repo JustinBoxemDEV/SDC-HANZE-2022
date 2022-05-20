@@ -26,7 +26,7 @@ class SelfDriveModel(nn.Module):
         )
 
     def forward(self, x):
-        x = x.view(x.size(0) , 3, 165, 848) # x.size(0) if training, 1 if deploying      (for full image use 3, 480, 848)
+        x = x.view(x.size(0), 3, 165, 848) # x.size(0) if training, 1 if deploying      (for full image use 3, 480, 848)
         output = self.conv_layers(x)
         # print(output.shape)
         output = output.view(output.size(0), -1) # output.size(0) if training, 1 if deploying
