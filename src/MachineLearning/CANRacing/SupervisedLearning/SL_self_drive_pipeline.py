@@ -98,7 +98,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 optimizer.step()
             
 
-            loss_sum += loss.item()
+            loss_sum += loss.cpu().item()
             loss_cnt += 1
 
         avg_loss = loss_sum / loss_cnt
@@ -243,7 +243,7 @@ def run(training=False, testing=True):
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="SLSelfDriveModel", num_epochs=100, amp_on=True, batch_size=4, dev="cuda:0")
+                    model_name="SLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=4, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
