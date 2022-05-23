@@ -141,7 +141,6 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
         input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
         outputs = model(input_images)
-        print(outputs)
 
         # Show all images and predictions from validation batch
         for idx, image in enumerate(input_images):
@@ -249,12 +248,24 @@ def run(training=False, testing=True):
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
 
+                    # 2021
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/2021_all_images.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/validation/100_60p_new_data images 30-03-2022 15-17-40.csv",
+
+                    # 2022
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/2022_all_images.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/validation/100_60p_new_data images 30-03-2022 15-17-40.csv",
+
                     # 8 IMAGE DATASET FOR DEBUGGING
                     train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="SLSelfDriveModel", num_epochs=200, amp_on=False, batch_size=8, dev="cuda:0")
+                    model_name="SLSelfDriveModel", num_epochs=50, amp_on=False, batch_size=8, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
@@ -264,6 +275,14 @@ def run(training=False, testing=True):
         run_testing(
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+
+                    # 2021
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+
+                    # 2022
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
                     test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
