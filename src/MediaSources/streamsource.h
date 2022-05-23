@@ -8,6 +8,8 @@ class StreamSource
     public:
         virtual void Setup() = 0;
         virtual cv::Mat GetFrameMat() = 0;
+        std::string currentImg = "";
+        bool outOfImages = false;
 };
 
 #endif

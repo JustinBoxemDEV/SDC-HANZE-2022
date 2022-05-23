@@ -9,7 +9,9 @@
 #include <torch/script.h>
 #include <torch/torch.h>
 #include <filesystem>
+#include <fstream>
 
+#include "../utils/Time/time.h"
 #include "../VehicleControl/communicationstrategy.h"
 
 using namespace std;
@@ -23,9 +25,14 @@ class Model
         torch::Tensor PreprocessImage(cv::Mat img);
         int LimitOutputInt(int value, int min = 0, int max = 100);
         float LimitOutputFloat(float value, int min = -1, int max = 1);
+        bool CSVIsEnabled = false;
+        std::ofstream csvFile;
+        bool csvIsClosed = false;
     public:
         Model(string model);
-        void Inference(cv::Mat frame);
+        void EnableCSV();
+        void closeCSV();
+        void Inference(cv::Mat frame, string img = "");
 };
 
 #endif
