@@ -50,7 +50,7 @@ CanProcess::CanProcess(MediaInput *input){
             #ifdef linux
             strategy = new CANStrategy();
             readProcess->setStrategy(strategy);
-            #elifdef __WIN32__
+            #elif __WIN32__
             std::cerr << "you can't run machine learning on a windows device";
             #endif
 
