@@ -21,40 +21,62 @@ Model::Model(string model) {
     module.to(at::Device("cpu"));
 }
 
+void Model::EnableCSV() {
+    if (!CSVIsEnabled) {
+        csvFile.open(fs::current_path().string()+"/logs/ml/"+Time::currentDateTime()+"-images-ml.csv");
+        csvFile << "Steer,Throttle,Brake,Image\n";
+        CSVIsEnabled = true;
+    }
+}
+
+void Model::closeCSV(){
+    if (!csvIsClosed) {
+        csvFile.close();
+        csvIsClosed = true;
+    }
+}
+
 torch::Tensor Model::PreprocessImage(cv::Mat img) {
     cv::resize(img, img, cv::Size(480,848));
-
     img.convertTo(img, CV_32FC3, 1/255.0);
-
     torch::Tensor img_tensor = torch::from_blob(img.data, {img.rows, img.cols, 3}, c10::kFloat);
-
     return img_tensor.clone();
 }
 
-void Model::Inference(cv::Mat frame) {
+void Model::Inference(cv::Mat frame, string img) {
+    if (csvIsClosed) {
+        return;
+    }
+
     // Create a vector of inputs.
-    std::vector<torch::jit::IValue> inputs;
+    vector<torch::jit::IValue> inputs;
     inputs.push_back(PreprocessImage(frame));
 
     // Execute the model and turn its output into a tensor.
     at::Tensor output = module.forward(inputs).toTensor();
-    // std::cout << output.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << '\n';
+    // cout << output.slice(/*dim=*/1, /*start=*/0, /*end=*/5) << endl;
     
-    std::tuple<torch::Tensor, torch::Tensor> result = torch::max(output, 1);
-
-    cout << "\n" << output[0][0].item<float>() << " steeringAngle \n";
-    cout << output[0][1].item<int>() << " throttlePercentage \n";
-    // cout << output[0][2].item<int>() << " brakePercentage \n";
+    tuple<torch::Tensor, torch::Tensor> result = torch::max(output, 1);
 
     float steeringAngle = output[0][0].item<float>();
     int throttlePercentage = output[0][1].item<int>();
     // int brakePercentage = output[0][2].item<int>();
 
+    cout << steeringAngle << " steeringAngle" << endl;
+    cout << throttlePercentage << " throttlePercentage" << endl;
+    // cout << brakePercentage << " brakePercentage" << endl;
+
     // steering
-    CommunicationStrategy::actuators.steeringAngle = LimitOutputFloat(steeringAngle);
+    steeringAngle = LimitOutputFloat(steeringAngle);
+    CommunicationStrategy::actuators.steeringAngle = steeringAngle;
 
     // throttle
-    CommunicationStrategy::actuators.throttlePercentage = LimitOutputInt(throttlePercentage);
+    throttlePercentage = LimitOutputInt(throttlePercentage);
+    CommunicationStrategy::actuators.throttlePercentage = throttlePercentage;
+
+    if (!csvIsClosed && img != "") {
+        csvFile << std::to_string(steeringAngle)+","+std::to_string(throttlePercentage)+",0,"+img+"\n";
+    }
 }
 
 int Model::LimitOutputInt(int value, int min, int max) {

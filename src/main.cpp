@@ -34,6 +34,22 @@ int main(int argc, char** argv) {
         }else if(arg == "-realtimeml"){
             std::cout << "realtime machine learning" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::realtime_ml;
+        }else if(arg == "-imagesml"){
+            std::cout << "images machine learning" << std::endl;
+            mediaInput.mediaType = CVProcess::MediaSource::images_ml;
+            cursor++;
+            std::string dir = argv[cursor];
+            if (dir.back() != '/')
+                dir = dir+"/";
+            std::string path = fs::current_path().string() + "/assets/images/" + dir;
+            // when de dir starts with a dot we presume that the user filled in the entire dir path
+            if (dir.at(0) == '.')
+                path = dir;
+            if(!fs::exists(path)){
+                std::cout << "file does not exists!" << std::endl;
+                return 1;
+            }
+            mediaInput.filepath = path;
         }else if(arg == "-assetto"){
             std::cout << "assetto" << std::endl;
             std::cout << arg << std::endl;
@@ -45,7 +61,7 @@ int main(int argc, char** argv) {
         cursor++;
     }
     CanProcess *canprocess = new CanProcess(&mediaInput);
-        if(arg == "-realtime" || arg == "-realtimeml" || arg == "") {
+        if(arg == "-realtime" || arg == "-realtimeml" || arg == "-imagesml" || arg == "") {
             CVProcess *cvprocess = new CVProcess(&mediaInput);
             application.RegisterProcess(cvprocess);
             #ifdef linux

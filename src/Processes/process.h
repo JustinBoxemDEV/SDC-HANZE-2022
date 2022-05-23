@@ -10,6 +10,7 @@ class Process
             video,
             realtime,
             realtime_ml,
+            images_ml,
             assetto,
             terminal
         };

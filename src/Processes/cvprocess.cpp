@@ -7,7 +7,7 @@
 CommunicationStrategy::Actuators CommunicationStrategy::actuators;
 #endif
 
-#define MODEL_PATH "/home/laurens/Projects/SDC-HANZE-2022/assets/models/model_traced_90p.pt"
+#define MODEL_PATH "/assets/models/model_traced_90p.pt"
 
 CVProcess::CVProcess(MediaInput *input){
     mediaInput = input;
@@ -28,7 +28,13 @@ CVProcess::CVProcess(MediaInput *input){
         case MediaSource::realtime_ml:
             streamSource = new VideoSource(input->cameraID);
             #ifdef linux
-            model = new Model(MODEL_PATH);
+            model = new Model(fs::current_path().string()+MODEL_PATH);
+            #endif
+            break;
+        case MediaSource::images_ml:
+            streamSource = new VideoSource(input->filepath);
+            #ifdef linux
+            model = new Model(fs::current_path().string()+MODEL_PATH);
             #endif
             break;
         case MediaSource::assetto:
@@ -63,9 +69,18 @@ void CVProcess::Run(){
 
 void CVProcess::ProcessFrame(cv::Mat src){
     if(mediaInput->mediaType == MediaSource::realtime_ml) {
-        imshow("camera", src);
+        imshow("src", src);
         #ifdef __linux__
         model->Inference(src);
+        #endif
+    } else if (mediaInput->mediaType == MediaSource::images_ml) {
+        imshow("src", src);
+        std::string img = streamSource->currentImg;
+        #ifdef __linux__
+        model->EnableCSV();
+        model->Inference(src, img);
+        if (streamSource->outOfImages)
+            model->closeCSV();
         #endif
     } else {
         cv::Mat gammaCorrected = cVision.GammaCorrection(src, gamma );
