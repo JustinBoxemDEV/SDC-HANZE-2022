@@ -4,8 +4,8 @@ import struct
 
 # csvName = "data images 22-03-2022 13-47-20"
 
-readf = open("D:\SDC Data\data images 30-03-2022 15-22-30.csv", "r")
-writef = open("D:\SDC Data\good_data images 30-03-2022 15-22-30.csv", 'w')
+readf = open("C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/data images 30-03-2022 15-17-40.csv", "r")
+writef = open("C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/new_data images 30-03-2022 15-17-40.csv", 'w')
 
 twentytwo = False
 twentyone = True
@@ -44,8 +44,8 @@ if(twentyone):
             throttle = 0
         else:
             throttle = int(throttle) 
-            # throttle = throttle * 1.75438596491
-            # throttle = int(round(throttle))
+            throttle = throttle * 1.75438596491
+            throttle = int(round(throttle))
         
         brake = data[2].replace("\"", "").split(",")[0]
         if(len(brake) == 0):
