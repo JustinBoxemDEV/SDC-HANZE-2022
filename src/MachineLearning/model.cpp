@@ -37,9 +37,18 @@ void Model::closeCSV(){
 }
 
 torch::Tensor Model::PreprocessImage(cv::Mat img) {
-    cv::resize(img, img, cv::Size(480,848));
+    cv::resize(img, img, cv::Size(848,480));
     img.convertTo(img, CV_32FC3, 1/255.0);
-    torch::Tensor img_tensor = torch::from_blob(img.data, {img.rows, img.cols, 3}, c10::kFloat);
+
+    // crop image
+    int y0 = 160;
+    int y1 = 325;
+    int x0 = 0;
+    int x1 = 848;
+    cv::Rect roi(/*x=*/x0, /*y=*/y0, /*w=*/x1-x0, /*h=*/y1-y0);
+    cv::Mat crop = img(roi);
+
+    torch::Tensor img_tensor = torch::from_blob(crop.data, {crop.rows, crop.cols, 3}, c10::kFloat);
     return img_tensor.clone();
 }
 
@@ -50,6 +59,7 @@ void Model::Inference(cv::Mat frame, string img) {
 
     // Create a vector of inputs.
     vector<torch::jit::IValue> inputs;
+    PreprocessImage(frame);
     inputs.push_back(PreprocessImage(frame));
 
     // Execute the model and turn its output into a tensor.

@@ -7,7 +7,7 @@
 CommunicationStrategy::Actuators CommunicationStrategy::actuators;
 #endif
 
-#define MODEL_PATH "/assets/models/model_traced_90p.pt"
+#define MODEL_PATH "/assets/models/traced_SLSelfDriveModel_2022-05-23_00-55-20_Adam_0.00001.pt"
 
 CVProcess::CVProcess(MediaInput *input){
     mediaInput = input;
@@ -28,7 +28,7 @@ CVProcess::CVProcess(MediaInput *input){
         case MediaSource::realtime_ml:
             streamSource = new VideoSource(input->cameraID);
             #ifdef linux
-            model = new Model(fs::current_path().string()+MODEL_PATH);
+            model = new Model(input->filepath);
             #endif
             break;
         case MediaSource::images_ml:
