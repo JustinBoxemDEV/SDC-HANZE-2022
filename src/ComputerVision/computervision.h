@@ -47,6 +47,7 @@ class ComputerVision{
         double getRightEdgeCurvature(){ return curveRadiusR; }
         double getLeftEdgeCurvature(){ return curveRadiusL; }
         cv::Mat GammaCorrection(const cv::Mat src, const float gamma);
+        cv::Mat InterpolatedThresholding(int thresholdUpper, int thresholdLower, cv::Mat src, int type);
 
         void SetFrame(cv::Mat src);
         cv::Mat BlurImage(cv::Mat src);
