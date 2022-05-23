@@ -11,10 +11,9 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 """
 
 # TODO: 
-# 1. Sort out images for training set (variations of data): only 2022 images
+# 1. Create more different datasets
 # 2. Remove brake from the NN (will have to remove brake from .csv for this)
 # 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 6. Implement early stopping (after 10 epochs of no improvement)
 
 import torch
 from load_data import get_dataloader
@@ -142,6 +141,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
         input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
         outputs = model(input_images)
+        print(outputs)
 
         # Show all images and predictions from validation batch
         for idx, image in enumerate(input_images):
@@ -151,7 +151,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
             # Show image and prediction from the validation batch
             img_with_data = draw_pred_and_target_npy(np_image, filename=batch['img_names'][idx][66:], predicted_actions=outputs[idx], target_actions=actions[idx], dataformats="CHW")
-            tb_show_image(img_with_data, epoch=epoch+idx, name=f"Validation images epoch {epoch}", dataformats="HWC", writer=writer) # TODO: Fix the step (epoch) of this
+            tb_show_image(img_with_data, epoch=(i*epoch)+idx, name=f"Validation images epoch {epoch}", dataformats="HWC", writer=writer) # TODO: Fix the step (epoch) of this
 
         loss = loss_fn(outputs, actions)
 
@@ -172,6 +172,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
     else:
         run_validation.no_improvement_count += 1
 
+    # early stopping afer 10 epochs of no improvement
     if run_validation.no_improvement_count > 9:
         return False
     return True
