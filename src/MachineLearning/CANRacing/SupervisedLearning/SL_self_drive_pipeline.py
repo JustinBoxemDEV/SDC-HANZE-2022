@@ -11,11 +11,9 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 """
 
 # TODO: 
-# 1. Sort out images for training set (variations of data): only 2022 images
+# 1. Create more different datasets
 # 2. Remove brake from the NN (will have to remove brake from .csv for this)
 # 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 5. (Laurens) Accept video input in C++ for testing on real kart (RDW)
-# 6. Implement early stopping (after 10 epochs of no improvement)
 
 import torch
 from load_data import get_dataloader
@@ -50,6 +48,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 
     train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True) # set transforms to true here for data augmentation (only in training!)
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=True)
+    run = True
 
     model = SelfDriveModel()
     model.to(dev)
@@ -112,12 +111,16 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
 
         if epoch % 1 == 0:
             model.eval()
-            run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, model_name=model_name, now=now, dev=dev)
+            run = run_validation(valid_loader=valid_loader, model=model, writer=writer, epoch=epoch, model_name=model_name, now=now, dev=dev)
             model.train()
+        
+        if not run:
+            return
+
     return f"{model_name}_{now}"
 
 
-@static_var(best_loss=99999)
+@static_var(best_loss=99999, no_improvement_count=0)
 @torch.no_grad()
 def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Module, epoch: int, writer: SummaryWriter, model_name: str,  now, dev: str):
     """
@@ -147,7 +150,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
             # Show image and prediction from the validation batch
             img_with_data = draw_pred_and_target_npy(np_image, filename=batch['img_names'][idx][66:], predicted_actions=outputs[idx], target_actions=actions[idx], dataformats="CHW")
-            tb_show_image(img_with_data, epoch=epoch+idx, name=f"Validation images epoch {epoch}", dataformats="HWC", writer=writer) # TODO: Fix the step (epoch) of this
+            tb_show_image(img_with_data, epoch=(i*epoch)+idx, name=f"Validation images epoch {epoch}", dataformats="HWC", writer=writer) # TODO: Fix the step (epoch) of this
 
         loss = loss_fn(outputs, actions)
 
@@ -164,7 +167,14 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
         print(f"\033[92mSaving model {model_name} {now} at epoch {epoch} with loss {avg_loss}\033[0m")
 
         run_validation.best_loss = avg_loss
-    return
+        run_validation.no_improvement_count = 0
+    else:
+        run_validation.no_improvement_count += 1
+
+    # early stopping afer 10 epochs of no improvement
+    if run_validation.no_improvement_count > 9:
+        return False
+    return True
 
 
 @torch.no_grad()
@@ -233,17 +243,29 @@ def run(training=False, testing=True):
     torch.cuda.empty_cache()
     if training:
         trained_model_name = run_training(
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/100_all_images.csv",
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/100_all_images.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
+
+                    # 2021
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/2021_all_images.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/validation/100_60p_new_data images 30-03-2022 15-17-40.csv",
+
+                    # 2022
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/2022_all_images.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/validation/100_60p_new_data images 30-03-2022 15-17-40.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="SLSelfDriveModel", num_epochs=40, amp_on=False, batch_size=8, dev="cuda:0")
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    model_name="SLSelfDriveModel", num_epochs=50, amp_on=False, batch_size=8, dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
@@ -251,12 +273,20 @@ def run(training=False, testing=True):
     if testing:
         # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
         run_testing(
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+
+                    # 2021
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+
+                    # 2022
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
                     model_name=trained_model_name, wait=True, dev="cpu")
 
     print("Done!")
