@@ -10,8 +10,8 @@ import shutil
 from sklearn.model_selection import train_test_split
 
 
-# insert folder path here
-images = os.listdir(f'')
+# insert folder path here (a folder within bochten)
+images = os.listdir(f'11-45-20')
 
 # split 10% (this method is meant for splitting train/test but we use it to extract 10%)
 train, test = train_test_split(images, test_size=0.10, random_state=42)
@@ -25,15 +25,16 @@ print("test has a size of", len(test))
 for img in train:
     print(f'Moving {img} to training set')
     # img
-    shutil.move(
-        f'',
-        f'')
+    shutil.copy(
+        f'11-45-20',
+        f'90p_11-45-20')
 
-for img in test:
-    print(f'Moving {img} to testing set')
-    shutil.move(
-        f'',
-        f'')
+# we dont need the remaining 10% so we ignore it
+# for img in test:
+#     print(f'Moving {img} to testing set')
+#     shutil.move(
+#         f'11-45-20',
+#         f'10p_11-45-20')
 
 
 # -----------------------------------------------------------------------
