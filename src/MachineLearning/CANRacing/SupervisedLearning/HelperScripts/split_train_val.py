@@ -29,7 +29,7 @@ for img in train:
         f'11-45-20',
         f'90p_11-45-20')
 
-# we dont need the remaining 10% so we ignore it
+# we dont need the remaining 10% so we ignore
 # for img in test:
 #     print(f'Moving {img} to testing set')
 #     shutil.move(
@@ -39,42 +39,42 @@ for img in train:
 
 # -----------------------------------------------------------------------
 # shitty script
-import os
-import random
-import shutil
+# import os
+# import random
+# import shutil
 
-# split  5880 images
+# # split  5880 images
 
-images = []
-val_images = []
-test_images = []
-cnt = 0
-for file in os.listdir("D:/SDC/sdc_data/justin_data/validation/40percent_val_images 30-03-2022 15-17-40"):
-    images.append(file)
+# images = []
+# val_images = []
+# test_images = []
+# cnt = 0
+# for file in os.listdir("D:/SDC/sdc_data/justin_data/validation/40percent_val_images 30-03-2022 15-17-40"):
+#     images.append(file)
 
-random.shuffle(images)
-random.shuffle(images)
-random.shuffle(images)
-random.shuffle(images)
+# random.shuffle(images)
+# random.shuffle(images)
+# random.shuffle(images)
+# random.shuffle(images)
 
-for image in images:
-    cnt = cnt + 1
-    if cnt <= 2352:
-        val_images.append(image)
-    else:
-        test_images.append(image)
+# for image in images:
+#     cnt = cnt + 1
+#     if cnt <= 2352:
+#         val_images.append(image)
+#     else:
+#         test_images.append(image)
         
 
-print(len(val_images))
-print(len(test_images))
-# print(new_images)
+# print(len(val_images))
+# print(len(test_images))
+# # print(new_images)
 
-for image in val_images:
-    pass
-    # print(image)
-    shutil.copy(f"D:/SDC/sdc_data/justin_data/validation/40percent_val_images 30-03-2022 15-17-40/{image}", f"D:/SDC/sdc_data/justin_data/validation/val_images 30-03-2022 15-17-40/{image}")
+# for image in val_images:
+#     pass
+#     # print(image)
+#     shutil.copy(f"D:/SDC/sdc_data/justin_data/validation/40percent_val_images 30-03-2022 15-17-40/{image}", f"D:/SDC/sdc_data/justin_data/validation/val_images 30-03-2022 15-17-40/{image}")
 
-for image in test_images:
-    pass
-    # print(image)
-    shutil.copy(f"D:/SDC/sdc_data/justin_data/validation/40percent_val_images 30-03-2022 15-17-40/{image}", f"D:/SDC/sdc_data/justin_data/testing/test_images 30-03-2022 15-17-40/{image}")
+# for image in test_images:
+#     pass
+#     # print(image)
+#     shutil.copy(f"D:/SDC/sdc_data/justin_data/validation/40percent_val_images 30-03-2022 15-17-40/{image}", f"D:/SDC/sdc_data/justin_data/testing/test_images 30-03-2022 15-17-40/{image}")
