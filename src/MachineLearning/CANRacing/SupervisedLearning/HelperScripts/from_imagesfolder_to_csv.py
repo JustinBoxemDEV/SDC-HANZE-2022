@@ -42,7 +42,7 @@ def main(src_path, csv_path, out_path, discarded_out_path):
 				if i < end:
 					needle = files[i]
 
-				print(f"Found: {row}")
+				print(f"Found: {row} at i {i}")
 			else:
 				discarded_out_writer.writerow(row)
 

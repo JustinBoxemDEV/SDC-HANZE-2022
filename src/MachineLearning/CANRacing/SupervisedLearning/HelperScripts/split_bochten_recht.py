@@ -4,10 +4,10 @@ import csv
 import shutil
 import os
 
-csvName = "new_data images 18-11-2021 14-59-21" # naam van de CSV
+csvName = "new_data images 18-11-2021 14-59-21" # naam van de CSV (zonder extension)
 foldername = "good_images 18-11-2021 14-59-21" # naam van de folder met alle images
 
-readf = open(f"D:/SDC/sdc_data/RDW_Data/new/{csvName}.csv", "r") # path van de csv
+readf = open(f"D:/SDC/sdc_data/RDW_Data/new/{csvName}.csv", "r") # path naar de folder waar de csv in staat
 
 fields=('Steer', 'Throttle', 'Brake', 'Image')
 
@@ -30,7 +30,7 @@ for row in reader:
     imageDirectory = imagePath.split("/")[0]
     imageName = imagePath.split("/")[1]
 
-    imageSource = f"D:/SDC/sdc_data/RDW_Data/new/{foldername}/{imagePath[27:]}" # path van de eerder gegeven folder met alle images
+    imageSource = f"D:/SDC/sdc_data/RDW_Data/new/{foldername}/{imagePath[27:]}" # path naar de locatie van de van de eerder gegeven folder (met alle images)
     # print(imageSource)
     # print(os.path.exists(imageSource))
 

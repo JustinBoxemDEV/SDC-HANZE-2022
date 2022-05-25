@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import skimage.io
 import numpy as np
+import cv2
 
 
 class TTAssenDataset(torch.utils.data.Dataset):
@@ -29,14 +30,15 @@ class TTAssenDataset(torch.utils.data.Dataset):
 
         img_name = os.path.join(self.root_dir, self.actions_frames.iloc[idx, 3])
 
-        image = skimage.io.imread(img_name)
+        # image = skimage.io.imread(img_name)
+        image = cv2.imread(img_name)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         steer = self.actions_frames.iloc[idx, 0]
         throttle = self.actions_frames.iloc[idx, 1]
         brake = self.actions_frames.iloc[idx, 2]
 
         actions = np.array([steer, throttle, brake])
-
         image = np.resize(image, (480, 848, 3)).astype(np.float32) # resize images here!
 
         # Slice the images to remove noise
