@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../MediaSources/screensource.h"
 #include "../MediaSources/videosource.h"
+#include <string>
 
 #ifdef __WIN32__
 CommunicationStrategy::Actuators CommunicationStrategy::actuators;
@@ -28,6 +29,11 @@ CVProcess::CVProcess(MediaInput *input){
                 streamSource = new ScreenSource();
             #endif
             break;
+    }
+    if(mediaInput->recordWarped){
+        if (!fs::is_directory(fs::current_path().string() + "/WarpedFrames") || !fs::exists(fs::current_path().string() + "/WarpedFrames")) { 
+            fs::create_directory(fs::current_path().string() + "/WarpedFrames");
+        }
     }
 }
 
@@ -72,7 +78,12 @@ void CVProcess::ProcessFrame(cv::Mat src) {
     cv::Mat maskedImage = cVision.MaskImage(binaryImage);
     
     cVision.PredictTurn(maskedImage);
-    
+
+    if(mediaInput->recordWarped){
+        cv::Mat warped = cVision.GetWarpedBinaryFrame();
+        cv::imwrite( fs::current_path().string() + "/WarpedFrames/" + std::to_string(frameID) + ".png", warped);
+    }
+
     double curveRadiusR = cVision.getRightEdgeCurvature();
     double curveRadiusL = cVision.getLeftEdgeCurvature();
     cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
@@ -94,6 +105,8 @@ void CVProcess::ProcessFrame(cv::Mat src) {
 
     cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
     imshow("masked", maskedImage);
+
+    frameID++;
 }
 
 void CVProcess::Terminate(){

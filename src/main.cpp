@@ -26,8 +26,6 @@ int main(int argc, char** argv) {
                 return 1;
             }
             mediaInput.filepath = path;
-            CVProcess *cvprocess = new CVProcess(&mediaInput);
-            application.RegisterProcess(cvprocess);
         }else if(arg == "-realtime"){
             std::cout << "realtime" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::realtime;
@@ -39,28 +37,29 @@ int main(int argc, char** argv) {
             std::cout << "terminal" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::terminal;
         }
+        else if(arg == "--recordWarped"){
+            mediaInput.recordWarped = true;
+        }
         cursor++;
     }
+    CVProcess *cvprocess = new CVProcess(&mediaInput);
     CanProcess *canprocess = new CanProcess(&mediaInput);
-        if(arg == "-realtime" || arg == "") {
-            CVProcess *cvprocess = new CVProcess(&mediaInput);
-            application.RegisterProcess(cvprocess);
-            #ifdef linux
-            ReadProcess *readcan = new ReadProcess();
-            canprocess->setReadProcess(readcan);
-            application.RegisterProcess(readcan);
-            #endif
-        } else if(arg == "-assetto") {
-            CVProcess *cvprocess = new CVProcess(&mediaInput);
-            application.RegisterProcess(cvprocess);
-        } else if(arg == "-terminal") {
-            #ifdef linux
-            TerminalProcess *terminal = new TerminalProcess();
-            canprocess->setTerminalProcess(terminal);
-            application.RegisterProcess(terminal);
-            #endif
-        }
-        application.RegisterProcess(canprocess);
-
-        application.Run();
+    if(arg == "-realtime" || arg == "") {
+        #ifdef linux
+        ReadProcess *readcan = new ReadProcess();
+        canprocess->setReadProcess(readcan);
+        application.RegisterProcess(readcan);
+        #endif
+    } 
+    if(arg == "-terminal") {
+        #ifdef linux
+        TerminalProcess *terminal = new TerminalProcess();
+        canprocess->setTerminalProcess(terminal);
+        application.RegisterProcess(terminal);
+        #endif
+    }else{
+        application.RegisterProcess(cvprocess);
+    }
+    application.RegisterProcess(canprocess);
+    application.Run();
 }

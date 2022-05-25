@@ -14,6 +14,7 @@ namespace fs = std::filesystem;
 class CVProcess : public Process
 {
     private:
+        int frameID = 0;
         cv::VideoCapture *capture;
         StreamSource *streamSource;
         ComputerVision cVision;

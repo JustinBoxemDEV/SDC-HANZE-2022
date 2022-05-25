@@ -296,6 +296,10 @@ cv::Mat ComputerVision::InterpolatedThresholding(int thresholdUpper, int thresho
     return thresholdedResult;
 }
 
+cv::Mat ComputerVision::GetWarpedBinaryFrame(){
+    return warped;
+}
+
 cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src)
 {
     denoisedImage = BlurImage(src);
@@ -587,8 +591,8 @@ void ComputerVision::PredictTurn(cv::Mat src)
     // std::cout<< "laneleft= "<< laneLeft << std::endl;
     // std::cout<< "laneright= "<< laneRight << std::endl;
     cv::cvtColor(warped, warped, cv::COLOR_GRAY2BGR);
-    cv::addWeighted(warpedOverlay, 1, warped, 1, 0, warped);
-    imshow("warped", warped);
+    cv::addWeighted(warpedOverlay, 1, warped, 1, 0, warpedOverlay);
+    imshow("warped", warpedOverlay);
 
     //----DRAW STUF -----
     std::vector<cv::Point2f> outPts;

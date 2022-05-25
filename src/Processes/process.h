@@ -16,6 +16,7 @@ class Process
             MediaSource mediaType = MediaSource::realtime;
             int cameraID = 0;
             std::string filepath = "";
+            bool recordWarped = false;
         } MediaInput;
         MediaInput* mediaInput;
         virtual void Run() = 0;
