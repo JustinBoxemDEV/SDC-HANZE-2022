@@ -41,5 +41,5 @@ def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=Fal
     dataset = TTAssenDataset(root_dir=img_folder, csv_file=act_csv, 
                                 transforms=transforms.Compose(t), albu_transforms=A.Compose(albu_t))
                                 
-    dataloader = torch.utils.data.DataLoader(dataset, drop_last=True, num_workers=8, batch_size=batch_size, shuffle=True) # num_workers veranderen naar een lager getal als je device het niet aan kan
+    dataloader = torch.utils.data.DataLoader(dataset, drop_last=True, num_workers=4, batch_size=batch_size, shuffle=True) # num_workers veranderen naar een lager getal als je device het niet aan kan
     return dataloader

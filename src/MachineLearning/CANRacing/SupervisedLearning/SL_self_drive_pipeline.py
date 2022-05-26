@@ -4,14 +4,15 @@ Training is done on the GPU and testing is done on the CPU.
 
 SETUP THE PIPELINE:
 1. Create a conda environment with python 3.7.13 
-    and run: conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch  (to prevent "Torch not compiled with CUDA enabled", this step is only needed if you plan on training on GPU)
+    and run: conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch  
+    (to prevent "Torch not compiled with CUDA enabled", this step is only needed if you plan on training on GPU)
 2. Then run pip install requirements.txt
 
 To update requirements.txt: https://github.com/bndr/pipreqs
 """
 
 # TODO: 
-# 1. Create more different datasets
+# 1. Create final dataset to train on
 # 2. Remove brake from the NN (will have to remove brake from .csv for this)
 # 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
 
@@ -244,8 +245,8 @@ def run(training=False, testing=True):
     if training:
         trained_model_name = run_training(
                     # full dataset
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/training_100_all_images.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/training_100_all_images.csv",
 
                     # 2021
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/training/", 
@@ -254,15 +255,23 @@ def run(training=False, testing=True):
                     # 2022
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
+
+                    # all use the same validation set
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
+
+                    # small dataset
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/new_all",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="SLSelfDriveModel", num_epochs=50, amp_on=False, batch_size=10 , dev="cuda:0")
+                    model_name="SLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=10 , dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
@@ -274,22 +283,18 @@ def run(training=False, testing=True):
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
 
-                    # 2021
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
-
-                    # 2022
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+                    # small dataset
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name="SLSelfDriveModel_2022-05-23_23-46-56_2022", wait=True, dev="cpu")
+                    model_name=trained_model_name, wait=True, dev="cpu") # trained_model_name
 
     # TODO: trace and save traced model
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=True, testing=False)
+    run(training=True, testing=True)
