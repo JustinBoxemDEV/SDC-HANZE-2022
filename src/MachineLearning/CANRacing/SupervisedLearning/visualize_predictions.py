@@ -1,4 +1,5 @@
 # Set deploy in transforms.py to True to use this!
+# If you are using an old model (that includes brake in the model) you may have to change out_features in SelfDriveModel.py at line 48 to 3.
 
 from os import listdir
 import cv2
@@ -8,7 +9,7 @@ import numpy as np
 from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
 
-model_name = "SLSelfDriveModel_nobrake_2022-05-27_13-42-18"
+model_name = "saved_models/SLSelfDriveModel_2022-05-23_23-46-56_2022"
 dev = "cpu"
 
 model = SelfDriveModel(gpu=False)
