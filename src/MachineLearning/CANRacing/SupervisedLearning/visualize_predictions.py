@@ -48,7 +48,7 @@ for i in range(row_count-1):
     outputs = model(normalized_cropped_img.to(dev)).detach().cpu().numpy()
     steer, throttle = outputs[0][0], outputs[0][1]
 
-    # visualize
+    # visualize (with original image)
     cv2.putText(img, f'{steer:.2f}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
     cv2.putText(img, f'{truth_steer:.2f}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
     cv2.rectangle(img, (45, 400), (65, int(400-(throttle))), (255, 0, 0), cv2.FILLED)
