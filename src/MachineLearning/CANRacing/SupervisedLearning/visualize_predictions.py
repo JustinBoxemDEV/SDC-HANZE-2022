@@ -10,8 +10,8 @@ from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
 import pandas as pd
 
-model_name = "saved_models/SLSelfDriveModel_2022-05-23_00-55-20_Adam_0.00001"
-csv_file_path = "D:/SDC/sdc_data/justin_data/original/100_new_data images 30-03-2022 15-17-40.csv"
+model_name = "saved_models/SLSelfDriveModel_2022-05-23_23-46-56_2022"
+csv_file_path = "D:/SDC/sdc_data/justin_data/original/sorted_100_new_data images 30-03-2022 15-17-40.csv"
 
 dev = "cpu"
 model = SelfDriveModel(gpu=False)
@@ -25,7 +25,7 @@ with open(csv_file_path) as f:
 # print(row_count)
 
 actions_frames = pd.read_csv(csv_file_path)
-for i in range(row_count):
+for i in range(row_count-1):
     # extract ground truth
     truth_steer = actions_frames.iloc[i, 0]
     truth_throttle = actions_frames.iloc[i, 1]
