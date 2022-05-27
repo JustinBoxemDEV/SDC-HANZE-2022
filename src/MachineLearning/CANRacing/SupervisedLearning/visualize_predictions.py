@@ -10,7 +10,7 @@ from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
 import pandas as pd
 
-model_name = "saved_models/SLSelfDriveModel_2022-05-23_23-46-56_2022"
+model_name = "SLSelfDriveModel_nobrake_2022-05-27_13-42-18"
 csv_file_path = "D:/SDC/sdc_data/justin_data/original/sorted_100_new_data images 30-03-2022 15-17-40.csv"
 
 dev = "cpu"
@@ -46,7 +46,7 @@ for i in range(row_count-1):
 
     # make prediction
     outputs = model(normalized_cropped_img.to(dev)).detach().cpu().numpy()
-    steer, throttle = outputs[0][0], outputs[0][1]
+    steer, throttle = min(outputs[0][0], 1.0), min(outputs[0][1], 100) # TODO: limit steering to not go below -1
 
     # visualize (with original image)
     cv2.putText(img, f'{steer:.2f}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
@@ -58,4 +58,4 @@ for i in range(row_count-1):
     cv2.imshow('Prediction visualization', img)
     cv2.waitKey(1000//60)
 
-    print("Done!")
+print("Done!")
