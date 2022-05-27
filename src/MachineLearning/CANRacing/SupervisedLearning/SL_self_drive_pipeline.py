@@ -13,8 +13,7 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 
 # TODO: 
 # 1. Create final dataset to train on
-# 2. Remove brake from the NN (will have to remove brake from .csv for this)
-# 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
+# 2. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
 
 import torch
 from load_data import get_dataloader
