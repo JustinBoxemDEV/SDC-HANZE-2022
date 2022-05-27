@@ -1,7 +1,6 @@
 # Set deploy in transforms.py to True to use this!
 # If you are using an old model (that includes brake in the model) you may have to change out_features in SelfDriveModel.py at line 48 to 3.
 
-from os import listdir
 import cv2
 from SelfDriveModel import SelfDriveModel
 import torch
