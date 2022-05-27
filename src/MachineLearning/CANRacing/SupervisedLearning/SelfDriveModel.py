@@ -22,7 +22,7 @@ class SelfDriveModel(nn.Module):
             # nn.Dropout(p=0.4),
             nn.Linear(in_features=64, out_features=10),
             nn.ELU(),
-            nn.Linear(in_features=10, out_features=3)
+            nn.Linear(in_features=10, out_features=2)
         )
 
     def forward(self, x):

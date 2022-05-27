@@ -92,7 +92,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 scaler.update()
             else:
                 outputs = model(input_images)
-                # print(outputs)
+                print(outputs)
                 loss = loss_fn(outputs, actions)
                 loss.backward()
 
@@ -262,16 +262,16 @@ def run(training=False, testing=True):
 
                     # small dataset
                     train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/new_all",
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new.csv",
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="SLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=10 , dev="cuda:0")
+                    model_name="SLSelfDriveModel_nobrake", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
@@ -285,7 +285,7 @@ def run(training=False, testing=True):
 
                     # small dataset
                     test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new.csv",
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
