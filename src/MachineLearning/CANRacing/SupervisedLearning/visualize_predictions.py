@@ -57,3 +57,5 @@ for i in range(row_count-1):
     cv2.line(img, (int(848//2), int(480)), (int(848*(1+truth_steer)//2), int(480//2)), (0, 255, 0), 2)
     cv2.imshow('Prediction visualization', img)
     cv2.waitKey(1000//60)
+
+    print("Done!")
