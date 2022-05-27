@@ -10,7 +10,7 @@ from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
 import pandas as pd
 
-model_name = "saved_models/SLSelfDriveModel_2022-05-23_23-46-56_2022"
+model_name = "saved_models/SLSelfDriveModel_2022-05-23_00-55-20_Adam_0.00001"
 csv_file_path = "D:/SDC/sdc_data/justin_data/original/100_new_data images 30-03-2022 15-17-40.csv"
 
 dev = "cpu"
@@ -49,8 +49,8 @@ for i in range(row_count):
     steer, throttle = outputs[0][0], outputs[0][1]
 
     # visualize
-    cv2.putText(img, f'{steer:.2f}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
-    cv2.putText(img, f'{truth_steer:.2f}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
+    cv2.putText(img, f'{steer:.2f}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
+    cv2.putText(img, f'{truth_steer:.2f}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
     cv2.rectangle(img, (45, 400), (65, int(400-(throttle))), (255, 0, 0), cv2.FILLED)
     cv2.rectangle(img, (40, 400), (20, int(400-(truth_throttle))), (0, 255, 0), cv2.FILLED)
     cv2.line(img, (int(848//2), int(480)), (int(848*(1+steer)//2), int(480//2)), (255, 0, 0), 2)
