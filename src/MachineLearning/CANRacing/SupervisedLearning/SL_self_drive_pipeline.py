@@ -91,7 +91,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 scaler.update()
             else:
                 outputs = model(input_images)
-                print(outputs)
+                # print(outputs)
                 loss = loss_fn(outputs, actions)
                 loss.backward()
 
