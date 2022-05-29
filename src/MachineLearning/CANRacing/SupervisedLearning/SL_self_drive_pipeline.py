@@ -51,7 +51,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     :param dev The device to run the pipeline on, default GPU, cuda:0
     """
                 
-    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True, motion_blur=True, random_gamma=True) # set transforms to true here for data augmentation (only in training!)
+    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True, motion_blur=False, random_gamma=False) # set transforms to true here for data augmentation (only in training!)
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=True)
     run = True
 
