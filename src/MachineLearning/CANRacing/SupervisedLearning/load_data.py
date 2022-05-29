@@ -5,7 +5,7 @@ import albumentations as A
 from transforms import ToTensor, Normalizer
 
 def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=False,
-                    random_sun_flare=False, horizontal_flip=False, motion_blur=False, random_shadow=False, 
+                    random_sun_flare=False, horizontal_flip=False, motion_blur=False, 
                     random_brightness_contrast=False, random_gamma=False):
     """
     Returns a dataloader (pytorch) which can sample images from the dataset. This dataloader will perform data augmentations based on the passed parameters.
@@ -29,8 +29,6 @@ def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=Fal
         t.append(Normalizer(0, 255))
     if(motion_blur):
         albu_t.append(A.MotionBlur(blur_limit=8, p=0.5))
-    # if(random_shadow):
-    #     albu_t.append(A.RandomShadow(shadow_roi=(0, 0.55, 1, 1), num_shadows_lower=1, num_shadows_upper=1, shadow_dimension=5, p=0.5))
     if(random_brightness_contrast):
         albu_t.append(A.RandomBrightnessContrast(brightness_limit=0.1, contrast_limit=0.2, brightness_by_max=True, p=0.5))
     if(random_gamma):

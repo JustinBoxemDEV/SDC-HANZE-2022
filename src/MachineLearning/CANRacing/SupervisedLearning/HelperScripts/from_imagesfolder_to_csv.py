@@ -1,4 +1,4 @@
-# Create .csv file out of an image folder
+# Create .csv file out of an image folder (needs to be sorted! Use sort_csv.py first)
 
 import argparse
 import csv

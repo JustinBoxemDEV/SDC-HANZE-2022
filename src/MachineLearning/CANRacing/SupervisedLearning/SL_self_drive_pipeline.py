@@ -14,6 +14,9 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # TODO: 
 # 1. Create final dataset to train on
 # 2. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
+# 3. Heatmap for visualization
+# 4. Test nn without throttle (only steer)
+# 5. Smooth data
 
 import torch
 from load_data import get_dataloader
@@ -46,7 +49,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     :param dev The device to run the pipeline on, default GPU, cuda:0
     """
                 
-    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True) # set transforms to true here for data augmentation (only in training!)
+    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True, motion_blur=True, random_gamma=True) # set transforms to true here for data augmentation (only in training!)
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=True)
     run = True
 
@@ -58,7 +61,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
         scaler = torch.cuda.amp.GradScaler()
 
     # optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.000001)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.1)
 
     now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -252,25 +255,25 @@ def run(training=False, testing=True):
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/training/2021_all_images.csv",
 
                     # 2022
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
 
                     # all use the same validation set
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
 
                     # small dataset
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="SLSelfDriveModel_nobrake", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="0.000001_blur_gamma_NBSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
@@ -278,13 +281,13 @@ def run(training=False, testing=True):
     if testing:
         # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
         run_testing(
-                    # full dataset
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+                    # all use the same testing set
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
 
                     # small dataset
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
 
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 

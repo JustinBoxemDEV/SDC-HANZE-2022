@@ -1,4 +1,4 @@
-# scuffed script to sort images by image name
+# scuffed script to sort csv by image name
 
 import pandas as pd
 import csv
