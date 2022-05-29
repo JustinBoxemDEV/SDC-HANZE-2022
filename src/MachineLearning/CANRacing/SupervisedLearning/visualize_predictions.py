@@ -9,7 +9,7 @@ from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
 import pandas as pd
 
-model_name = "0.000001_blur_NBSLSelfDriveModel_2022-05-28_17-39-27"
+model_name = "saved_models/0.000001_blur_NBSLSelfDriveModel_2022-05-28_17-39-27"
 csv_file_path = "D:/SDC/sdc_data/justin_data/original/sorted_100_new_data images 30-03-2022 15-17-40.csv"
 
 dev = "cpu"

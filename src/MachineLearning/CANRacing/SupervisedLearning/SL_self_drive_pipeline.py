@@ -17,6 +17,8 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # 3. Heatmap for visualization
 # 4. Test nn without throttle (only steer)
 # 5. Smooth data
+# 6. Update requirements.txt
+# 7. Only crop upper part of the image/ crop more from upper part
 
 import torch
 from load_data import get_dataloader
