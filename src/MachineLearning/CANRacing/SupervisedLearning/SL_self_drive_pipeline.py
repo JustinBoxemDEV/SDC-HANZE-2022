@@ -155,7 +155,8 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
             # Show image and prediction from the validation batch
             img_with_data = draw_pred_and_target_npy(np_image, filename=batch['img_names'][idx][66:], predicted_actions=outputs[idx], target_actions=actions[idx], dataformats="CHW")
-            tb_show_image(img_with_data, epoch=(i*epoch)+idx, name=f"Validation images epoch {epoch}", dataformats="HWC", writer=writer) # TODO: Fix the step (epoch) of this
+            step = (len(input_images) * i)+idx
+            tb_show_image(img_with_data, epoch=step, name=f"Validation images epoch {epoch}", dataformats="HWC", writer=writer) # TODO: Fix the step (epoch) of this
 
         loss = loss_fn(outputs, actions)
 
