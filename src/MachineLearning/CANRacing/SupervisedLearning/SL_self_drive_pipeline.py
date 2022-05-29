@@ -14,9 +14,9 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # TODO: 
 # 1. Create final dataset to train on
 # 2. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 3. Heatmap for visualization
+# 3. Heatmap for visualization (for demo)
 # 4. Test nn without throttle (only steer)
-# 5. Smooth data
+# 5. Smooth data (data_smoothing.py)
 # 6. Update requirements.txt
 # 7. Only crop upper part of the image/ crop more from upper part
 
