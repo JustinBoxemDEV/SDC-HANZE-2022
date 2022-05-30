@@ -38,12 +38,40 @@ CVProcess::CVProcess(MediaInput *input){
 }
 
 void CVProcess::Run(){
-    cv::Mat frame;
-    
-    if(streamSource == nullptr){
-        std::cout << "Could not set stream source!" << std::endl;
-        return;
+    switch (mediaInput->mediaType)
+    {
+        case MediaSource::video: case MediaSource::realtime: case MediaSource::assetto:
+            if(streamSource == nullptr){
+                std::cout << "Could not set stream source!" << std::endl;
+                return;
+            }
+            ProcessVideo();
+            break;
+        case MediaSource::frames:
+            ProcessFrames();
+            break;
     }
+}
+
+void CVProcess::ProcessFrames(){
+    cv::Mat frame;
+    for (const auto & file : fs::directory_iterator(mediaInput->filepath)){
+        frame = cv::imread(file.path());
+        currentFile = file.path().stem();
+
+        if(frame.empty()){
+            break;
+        }
+
+        ProcessFrame(frame);
+        if (cv::waitKey(100/60)>0){
+            break;
+        };
+    };
+}
+
+void CVProcess::ProcessVideo(){
+    cv::Mat frame;
 
     while (true){
         frame = streamSource->GetFrameMat();
@@ -81,18 +109,23 @@ void CVProcess::ProcessFrame(cv::Mat src) {
 
     if(mediaInput->recordWarped){
         cv::Mat warped = cVision.GetWarpedBinaryFrame();
-        cv::imwrite( fs::current_path().string() + "/WarpedFrames/" + std::to_string(frameID) + ".png", warped);
+        std::string filename = ((currentFile != "") ? currentFile : std::to_string(frameID));
+        std::string foldername = ((currentFile != "") ? fs::path(mediaInput->filepath).filename() : "");
+        if (!fs::is_directory(fs::current_path().string() + "/WarpedFrames/" + foldername) || !fs::exists(fs::current_path().string() + "/WarpedFrames/" + foldername)) { 
+            fs::create_directory(fs::current_path().string() + "/WarpedFrames/" + foldername);
+        }
+        cv::imwrite( fs::current_path().string() + "/WarpedFrames/" + ((foldername != "") ? foldername + "/": foldername) + filename + ".png", warped);
     }
 
     double curveRadiusR = cVision.getRightEdgeCurvature();
     double curveRadiusL = cVision.getLeftEdgeCurvature();
-    cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
-    cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
+    // cv::putText(src, "Curvature left edge: " + std::to_string(curveRadiusL), cv::Point(10, 75), 1, 1.2, cv::Scalar(255, 255, 0));
+    // cv::putText(src, "Curvature right edge: " + std::to_string(curveRadiusR), cv::Point(10, 100), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double laneOffset = cVision.getLaneOffset();
     double normalisedLaneOffset =  cVision.getNormalisedLaneOffset();
-    cv::putText(src, "Center Offset: " + std::to_string(laneOffset), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
-    cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
+    // cv::putText(src, "Center Offset: " + std::to_string(laneOffset), cv::Point(10, 25), 1, 1.2, cv::Scalar(255, 255, 0));
+    // cv::putText(src, "Center Offset (N): " + std::to_string(normalisedLaneOffset), cv::Point(10, 50), 1, 1.2, cv::Scalar(255, 255, 0));
 
     double pidout = pid.PIDController_update(normalisedLaneOffset);
 
@@ -103,7 +136,7 @@ void CVProcess::ProcessFrame(cv::Mat src) {
         CommunicationStrategy::actuators.steeringAngle = static_cast<float>(pidout);
     };
 
-    cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
+    // cv::putText(src, "PID output: " + std::to_string(pidout), cv::Point(10, 125), 1, 1.2, cv::Scalar(255, 255, 0));
     imshow("masked", maskedImage);
 
     frameID++;

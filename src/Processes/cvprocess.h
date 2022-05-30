@@ -8,6 +8,7 @@
 #include "../PID/PID.h"
 #include "../MediaSources/streamsource.h"
 #include <filesystem>
+#include <string>
 
 namespace fs = std::filesystem;
 
@@ -19,6 +20,9 @@ class CVProcess : public Process
         StreamSource *streamSource;
         ComputerVision cVision;
         PIDController pid{0.3,0.2,0.4};
+        std::string currentFile = "";
+        void ProcessVideo();
+        void ProcessFrames();
         void ProcessFrame(cv::Mat src);
     public:
         CVProcess(MediaInput *input);

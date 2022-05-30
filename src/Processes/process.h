@@ -10,6 +10,7 @@ class Process
             video,
             realtime,
             assetto,
+            frames,
             terminal
         };
         typedef struct {

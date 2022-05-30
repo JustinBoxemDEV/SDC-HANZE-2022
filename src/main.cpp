@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
             std::string path = fs::current_path().string() + "/assets/videos/" + argv[cursor];
             std::cout << path << std::endl;
             if(!fs::exists(path)){
-                std::cout << "file does not exists!" << std::endl;
+                std::cout << "file does not exist!" << std::endl;
                 return 1;
             }
             mediaInput.filepath = path;
@@ -36,6 +36,17 @@ int main(int argc, char** argv) {
         }else if(arg == "-terminal") {
             std::cout << "terminal" << std::endl;
             mediaInput.mediaType = CVProcess::MediaSource::terminal;
+        }else if(arg == "-frames"){
+            std::cout << "frames" << std::endl;
+            mediaInput.mediaType = CVProcess::MediaSource::frames;
+            cursor++;
+            std::string path = fs::current_path().string() + "/assets/datasets/" + argv[cursor];
+            std::cout << path << std::endl;
+            if(!fs::is_directory(path) && !fs::exists(path)){
+                std::cout << "folder does not exist!" << std::endl;
+                return 1;
+            }
+            mediaInput.filepath = path;
         }
         else if(arg == "--recordWarped"){
             mediaInput.recordWarped = true;

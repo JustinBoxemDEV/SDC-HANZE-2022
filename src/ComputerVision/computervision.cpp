@@ -428,7 +428,7 @@ cv::Mat ComputerVision::CreateBinaryImage(cv::Mat src)
     cv::Mat edges = DetectEdges(hlsChannels[2]);
     cv::bitwise_or(edges, hlsChannels[1], binaryImage);
 
-    // imshow("binary", binaryImage);
+    imshow("binary", binaryImage);
 
     return binaryImage;
 }
@@ -498,10 +498,10 @@ void ComputerVision::PredictTurn(cv::Mat src)
     std::vector<int> histogram = Histogram(warped, 75);
     //dnn4_v20211220 on linux
     //dnn4_v20210301 on windows
-    cv::dnn::dnn4_v20210301::MatShape::iterator lRangeStart = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : (lastKnownHistogramMaxL - offset));
-    cv::dnn::dnn4_v20210301::MatShape::iterator lRangeEnd = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? src.cols * 0.5 : (lastKnownHistogramMaxL + offset));
-    cv::dnn::dnn4_v20210301::MatShape::iterator rRangeStart = histogram.begin()  + ((lastKnownHistogramMaxR == 0) ?  src.cols * 0.5 : (lastKnownHistogramMaxR - offset));
-    cv::dnn::dnn4_v20210301::MatShape::iterator rRangeEnd =  ((lastKnownHistogramMaxR == 0) ? histogram.end() : histogram.begin() + (lastKnownHistogramMaxR + offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator lRangeStart = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? 0 : (lastKnownHistogramMaxL - offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator lRangeEnd = histogram.begin() + ((lastKnownHistogramMaxL == 0) ? src.cols * 0.5 : (lastKnownHistogramMaxL + offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator rRangeStart = histogram.begin()  + ((lastKnownHistogramMaxR == 0) ?  src.cols * 0.5 : (lastKnownHistogramMaxR - offset));
+    cv::dnn::dnn4_v20211220::MatShape::iterator rRangeEnd =  ((lastKnownHistogramMaxR == 0) ? histogram.end() : histogram.begin() + (lastKnownHistogramMaxR + offset));
 
     std::vector<int> leftHist(lRangeStart, lRangeEnd);
     std::vector<int> rightHist(rRangeStart, rRangeEnd);
