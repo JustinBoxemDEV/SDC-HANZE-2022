@@ -12,13 +12,12 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 """
 
 # TODO: 
-# 1. Create final dataset to train on
-# 2. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 3. Heatmap for visualization (for demo)
-# 4. Test nn without throttle (only steer)
-# 5. Smooth data (data_smoothing.py)
-# 6. Update requirements.txt
-# 7. Only crop upper part of the image/ crop more from upper part
+# 1. Create new dataset: Add flipped versions of the turns to 2022 dataset
+# 2. Create final dataset to train on (based on experiments bochten/recht/mirroredturns)
+# 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
+# 4. Heatmap for visualization
+# 5. Smooth data (using data_smoothing.py)
+# 6. Only crop upper part of the image/ crop more from upper part
 
 import torch
 from load_data import get_dataloader
