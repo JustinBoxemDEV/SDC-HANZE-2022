@@ -171,6 +171,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
         model_dir = f"assets/models/{model_name}_{now}.pt"
         torch.save(model.state_dict(), model_dir)
         print(f"\033[92mSaving model {model_name} {now} at epoch {epoch} with loss {avg_loss}\033[0m")
+        tb_show_text(text=f"Saved model at epoch: {epoch} with loss {loss}", name="saved_model_data", writer=writer)
 
         run_validation.best_loss = avg_loss
         run_validation.no_improvement_count = 0
@@ -276,7 +277,7 @@ def run(training=False, testing=True):
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="0.000001_steering_NBSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="0.000001_steering_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
