@@ -35,10 +35,10 @@ class TTAssenDataset(torch.utils.data.Dataset):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         steer = self.actions_frames.iloc[idx, 0]
-        throttle = self.actions_frames.iloc[idx, 1]
+        # throttle = self.actions_frames.iloc[idx, 1]
         # brake = self.actions_frames.iloc[idx, 2]
 
-        actions = np.array([steer, throttle]) # brake
+        actions = np.array([steer]) # throttle, brake
         image = np.resize(image, (480, 848, 3)).astype(np.float32) # resize images here! TODO: something may or may not be wrong with this?
 
         # Slice the images to remove noise
