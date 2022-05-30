@@ -14,9 +14,9 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 # TODO: 
 # 1. Create final dataset to train on
 # 2. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 3. Heatmap for visualization
+# 3. Heatmap for visualization (for demo)
 # 4. Test nn without throttle (only steer)
-# 5. Smooth data
+# 5. Smooth data (data_smoothing.py)
 # 6. Update requirements.txt
 # 7. Only crop upper part of the image/ crop more from upper part
 
@@ -51,7 +51,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     :param dev The device to run the pipeline on, default GPU, cuda:0
     """
                 
-    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True, motion_blur=True, random_gamma=True) # set transforms to true here for data augmentation (only in training!)
+    train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True, motion_blur=False, random_gamma=False) # set transforms to true here for data augmentation (only in training!)
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=True)
     run = True
 
@@ -96,7 +96,8 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 scaler.update()
             else:
                 outputs = model(input_images)
-                # print(outputs)
+                # print("model outputs:", outputs)
+                # print("ground truth actions:", actions)
                 loss = loss_fn(outputs, actions)
                 loss.backward()
 
@@ -276,7 +277,7 @@ def run(training=False, testing=True):
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="0.000001_blur_gamma_NBSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="0.000001_steering_NBSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()

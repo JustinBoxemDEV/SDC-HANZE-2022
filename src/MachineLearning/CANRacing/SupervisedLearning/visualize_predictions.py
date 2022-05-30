@@ -9,7 +9,7 @@ from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
 import pandas as pd
 
-model_name = "saved_models/0.000001_blur_NBSLSelfDriveModel_2022-05-28_17-39-27"
+model_name = "0.000001_steering_NBSLSelfDriveModel_2022-05-30_01-59-26"
 csv_file_path = "D:/SDC/sdc_data/justin_data/original/sorted_100_new_data images 30-03-2022 15-17-40.csv"
 
 dev = "cpu"
@@ -45,15 +45,16 @@ for i in range(row_count-1):
 
     # make prediction
     outputs = model(normalized_cropped_img.to(dev)).detach().cpu().numpy()
-    steer, throttle = min(outputs[0][0], 1.0), min(outputs[0][1], 100) # TODO: limit steering to not go below -1
+    # steer, throttle = min(outputs[0][0], 1.0), min(outputs[0][1], 100) # TODO: limit steering to not go below -1
+    steer = min(outputs[0][0], 1.0)
     steer = max(steer, -1)
-    throttle = max(throttle, 0)
+    # throttle = max(throttle, 0)
 
     # visualize (with original image)
     cv2.putText(img, f'{steer:.2f}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
     cv2.putText(img, f'{truth_steer:.2f}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
-    cv2.rectangle(img, (45, 400), (65, int(400-(throttle))), (255, 0, 0), cv2.FILLED)
-    cv2.rectangle(img, (40, 400), (20, int(400-(truth_throttle))), (0, 255, 0), cv2.FILLED)
+    # cv2.rectangle(img, (45, 400), (65, int(400-(throttle))), (255, 0, 0), cv2.FILLED)
+    # cv2.rectangle(img, (40, 400), (20, int(400-(truth_throttle))), (0, 255, 0), cv2.FILLED)
     cv2.line(img, (int(848//2), int(480)), (int(848*(1+steer)//2), int(480//2)), (255, 0, 0), 2)
     cv2.line(img, (int(848//2), int(480)), (int(848*(1+truth_steer)//2), int(480//2)), (0, 255, 0), 2)
     cv2.imshow('Prediction visualization', img)
