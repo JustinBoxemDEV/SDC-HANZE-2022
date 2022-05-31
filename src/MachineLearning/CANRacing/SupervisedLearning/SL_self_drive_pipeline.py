@@ -12,12 +12,12 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 """
 
 # TODO: 
-# 1. Create new dataset: Add flipped versions of the turns to 2022 dataset
-# 2. Create final dataset to train on (based on experiments bochten/recht/mirroredturns)
-# 3. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 4. Heatmap for visualization
-# 5. Smooth data (using data_smoothing.py)
-# 6. Only crop upper part of the image/ crop more from upper part
+# 1. Create final dataset to train on (based on experiments bochten/recht/mirroredturns)
+# 2. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
+# 3. Heatmap for visualization (Grad-CAM)
+# 4. Smooth data (using data_smoothing.py)
+# 5. (Douwe) Create new dataset: Add flipped versions of the turns to 2022 dataset
+# 6. (Douwe) Only crop upper part of the image/ crop more from upper part
 
 import torch
 from load_data import get_dataloader
@@ -251,21 +251,26 @@ def run(training=False, testing=True):
     if training:
         trained_model_name = run_training(
                     # full dataset
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/training_100_all_images.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/training_100_all_images.csv",
 
-                    # 2021
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/training/", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/training/2021_all_images.csv",
+                    # full dataset with mirror lap
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/mirrorlap_training_100_all_images.csv",
 
                     # 2022
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
 
-                    # all use the same validation set
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/40p_100_new_data images 30-03-2022 15-17-40.csv",
+                    # 2022 with mirror lap
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/mirrorlap_2022_all_images.csv",
 
+                    # all use the same validation set
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
+
+                    # ----------------------- DEBUG SETS ----------------------
                     # small dataset
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
@@ -277,7 +282,7 @@ def run(training=False, testing=True):
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="full_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="mirror_full_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()
@@ -285,10 +290,19 @@ def run(training=False, testing=True):
     if testing:
         # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
         run_testing(
-                    # all use the same testing set
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/testing/100_60p_new_data images 30-03-2022 15-17-40.csv",
+                    # test set (30-03-2022 15-17-40)
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
 
+                    # mirrored set (12-04-2022 12-20-39)
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
+
+                    # test + mirrored set 
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
+
+                    # ----------------------- DEBUG SETS ----------------------
                     # small dataset
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
@@ -296,11 +310,11 @@ def run(training=False, testing=True):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name=trained_model_name, wait=True, dev="cpu") # trained_model_name
+                    model_name="full_0.000001_SteerSLSelfDriveModel_2022-05-31_01-19-10", wait=True, dev="cpu") # trained_model_name
 
     # TODO: trace and save traced model
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=True, testing=True)
+    run(training=False, testing=True)
