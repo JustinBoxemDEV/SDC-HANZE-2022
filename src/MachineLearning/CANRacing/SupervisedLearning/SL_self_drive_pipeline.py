@@ -295,8 +295,8 @@ def run(training=False, testing=True):
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
 
                     # mirrored set (12-04-2022 12-20-39)
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
 
                     # test + mirrored set 
                     test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
