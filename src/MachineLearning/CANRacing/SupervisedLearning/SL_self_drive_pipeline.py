@@ -171,7 +171,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
         model_dir = f"assets/models/{model_name}_{now}.pt"
         torch.save(model.state_dict(), model_dir)
         print(f"\033[92mSaving model {model_name} {now} at epoch {epoch} with loss {avg_loss}\033[0m")
-        tb_show_text(text=f"Saved model at epoch: {epoch} with loss {loss}", name="saved_model_data", writer=writer)
+        tb_show_text(text=f"Saved model at epoch: {epoch} with loss {avg_loss}", name="saved_model_data", writer=writer)
 
         run_validation.best_loss = avg_loss
         run_validation.no_improvement_count = 0
@@ -251,16 +251,16 @@ def run(training=False, testing=True):
     if training:
         trained_model_name = run_training(
                     # full dataset
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/training_100_all_images.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/training_100_all_images.csv",
 
                     # 2021
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/training/", 
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2021/training/2021_all_images.csv",
 
                     # 2022
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
 
                     # all use the same validation set
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/", 
@@ -277,7 +277,7 @@ def run(training=False, testing=True):
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="0.000001_steering_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="full_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
         # try to free up GPU memory
         torch.cuda.empty_cache()

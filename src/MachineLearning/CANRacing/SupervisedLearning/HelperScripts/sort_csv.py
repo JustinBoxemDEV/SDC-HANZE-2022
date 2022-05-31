@@ -3,7 +3,7 @@
 import pandas as pd
 import csv
 
-csv_file_path = "D:/SDC/sdc_data/justin_data/original/100_new_data images 30-03-2022 15-17-40.csv"
+csv_file_path = "C:/Users/Sabin/Documents/SDC/SL_data/mirror/new_data images 12-04-2022 12-20-39.csv"
 
 actions_frames = pd.read_csv(csv_file_path)
 csv_array = []
@@ -19,7 +19,7 @@ for i in range(row_count-1):
 
 csv_array.sort(key=lambda x: x[-1])
 
-out_path = "D:/SDC/sdc_data/justin_data/original/sorted_100_new_data images 30-03-2022 15-17-40.csv"
+out_path = "C:/Users/Sabin/Documents/SDC/SL_data/mirror/sorted_new_data images 12-04-2022 12-20-39.csv"
 
 with open(out_path, 'w', newline='') as out_file:
     out_file_writer = csv.writer(out_file)
