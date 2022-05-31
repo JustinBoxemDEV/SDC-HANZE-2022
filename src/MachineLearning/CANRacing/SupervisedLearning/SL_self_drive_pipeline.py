@@ -296,12 +296,12 @@ def run(training=False, testing=True):
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
 
                     # mirrored set (12-04-2022 12-20-39)
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
 
                     # test + mirrored set 
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
 
                     # ----------------------- DEBUG SETS ----------------------
                     # small dataset
@@ -311,7 +311,7 @@ def run(training=False, testing=True):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name="full_0.000001_SteerSLSelfDriveModel_2022-05-31_01-19-10", tb_name="test_mirrored", wait=True, dev="cpu") # trained_model_name
+                    model_name="full_0.000001_SteerSLSelfDriveModel_2022-05-31_01-19-10", tb_name="tensorboard_test_mirrored", wait=True, dev="cpu") # trained_model_name
 
     # TODO: trace and save traced model
     print("Done!")
