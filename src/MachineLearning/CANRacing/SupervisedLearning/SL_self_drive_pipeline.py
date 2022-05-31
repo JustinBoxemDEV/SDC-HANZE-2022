@@ -185,7 +185,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
 
 @torch.no_grad()
-def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSelfDriveModel", wait: bool =True, dev: str ="cpu"):
+def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSelfDriveModel", tb_name = "tensorboard_testing", wait: bool =True, dev: str ="cpu"):
    
     """
     Test the model. All of the images in the test set along with predictions and ground truth will be shown in tensorboard.
@@ -193,6 +193,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
     :param test_img_dir The directory containing the images
     :param test_actions_csv The path to the testing csv containing the actions and corresponding image name
     :param model_name The name of the model to be tested. If you run testing right after training you can use trained_model_name (return value of run_training), otherwise insert a string with the model name
+    :param tb_name The name of the tensorboard. This can be used to distinguish between testing sets.
     :param wait Boolean if the program should be kept running to continue showing the tensorboard after testing is finished
     :param dev The device to run the pipeline on, default CPU
     """
@@ -210,7 +211,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
 
     loss_sum, loss_cnt = 0, 0
 
-    logdir_path = os.path.join("src/MachineLearning/CANRacing/tensorboards/", model_name, "tensorboard_testing_log")
+    logdir_path = os.path.join("src/MachineLearning/CANRacing/tensorboards/", model_name, tb_name)
     writer = create_tb(log_dir=logdir_path, wait=wait)
 
     print("Testing...")
@@ -295,12 +296,12 @@ def run(training=False, testing=True):
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
 
                     # mirrored set (12-04-2022 12-20-39)
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
 
                     # test + mirrored set 
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
+                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
+                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
 
                     # ----------------------- DEBUG SETS ----------------------
                     # small dataset
@@ -310,7 +311,7 @@ def run(training=False, testing=True):
                     # 8 IMAGE DATASET FOR DEBUGGING
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name="full_0.000001_SteerSLSelfDriveModel_2022-05-31_01-19-10", wait=True, dev="cpu") # trained_model_name
+                    model_name="full_0.000001_SteerSLSelfDriveModel_2022-05-31_01-19-10", tb_name="test_mirrored", wait=True, dev="cpu") # trained_model_name
 
     # TODO: trace and save traced model
     print("Done!")
