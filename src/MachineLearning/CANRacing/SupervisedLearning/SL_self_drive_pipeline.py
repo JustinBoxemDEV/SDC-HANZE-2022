@@ -12,13 +12,14 @@ To update requirements.txt: https://github.com/bndr/pipreqs
 """
 
 # TODO: 
-# 1. Create final dataset to train on (based on experiments bochten/recht/mirroredturns)
+# 1. Heatmap for visualization (Grad-CAM) https://coderzcolumn.com/tutorials/artificial-intelligence/pytorch-grad-cam
 # 2. Limit NN output values https://discuss.pytorch.org/t/how-to-return-output-values-only-from-0-to-1/24517/5
-# 3. Heatmap for visualization (Grad-CAM) https://coderzcolumn.com/tutorials/artificial-intelligence/pytorch-grad-cam 
-# 4. Smooth data (using data_smoothing.py)
-# 5. (Douwe) Create new dataset: Add flipped versions of the turns to 2022 dataset
-# 6. (Douwe) Only crop upper part of the image/ crop more from upper part
-# 7. Create test sets per group: left turns, right turns and straight
+# 3. Experiment on model layers: leakyrelu instead of elu activation layer
+# 4. 50% flip in dataloader
+# 5. Change normalization: image / 127.5 - 1
+# 6. Add line indicators to tensorboard
+# 7. Laurens: Smooth data (using data_smoothing.py)
+# 8. Douwe: Create test sets per group: left turns, right turns and straight
 
 import torch
 from load_data import get_dataloader
@@ -64,7 +65,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
         scaler = torch.cuda.amp.GradScaler()
 
     # optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.000001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.1)
 
     now = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -249,25 +250,25 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
     return
 
 
-def run(training=False, test_all=False, debug_training=False, debug_testing=False):
+def run(training=False, test_all=True, debug_training=False, debug_testing=False, trace=False):
     torch.cuda.empty_cache()
 
     if training:
         trained_model_name = run_training(
                     # 2022
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
 
                     # binary sobel
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/binary_sobel_2022_all_images.csv",
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation/binary_sobel_final_40p_data images 30-03-2022 15-17-40.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/", 
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/binary_sobel_2022_all_images.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation/binary_sobel_final_40p_data images 30-03-2022 15-17-40.csv",
 
                     # all use the same validation set (except binary and warped)
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
-                    model_name="Binary_Sobel_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
+                    model_name="lr_0.00001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     if debug_training:
         # ----------------------- DEBUG SETS ----------------------
@@ -316,9 +317,12 @@ def run(training=False, test_all=False, debug_training=False, debug_testing=Fals
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
                     model_name="DEBUG", tb_name="tensorboard_testing_debug", wait=True, dev="cuda:0")
     
-    # TODO: trace and save traced model
+    if trace:
+        pass
+        # TODO: trace and save traced model
+
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=True, test_all=True, debug_training=False, debug_testing=False)
+    run(training=True, test_all=True, debug_training=False, debug_testing=False, trace=False)
