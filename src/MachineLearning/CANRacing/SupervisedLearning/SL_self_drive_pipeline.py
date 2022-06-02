@@ -251,7 +251,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
 
 def run(training=False, test_all=False, debug_training=False, debug_testing=False):
     torch.cuda.empty_cache()
-    
+
     if training:
         trained_model_name = run_training(
                     # 2022
@@ -260,11 +260,13 @@ def run(training=False, test_all=False, debug_training=False, debug_testing=Fals
 
                     # binary sobel
                     train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary sobel/binary_sobel_2022_all_images.csv",
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/binary_sobel_2022_all_images.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation/binary_sobel_final_40p_data images 30-03-2022 15-17-40.csv",
 
-                    # all use the same validation set
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
+                    # all use the same validation set (except binary and warped)
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
                     model_name="Binary_Sobel_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     if debug_training:
@@ -277,10 +279,10 @@ def run(training=False, test_all=False, debug_training=False, debug_testing=Fals
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
 
                     # 8 image dataset
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     model_name="Binary_Sobel_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     # try to free up GPU memory
