@@ -32,6 +32,7 @@ import torch.utils.data
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import os
+torch.manual_seed(1234)
 
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name: str ="SLSelfDriveModel 2022-05-20_00-46-45",
                 num_epochs: int = 5, batch_size: int = 1, amp_on: bool = False, dev: str = "cuda:0"):
@@ -248,75 +249,74 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
     return
 
 
-def run(training=False, testing=True):
+def run(training=False, test_all=False, debug_training=False, debug_testing=False):
     torch.cuda.empty_cache()
+    
     if training:
         trained_model_name = run_training(
-                    # full dataset
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/training_100_all_images.csv",
-
-                    # full dataset with mirror lap
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/training/both/mirrorlap_training_100_all_images.csv",
-
                     # 2022
                     # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
 
-                    # 2022 with mirror lap
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/mirrorlap_2022_all_images.csv",
+                    # binary sobel
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary sobel/binary_sobel_2022_all_images.csv",
 
                     # all use the same validation set
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
+                    model_name="Binary_Sobel_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
-                    # ----------------------- DEBUG SETS ----------------------
-                    # small dataset
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
+    if debug_training:
+        # ----------------------- DEBUG SETS ----------------------
+        trained_model_name = run_training(
+                    # small dataset ~200imgs
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
 
-                    # 8 IMAGE DATASET FOR DEBUGGING
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="mirror_2022_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    # 8 image dataset
+                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    model_name="Binary_Sobel_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
-        # try to free up GPU memory
-        torch.cuda.empty_cache()
+    # try to free up GPU memory
+    torch.cuda.empty_cache()
 
-    if testing:
+    if test_all:
         # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
-        run_testing(
-                    # test set (30-03-2022 15-17-40)
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
 
-                    # mirrored set (12-04-2022 12-20-39)
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
+        # test set (30-03-2022 15-17-40)
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
+                    model_name=trained_model_name, tb_name="tensorboard_testing_test", wait=False, dev="cuda:0")
+        # mirrored set (12-04-2022 12-20-39)
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
                     test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
-
-                    # test + mirrored set 
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
-
-                    # ----------------------- DEBUG SETS ----------------------
-                    # small dataset
+                    model_name=trained_model_name, tb_name="tensorboard_testing_mirror", wait=False, dev="cuda:0")
+        # test + mirrored set 
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
+                    model_name=trained_model_name, tb_name="tensorboard_testing_testandmirror", wait=False, dev="cuda:0")
+    
+    if debug_testing:
+        # ----------------------- DEBUG SETS ----------------------
+        run_testing(
+                    # small dataset ~200imgs
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
 
-                    # 8 IMAGE DATASET FOR DEBUGGING
+                    # 8 image dataset
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
                     # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name="mirror_2022_0.000001_SteerSLSelfDriveModel_2022-05-31_23-12-44", tb_name="tensorboard_testing_mirror", wait=True, dev="cpu") # trained_model_name
-
+                    model_name="DEBUG", tb_name="tensorboard_testing_debug", wait=True, dev="cuda:0")
+    
     # TODO: trace and save traced model
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=False, testing=True)
+    run(training=True, test_all=True, debug_training=False, debug_testing=False)
