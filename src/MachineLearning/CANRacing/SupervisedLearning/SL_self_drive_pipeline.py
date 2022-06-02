@@ -309,8 +309,8 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
         # ----------------------- DEBUG SETS ----------------------
         run_testing(
                     # small dataset ~200imgs
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
+                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
 
                     # 8 image dataset
                     # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
