@@ -1,11 +1,11 @@
 import os
 import csv
 
-readf = open("/home/douwe/Downloads/dataset_90p_recht (Hanze 2022)/data_images_30-03-2022_15-22-30.csv", 'r')
+readf = open("D:\\Testing\\Testing\\testing_60p_100_new_data_images_30-03-2022_15-17-40_smoothed.csv", 'r')
 reader = csv.reader(readf)
 header = next(reader)
 
-writef = open("/home/douwe/Downloads/dataset_90p_recht (Hanze 2022)/Fixed CSV/data_images_30-03-2022_15-22-30.csv", 'w')
+writef = open("D:\\Testing\\Testing_recht\\Testing_recht.csv", 'w')
 
 fields=('Steer', 'Throttle', 'Brake', 'Image')
 
@@ -16,7 +16,7 @@ writer.writeheader()
 
 images = []
 
-for image in os.listdir("/home/douwe/Downloads/dataset_90p_recht (Hanze 2022)/images 30-03-2022 15-22-30/"):
+for image in os.listdir("D:\\Testing\\Testing_recht\\images 30-03-2022 15-17-40\\"):
     images.append(image)
     
 
@@ -32,6 +32,7 @@ for row in reader:
         imageList = imageData.split("/")
         imagePath = imageList[0]
         imageName = imageList[1]
+
         # print("row image: "+imageName)
         # print("image: " + image)
         # print(imageName)
