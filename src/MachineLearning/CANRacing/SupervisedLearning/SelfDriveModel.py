@@ -8,9 +8,9 @@ class SelfDriveModel(nn.Module):
 
         self.conv_layers = nn.Sequential(
             nn.Conv2d(3, 24, kernel_size=5, stride=2),
-            nn.ELU(),
+            nn.LeakyReLU(),
             nn.Conv2d(24, 36, kernel_size=3, stride=1),
-            nn.ELU(),
+            nn.LeakyReLU(),
             nn.Conv2d(36, 64, kernel_size=3, stride=1),
             # nn.ELU(),
             # nn.Dropout(p=0.5) # TODO: test if this helps
@@ -18,10 +18,10 @@ class SelfDriveModel(nn.Module):
 
         self.linear_layers = nn.Sequential(
             nn.Linear(in_features=64*77*418, out_features=64), # for full image use 64x234x418
-            nn.ELU(),
+            nn.LeakyReLU(),
             # nn.Dropout(p=0.4),
             nn.Linear(in_features=64, out_features=10),
-            nn.ELU(),
+            nn.LeakyReLU(),
             nn.Linear(in_features=10, out_features=1)
         )
 
