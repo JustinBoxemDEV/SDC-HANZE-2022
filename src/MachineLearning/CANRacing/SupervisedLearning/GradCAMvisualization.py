@@ -1,4 +1,10 @@
 # stolen from: https://medium.com/the-owl/gradcam-in-pytorch-7b700caa79e5
+# https://gist.github.com/sadimanna/df7fae2b7c14d62b40911e8dc60300af/revisions
+
+# https://discuss.pytorch.org/t/how-do-hooks-work/83109/2
+# https://gist.github.com/Nikhil-Kasukurthi/3f75bd470380dda6e24f981d01f4c2cb
+
+# NOT FUNCTIONAL, GRADIENTS ARE NONE
 
 from traceback import print_tb
 from SelfDriveModel import SelfDriveModel
