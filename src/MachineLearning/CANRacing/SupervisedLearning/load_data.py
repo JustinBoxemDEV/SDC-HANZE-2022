@@ -6,7 +6,7 @@ from transforms import ToTensor, Normalizer
 
 def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=False,
                     random_sun_flare=False, horizontal_flip=False, motion_blur=False, 
-                    random_brightness_contrast=False, random_gamma=False):
+                    random_brightness_contrast=False, random_gamma=False, flip=False):
     """
     Returns a dataloader (pytorch) which can sample images from the dataset. This dataloader will perform data augmentations based on the passed parameters.
 
@@ -37,7 +37,7 @@ def get_dataloader(img_folder: str, act_csv: str, batch_size: int, normalize=Fal
     # To use GPU acceleration, always convert to tensor
     t.append(ToTensor())
     dataset = TTAssenDataset(root_dir=img_folder, csv_file=act_csv, 
-                                transforms=transforms.Compose(t), albu_transforms=A.Compose(albu_t))
+                                transforms=transforms.Compose(t), albu_transforms=A.Compose(albu_t), flip=flip)
                                 
     dataloader = torch.utils.data.DataLoader(dataset, drop_last=True, num_workers=4, batch_size=batch_size, shuffle=True) # num_workers veranderen naar een lager getal als je device het niet aan kan
     return dataloader

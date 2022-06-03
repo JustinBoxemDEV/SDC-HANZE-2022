@@ -4,12 +4,12 @@ import os
 import skimage.io
 import numpy as np
 import cv2
-
+from random import random
 
 class TTAssenDataset(torch.utils.data.Dataset):
 
     def __init__(self, root_dir: str, csv_file: str,
-                    transforms=None, albu_transforms=None):
+                    transforms=None, albu_transforms=None, flip=False):
         """
         :param root_dir (string): Path to folder containing directory with all the images
         :param csv_file (string): Path to the csv file with actions and corresponding image names
@@ -20,6 +20,7 @@ class TTAssenDataset(torch.utils.data.Dataset):
         self.root_dir = root_dir
         self.transforms = transforms
         self.albu_transforms = albu_transforms
+        self.flip = flip
     
     def __len__(self):
         return len(self.actions_frames)
@@ -38,6 +39,10 @@ class TTAssenDataset(torch.utils.data.Dataset):
         steer = self.actions_frames.iloc[idx, 0]
         # throttle = self.actions_frames.iloc[idx, 1]
         # brake = self.actions_frames.iloc[idx, 2]
+        
+        if self.flip and random() > 0.5:
+            image = cv2.flip(image, 1)
+            steer = steer * -1
 
         actions = np.array([steer]) # throttle, brake
 
