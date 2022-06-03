@@ -33,13 +33,13 @@ class TTAssenDataset(torch.utils.data.Dataset):
         # image = skimage.io.imread(img_name) # doesnt seem to work on google collab so for consistency we use opencv
         image = cv2.imread(img_name)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (848, 480)) # resize images here!
 
         steer = self.actions_frames.iloc[idx, 0]
         # throttle = self.actions_frames.iloc[idx, 1]
         # brake = self.actions_frames.iloc[idx, 2]
 
         actions = np.array([steer]) # throttle, brake
-        image = np.resize(image, (480, 848, 3)).astype(np.float32) # resize images here! TODO: something may or may not be wrong with this?
 
         # Slice the images to remove noise
         sample = {'image': image[160:325,0:848], 'actions': actions}

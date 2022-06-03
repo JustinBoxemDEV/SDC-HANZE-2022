@@ -2,10 +2,8 @@
 import csv
 import struct
 
-# csvName = "data images 22-03-2022 13-47-20"
-
-readf = open("C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/data images 30-03-2022 15-17-40.csv", "r") 
-writef = open("C:/Users/Sabin/Documents/SDC/SL_data/full_dataset/validation/new_data images 30-03-2022 15-17-40.csv", 'w')
+readf = open("C:/Users/Sabin/Documents/SDC/SL_data/mirror/data images 12-04-2022 12-20-39.csv", "r") 
+writef = open("C:/Users/Sabin/Documents/SDC/SL_data/mirror/new_data images 12-04-2022 12-20-39.csv", 'w')
 
 twentytwo = False
 twentyone = True

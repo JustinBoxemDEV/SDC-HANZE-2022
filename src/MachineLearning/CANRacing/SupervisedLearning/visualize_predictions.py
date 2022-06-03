@@ -9,8 +9,10 @@ from transforms import Normalizer, ToTensor
 import torchvision.transforms as transforms
 import pandas as pd
 
-model_name = "0.000001_steering_NBSLSelfDriveModel_2022-05-30_01-59-26"
-csv_file_path = "D:/SDC/sdc_data/justin_data/original/sorted_100_new_data images 30-03-2022 15-17-40.csv"
+
+model_name = "full_0.000001_SteerSLSelfDriveModel_2022-05-31_01-19-10"
+# csv_file_path = "D:/SDC/sdc_data/justin_data/original/sorted_100_new_data images 30-03-2022 15-17-40.csv"
+csv_file_path = "C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv"
 
 dev = "cpu"
 model = SelfDriveModel(gpu=False)
@@ -21,7 +23,6 @@ model.to(dev)
 # count the amount of lines in the csv
 with open(csv_file_path) as f:
     row_count = sum(1 for line in f)
-# print(row_count)
 
 actions_frames = pd.read_csv(csv_file_path)
 for i in range(row_count-1):
@@ -30,7 +31,8 @@ for i in range(row_count-1):
     truth_throttle = actions_frames.iloc[i, 1]
     i_name = actions_frames.iloc[i, 3]
     
-    img = cv2.imread(f"D:/SDC/sdc_data/justin_data/original/images 30-03-2022 15-17-40/{i_name[27:]}")
+    # img = cv2.imread(f"D:/SDC/sdc_data/justin_data/original/{i_name}")
+    img = cv2.imread(f"C:/Users/Sabin/Documents/SDC/SL_data/mirror/{i_name}")
 
     # resize and crop
     img = np.resize(img, (480, 848, 3)) 
