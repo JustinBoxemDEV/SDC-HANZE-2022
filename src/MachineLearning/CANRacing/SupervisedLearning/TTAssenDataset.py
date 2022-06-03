@@ -44,6 +44,10 @@ class TTAssenDataset(torch.utils.data.Dataset):
             image = cv2.flip(image, 1)
             steer = steer * -1
 
+        # TODO: Test this. Different method of normalizing, if you use this set Normalize=False in load_data.py function
+        # image = image / 127.5 -1
+        # image = image.astype(np.float32)
+
         actions = np.array([steer]) # throttle, brake
 
         # Slice the images to remove noise
