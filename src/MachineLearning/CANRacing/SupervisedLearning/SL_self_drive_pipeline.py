@@ -303,29 +303,29 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
 
         # catagorized tests (30-03-2022 15-17-40)
         # straight set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Testing_recht/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Testing_recht/Testing_recht.csv",
                     model_name=trained_model_name, tb_name="tensorboard_testing_test_straight", wait=False, dev="cuda:0")
         # left set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_links/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_links/Testing_bochten_links.csv",
                     model_name=trained_model_name, tb_name="tensorboard_testing_test_left", wait=False, dev="cuda:0")
         # right set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_rechts/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_rechts/Testing_bochten_rechts.csv",
                     model_name=trained_model_name, tb_name="tensorboard_testing_test_right", wait=False, dev="cuda:0")
 
         # catagorized tests mirror (12-04-2022 12-20-39)
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Mirror_recht/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Mirror_recht/Mirror_recht.csv",
                     model_name=trained_model_name, tb_name="tensorboard_testing_mirror_straight", wait=False, dev="cuda:0")
         # left set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Mirror_links/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Mirror_links/Mirror_links.csv",
                     model_name=trained_model_name, tb_name="tensorboard_testing_mirror_left", wait=False, dev="cuda:0")
         # right set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
+        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Mirror_rechts/", 
+                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Mirror_rechts/Mirror_rechts.csv",
                     model_name=trained_model_name, tb_name="tensorboard_testing_mirror_right", wait=False, dev="cuda:0")
     
     if debug_testing:

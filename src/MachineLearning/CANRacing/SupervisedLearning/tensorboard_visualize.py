@@ -105,7 +105,6 @@ def draw_pred_and_target_npy(img: np.ndarray, filename: str, predicted_actions, 
     :param target_actions The ground truth actions
     :param dataformats HWC or CHW
     """ 
-    w, h = img.size
 
     if dataformats == "CHW":
         # print("changing dataformat to HWC")
@@ -117,7 +116,8 @@ def draw_pred_and_target_npy(img: np.ndarray, filename: str, predicted_actions, 
     draw.text((10, 10), str(f"Filename: {filename}"), fill=(255, 0, 0))
     draw.text((10, 20), str(f"Predicted steering: {predicted_actions[0]}"), fill=(0, 255, 255))
     draw.text((10, 30), str(f"Target steering: {target_actions[0]}"), fill=(0, 255, 0))
-   
+
+    w, h = img.size
     # fancy lines for visualization
     draw.line(xy=[(int(w//2), int(h)), (int(w*(1+float(predicted_actions[0]))//2), int(h//2))], fill=(255, 0, 0))
     draw.line(xy=[(int(w//2), int(h)), (int(w*(1+float(target_actions[0]))//2), int(h//2))], fill=(0, 255, 0))
