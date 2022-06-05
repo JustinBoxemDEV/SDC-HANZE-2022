@@ -1,3 +1,4 @@
+from cmath import tanh
 import torch.nn as nn
 import torch
 
@@ -22,7 +23,8 @@ class SelfDriveModel(nn.Module):
             # nn.Dropout(p=0.4),
             nn.Linear(in_features=64, out_features=10),
             nn.LeakyReLU(),
-            nn.Linear(in_features=10, out_features=1)
+            nn.Linear(in_features=10, out_features=1),
+            nn.Tanh()
         )
 
     def forward(self, x):

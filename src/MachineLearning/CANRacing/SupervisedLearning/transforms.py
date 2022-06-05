@@ -7,7 +7,7 @@ from typing import Dict, Union
 deploy = False
 
 class ToTensor(object):
-    """Convert ndarrays in sample to Tensors for GPU acceleration"""
+    """Convert ndarrays in sample to Tensors"""
 
     def __call__(self, sample):
         if deploy:
