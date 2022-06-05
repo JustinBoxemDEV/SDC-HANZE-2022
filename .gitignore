@@ -47,6 +47,7 @@ __pycache__
 src/MachineLearning/ACRacing/training_data
 src/MachineLearning/CANRacing/models
 assets/models
+src/MachineLearning/CANRacing/SupervisedLearning/runs
 
 # Videos are too big to push
 src/MachineLearning/ACRacing/TestImges
@@ -56,3 +57,5 @@ src/MachineLearning/CANRacing/saved_tbs
 src/MachineLearning/CANRacing/tensorboard_testing_log
 src/MachineLearning/CANRacing/SupervisedLearning/HelperScripts/old_smooth_data.py
 assets/videos/outpyTestdag5.mp4
+
+src/MachineLearning/CANRacing/SupervisedLearning/yolov5/yolov5s.pt
