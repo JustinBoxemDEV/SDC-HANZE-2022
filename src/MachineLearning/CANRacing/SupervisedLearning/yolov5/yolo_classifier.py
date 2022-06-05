@@ -2,14 +2,12 @@
 """
 Train a YOLOv5 classifier model on a classification dataset
 Usage - train:
-    $ python path/to/classifier.py --model yolov5s --data mnist --epochs 5 --img 128
-    python yolo_classifier.py --model yolov5s --data None --epochs 5 --img 128 --batch-size 16 --workers 4
+    cd src/MachineLearning/CANRacing/SupervisedLearning/yolov5
+    python yolo_classifier.py --model yolov5s --epochs 5 --img 128 --batch-size 16 --workers 4
 Usage - inference:
-    from classifier import *
     model = torch.load('path/to/best.pt', map_location=torch.device('cpu'))['model'].float()
-    files = Path('../datasets/mnist/test/7').glob('*.png')  # images from dir
-    for f in list(files)[:10]:  # first 10 images
-        classify(model, size=128, file=f)
+
+    use visualize_classification.py :)
 """
 
 import argparse
@@ -36,9 +34,9 @@ if str(ROOT) not in sys.path:
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 from models.common import Classify, DetectMultiBackend
-from utils.general import (NUM_THREADS, check_file, check_git_status, check_requirements, colorstr, download,
+from utils.general import (NUM_THREADS, check_git_status, colorstr, download,
                            increment_path)
-from utils.torch_utils import de_parallel, model_info, select_device
+from utils.torch_utils import de_parallel, select_device
 
 # Functions
 normalize = lambda x, mean=0.5, std=0.25: (x - mean) / std
@@ -46,8 +44,8 @@ denormalize = lambda x, mean=0.5, std=0.25: x * std + mean
 
 
 def train():
-    save_dir, data, bs, epochs, nw, imgsz = \
-        Path(opt.save_dir), opt.data, opt.batch_size, opt.epochs, min(NUM_THREADS, opt.workers), opt.img_size
+    save_dir, bs, epochs, nw, imgsz = \
+        Path(opt.save_dir), opt.batch_size, opt.epochs, min(NUM_THREADS, opt.workers), opt.img_size
 
     # Directories
     wdir = save_dir / 'weights'
@@ -63,8 +61,7 @@ def train():
 
 
     train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022_3_classes/training"
-    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation/"
-    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022_3_classes/testing"
+    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022_3_classes/validation"
 
     # Dataloader
     trainset = torchvision.datasets.ImageFolder(root=train_img_dir, transform=trainform)
@@ -100,9 +97,6 @@ def train():
         model = torchvision.models.__dict__[opt.model](pretrained=True)
         model.fc = nn.Linear(model.fc.weight.shape[1], nc)
 
-    # print(model)  # debug
-    # model_info(model)
-
     # Optimizer
     lr0 = 0.0001 * bs  # intial lr
     lrf = 0.01  # final lr (fraction of lr0)
@@ -116,8 +110,6 @@ def train():
     # Scheduler
     lf = lambda x: ((1 + math.cos(x * math.pi / epochs)) / 2) * (1 - lrf) + lrf  # cosine
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
-    # scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=lr0, total_steps=epochs, pct_start=0.1,
-    #                                    final_div_factor=1 / 25 / lrf)
 
     # Train
     model = model.to(device)
@@ -167,18 +159,25 @@ def train():
         # Save model
         final_epoch = epoch + 1 == epochs
         if (not opt.nosave) or final_epoch:
-            ckpt = {
-                'epoch': epoch,
-                'best_fitness': best_fitness,
-                'model': deepcopy(de_parallel(model)).half(),
-                'optimizer': None,  # optimizer.state_dict()
-                'date': datetime.now().isoformat()}
+            # ckpt = {
+            #     'epoch': epoch,
+            #     'best_fitness': best_fitness,
+            #     'model': deepcopy(de_parallel(model)).half(),
+            #     'optimizer': None,  # optimizer.state_dict()
+            #     'date': datetime.now().isoformat()}
 
-            # Save last, best and delete
-            torch.save(ckpt, last)
+            # # Save last, best and delete
+            # torch.save(ckpt, last)
+
+            # only save state dict
+            torch.save(model.state_dict(), last)
+
             if best_fitness == fitness:
-                torch.save(ckpt, best)
-            del ckpt
+                # torch.save(ckpt, best)
+
+                # only save state dict
+                torch.save(model.state_dict(), best)
+            # del ckpt
 
     # Train complete
     if final_epoch:
@@ -279,8 +278,6 @@ def imshow(img, labels=None, pred=None, names=None, nmax=64, verbose=False, f=Pa
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default='yolov5s', help='initial weights path')
-    parser.add_argument('--data', type=str, default='mnist', help='cifar10, cifar100, mnist or mnist-fashion')
-    parser.add_argument('--hyp', type=str, default='data/hyps/hyp.scratch-low.yaml', help='hyperparameters path')
     parser.add_argument('--epochs', type=int, default=20)
     parser.add_argument('--batch-size', type=int, default=128, help='total batch size for all GPUs')
     parser.add_argument('--img-size', type=int, default=128, help='train, test image sizes (pixels)')
@@ -297,12 +294,10 @@ if __name__ == '__main__':
 
     # Checks
     check_git_status()
-    check_requirements()
 
     # Parameters
     device = select_device(opt.device, batch_size=opt.batch_size)
     cuda = device.type != 'cpu'
-    # opt.hyp = check_file(opt.hyp)  # check files
     opt.save_dir = increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok | opt.evolve)  # increment run
     resize = torch.nn.Upsample(size=(opt.img_size, opt.img_size), mode='bilinear', align_corners=False)  # image resize
 

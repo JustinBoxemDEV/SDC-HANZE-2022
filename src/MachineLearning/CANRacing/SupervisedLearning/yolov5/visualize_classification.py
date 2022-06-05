@@ -18,6 +18,8 @@ image_folder_path = "C:/Users/Sabin/Documents/SDC/SL_data/Visualization_test/ima
 dev = "cpu"
 model = torch.load(f'src/MachineLearning/CANRacing/SupervisedLearning/runs/{model_name}/weights/best.pt', 
         map_location=torch.device('cpu'))['model'].float()
+
+# model.load_state_dict(torch.load(f"src/MachineLearning/CANRacing/SupervisedLearning/runs/{model_name}/weights/best.pt", map_location=dev))
 model.eval()
 model.to(dev)
 
