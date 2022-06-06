@@ -27,7 +27,7 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import os
 import cv2
-torch.manual_seed(400)
+torch.manual_seed(3)
 
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name: str ="SLSelfDriveModel",
                 num_epochs: int = 5, batch_size: int = 1, amp_on: bool = False, dev: str = "cuda:0"):
@@ -260,7 +260,7 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/smoothed_val.csv",
-                    model_name="seed_401_joel_0.000001_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="368-207_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     if debug_training:
         # ----------------------- DEBUG SETS ----------------------
@@ -276,7 +276,7 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="final_368-207_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="test_steermodel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     # try to free up GPU memory
     torch.cuda.empty_cache()

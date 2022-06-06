@@ -33,7 +33,7 @@ class SelfDriveModel(nn.Module):
             x = x.view(1, 3, 207, 368)
 
         output = self.conv_layers(x)
-        print(output.shape)
+        # print(output.shape)
 
         if self.gpu:
             output = output.view(output.size(0), -1)
