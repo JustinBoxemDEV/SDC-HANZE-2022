@@ -53,5 +53,5 @@ src/MachineLearning/CANRacing/tensorboards
 assets/videos/outpyTestdag5.mp4
 /src/MachineLearning/ACRacing/training_data
 
-src/MachineLearning/CANRacing/SupervisedLearning/yolov5/yolov5s.pt
+src/MachineLearning/CANRacing/SupervisedLearning/classification/yolov5/yolov5s.pt
 src/MachineLearning/CANRacing/SupervisedLearning/CANRacing/SupervisedLearning/classification/runs
