@@ -79,7 +79,7 @@ def train():
     # Model
     if opt.model.startswith('yolov5'):
         # YOLOv5 Classifier
-        model = torch.hub.load('ultralytics/yolov5', opt.model, pretrained=True, autoshape=False)
+        model = torch.hub.load('ultralytics/yolov5', opt.model, pretrained=False, autoshape=False)
         if isinstance(model, DetectMultiBackend):
             model = model.model  # unwrap DetectMultiBackend
         model.model = model.model[:10] if opt.model.endswith('6') else model.model[:8]  # backbone
@@ -98,7 +98,7 @@ def train():
         model.fc = nn.Linear(model.fc.weight.shape[1], nc)
 
     # Optimizer
-    lr0 = 0.0001 * bs  # intial lr
+    lr0 = 0.00001 * bs  # intial lr
     lrf = 0.01  # final lr (fraction of lr0)
     if opt.optimizer == 'Adam':
         optimizer = optim.Adam(model.parameters(), lr=lr0 / 10)
@@ -159,25 +159,19 @@ def train():
         # Save model
         final_epoch = epoch + 1 == epochs
         if (not opt.nosave) or final_epoch:
-            # ckpt = {
-            #     'epoch': epoch,
-            #     'best_fitness': best_fitness,
-            #     'model': deepcopy(de_parallel(model)).half(),
-            #     'optimizer': None,  # optimizer.state_dict()
-            #     'date': datetime.now().isoformat()}
+            ckpt = {
+                'epoch': epoch,
+                'best_fitness': best_fitness,
+                'model': deepcopy(de_parallel(model)).half(),
+                'optimizer': None,  # optimizer.state_dict()
+                'date': datetime.now().isoformat()}
 
-            # # Save last, best and delete
-            # torch.save(ckpt, last)
-
-            # only save state dict
-            torch.save(model.state_dict(), last)
+            # Save last, best and delete
+            torch.save(ckpt, last)
 
             if best_fitness == fitness:
-                # torch.save(ckpt, best)
-
-                # only save state dict
-                torch.save(model.state_dict(), best)
-            # del ckpt
+                torch.save(ckpt, best)
+            del ckpt
 
     # Train complete
     if final_epoch:
