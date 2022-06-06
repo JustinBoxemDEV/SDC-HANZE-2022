@@ -1,6 +1,7 @@
 # Set deploy in transforms.py to True to use this!
 # If you are using an old model (that includes brake in the model) you may have to change out_features in SelfDriveModel.py at line 48 to 3.
 
+from traceback import print_tb
 import cv2
 from SelfDriveModel import SelfDriveModel
 import torch
@@ -15,7 +16,7 @@ csv_file_path = "C:/Users/Sabin/Documents/SDC/SL_data/testing/testing_60p_100_ne
 
 dev = "cpu"
 model = SelfDriveModel(gpu=False)
-model.load_state_dict(torch.load(f"/assets/models/{model_name}.pt", map_location=dev))
+model.load_state_dict(torch.load(f"./assets/models/{model_name}.pt", map_location=dev))
 model.eval()
 model.to(dev)
 
@@ -35,13 +36,17 @@ for i in range(row_count-1):
     # resize and crop
     img = np.resize(img, (480, 848, 3)) 
     cropped_img = img[160:325,0:848]
-    
+
+    cropped_img = cropped_img / 127.5 -1
+    cropped_img = cropped_img.astype(np.float32)
+
     # transforms
     t = []
-    t.append(Normalizer(0, 255))
     t.append(ToTensor())
     transform = transforms.Compose(t)
     normalized_cropped_img = transform(cropped_img)
+
+    print(normalized_cropped_img.shape)
 
     # make prediction
     outputs = model(normalized_cropped_img.to(dev)).detach().cpu().numpy()
