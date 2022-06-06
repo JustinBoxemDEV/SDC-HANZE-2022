@@ -32,7 +32,7 @@ class TTAssenDataset(torch.utils.data.Dataset):
 
         image = cv2.imread(img_name)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = cv2.resize(image, (848, 480)) # resize images here!
+        image = cv2.resize(image, (207, 368)) # resize images here!
 
         steer = self.actions_frames.iloc[idx, 0]
         # throttle = self.actions_frames.iloc[idx, 1]
@@ -49,7 +49,7 @@ class TTAssenDataset(torch.utils.data.Dataset):
         actions = np.array([steer]) # throttle, brake
 
         # Slice the images to remove noise
-        sample = {'image': image[160:325,0:848], 'actions': actions}
+        sample = {'image': image, 'actions': actions}
 
         # Augmentation transforms which use the albumentations library
         if self.albu_transforms:

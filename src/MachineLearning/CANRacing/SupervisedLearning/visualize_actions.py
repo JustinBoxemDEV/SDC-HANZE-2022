@@ -6,12 +6,12 @@ import cv2
 from SelfDriveModel import SelfDriveModel
 import torch
 import numpy as np
-from transforms import Normalizer, ToTensor
+from transforms import ToTensor
 import torchvision.transforms as transforms
 import pandas as pd
 
 
-model_name = "final_seed400_SteerSLSelfDriveModel_2022-06-05_19-51-22"
+model_name = "final_seed3_SteerSLSelfDriveModel_2022-06-05_16-40-59"
 csv_file_path = "C:/Users/Sabin/Documents/SDC/SL_data/testing/testing_60p_100_new_data_images_30-03-2022_15-17-40_smoothed.csv"
 
 dev = "cpu"
@@ -37,6 +37,7 @@ for i in range(row_count-1):
     img = np.resize(img, (480, 848, 3)) 
     cropped_img = img[160:325,0:848]
 
+    # normalization
     cropped_img = cropped_img / 127.5 -1
     cropped_img = cropped_img.astype(np.float32)
 
@@ -45,8 +46,6 @@ for i in range(row_count-1):
     t.append(ToTensor())
     transform = transforms.Compose(t)
     normalized_cropped_img = transform(cropped_img)
-
-    print(normalized_cropped_img.shape)
 
     # make prediction
     outputs = model(normalized_cropped_img.to(dev)).detach().cpu().numpy()

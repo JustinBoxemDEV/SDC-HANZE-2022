@@ -17,7 +17,7 @@ class SelfDriveModel(nn.Module):
         )
 
         self.linear_layers = nn.Sequential(
-            nn.Linear(in_features=64*77*418, out_features=64), # for full image use 64x234x418
+            nn.Linear(in_features=64*98*178, out_features=64), # for full image use 64x234x418
             nn.LeakyReLU(),
             # nn.Dropout(p=0.4),
             nn.Linear(in_features=64, out_features=10),
@@ -28,12 +28,12 @@ class SelfDriveModel(nn.Module):
 
     def forward(self, x):
         if self.gpu:
-            x = x.view(x.size(0), 3, 165, 848) # for full image use 3, 480, 848
+            x = x.view(x.size(0), 3, 207, 368) # for full image use 3, 480, 848
         else:
-            x = x.view(1, 3, 165, 848)
+            x = x.view(1, 3, 207, 368)
 
         output = self.conv_layers(x)
-        # print(output.shape)
+        print(output.shape)
 
         if self.gpu:
             output = output.view(output.size(0), -1)
@@ -45,4 +45,3 @@ class SelfDriveModel(nn.Module):
         if self.gpu:
             output = output.type(torch.cuda.DoubleTensor)
         return output
-

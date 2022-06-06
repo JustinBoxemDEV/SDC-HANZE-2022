@@ -22,13 +22,12 @@ from SelfDriveModel import SelfDriveModel
 from utilities import static_var, wait_forever
 import numpy as np
 from tensorboard_visualize import create_tb, tb_show_text, tb_show_loss, tb_show_image, draw_pred_and_target_npy
-import skimage.io
 import torch.utils.data
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import os
 import cv2
-torch.manual_seed(401)
+torch.manual_seed(400)
 
 def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name: str ="SLSelfDriveModel",
                 num_epochs: int = 5, batch_size: int = 1, amp_on: bool = False, dev: str = "cuda:0"):
@@ -257,13 +256,7 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
                     train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images_smoothed.csv", # smoothed version of the csv
 
-                    # binary sobel
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel/binary_sobel_2022_all_images.csv",
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation", 
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Binary_sobel_validation/binary_sobel_final_40p_data images 30-03-2022 15-17-40.csv",
-
-                    # all use the same validation set (except binary and warped)
+                    # all use the same validation set
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
                     valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/smoothed_val.csv",
@@ -283,13 +276,14 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
                     # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    model_name="test_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    model_name="final_368-207_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     # try to free up GPU memory
     torch.cuda.empty_cache()
 
     if test_all:
         # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name
+        # trained_model_name = ""
 
         # test set (30-03-2022 15-17-40)
         run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
