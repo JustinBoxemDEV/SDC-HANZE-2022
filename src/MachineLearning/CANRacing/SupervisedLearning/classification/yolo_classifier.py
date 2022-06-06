@@ -1,8 +1,10 @@
+# did not end up using this
+
 # YOLOv5 🚀 by Ultralytics, GPL-3.0 license
 """
 Train a YOLOv5 classifier model on a classification dataset
 Usage - train:
-    cd src/MachineLearning/CANRacing/SupervisedLearning/yolov5
+    cd src/MachineLearning/CANRacing/SupervisedLearning/classification/yolov5
     python yolo_classifier.py --model yolov5s --epochs 5 --img 128 --batch-size 16 --workers 4
 Usage - inference:
     model = torch.load('path/to/best.pt', map_location=torch.device('cpu'))['model'].float()
@@ -33,10 +35,10 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
-from models.common import Classify, DetectMultiBackend
-from utils.general import (NUM_THREADS, check_git_status, colorstr, download,
+from yolov5.models.common import Classify, DetectMultiBackend
+from yolov5.utils.general import (NUM_THREADS, check_git_status, colorstr, download,
                            increment_path)
-from utils.torch_utils import de_parallel, select_device
+from yolov5.utils.torch_utils import de_parallel, select_device
 
 # Functions
 normalize = lambda x, mean=0.5, std=0.25: (x - mean) / std
@@ -281,7 +283,7 @@ if __name__ == '__main__':
     parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--workers', type=int, default=8, help='max dataloader workers (per RANK in DDP mode)')
-    parser.add_argument('--project', default='../runs/', help='save to project/name')
+    parser.add_argument('--project', default='./runs/', help='save to project/name')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     opt = parser.parse_args()
