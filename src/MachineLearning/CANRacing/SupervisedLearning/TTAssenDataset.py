@@ -1,7 +1,6 @@
 import torch
 import pandas as pd
 import os
-import skimage.io
 import numpy as np
 import cv2
 from random import random
@@ -31,7 +30,6 @@ class TTAssenDataset(torch.utils.data.Dataset):
 
         img_name = os.path.join(self.root_dir, self.actions_frames.iloc[idx, -1])
 
-        # image = skimage.io.imread(img_name) # doesnt seem to work on google collab so for consistency we use opencv
         image = cv2.imread(img_name)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = cv2.resize(image, (848, 480)) # resize images here!
