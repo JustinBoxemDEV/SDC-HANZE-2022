@@ -1,4 +1,3 @@
-from cmath import tanh
 import torch.nn as nn
 import torch
 
