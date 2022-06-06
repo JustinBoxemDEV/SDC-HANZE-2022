@@ -12,7 +12,7 @@ from transforms import ToTensor
 import torchvision.transforms as transforms
 
 CAN_MSG_SENDING_SPEED = .04 # 100Hz
-SUDO_PASSWORD = 'Welkom01'
+SUDO_PASSWORD = 'wijgaanwinnen22'
 
 camera = False
 preview = True
