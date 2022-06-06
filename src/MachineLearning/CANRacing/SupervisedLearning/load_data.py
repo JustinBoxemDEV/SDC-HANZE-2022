@@ -1,5 +1,4 @@
-from MachineLearning.CANRacing.SupervisedLearning.ClassificationTTAssenDataset import ClassificationTTAssenDataset
-from TTAssenDataset import TTAssenDataset, ClassificationTTAssenDataset
+from TTAssenDataset import TTAssenDataset
 import torchvision.transforms as transforms
 import torch.utils.data
 import albumentations as A
