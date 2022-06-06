@@ -7,17 +7,19 @@ import torch
 import numpy as np
 import time
 import torch.nn.functional as F
+from DirectionClassificationModel import DirectionClassificationModel
 
 # Functions
 normalize = lambda x, mean=0.5, std=0.25: (x - mean) / std
 denormalize = lambda x, mean=0.5, std=0.25: x * std + mean
 
-model_name = "exp5"
+model_name = "best"
 image_folder_path = "C:/Users/Sabin/Documents/SDC/SL_data/Visualization_test/images 30-03-2022 15-17-40/"
 
 dev = "cpu"
 
-model = torch.load(f'../runs/{model_name}/weights/best.pt', map_location=torch.device('cpu'))['model'].float()
+model = DirectionClassificationModel(gpu=False)
+model.load_state_dict(torch.load(f"assets/models/classification/{model_name}.pt", map_location=torch.device('cpu')))
 
 model.eval()
 model.to(dev)
@@ -25,7 +27,7 @@ model.to(dev)
 for image in listdir(image_folder_path):
     start = time.time()
 
-    # TODO: extract ground truth
+    # TODO: extract ground truth somehow
 
     image_path = image_folder_path + image
 
@@ -33,13 +35,12 @@ for image in listdir(image_folder_path):
 
     # resize
     resize = torch.nn.Upsample(size=(128, 128), mode='bilinear', align_corners=False)
-    
+
     # transforms
     im = np.ascontiguousarray(np.asarray(original_im).transpose((2, 0, 1)))  # HWC to CHW
     im = torch.tensor(im).float().unsqueeze(0) / 255.0  # to Tensor, to BCWH, rescale
     resized_image = resize(normalize(im))
     resized_image = resized_image[:3, :, :]
-    print(resized_image.shape)
 
     # make prediction
     predictions = model(resized_image)
@@ -50,7 +51,7 @@ for image in listdir(image_folder_path):
 
     steer = "straight"
     if i == 0: steer = "  left"
-    elif i == 2: steer = "  right"
+    elif i == 1: steer = "  right"
     # print(steer)
 
     original_im = cv2.cvtColor(original_im, cv2.COLOR_BGR2RGB)
