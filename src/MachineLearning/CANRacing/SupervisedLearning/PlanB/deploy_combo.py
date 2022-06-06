@@ -16,7 +16,7 @@ SUDO_PASSWORD = 'Welkom01'
 
 camera = False
 preview = True
-CAN = ""
+CAN = "" # vcan
 acc_speed = 40
 straight_cutoff = 0.05 # for swerving
 corner_cutoff = 0.1 # for steering too much/little
