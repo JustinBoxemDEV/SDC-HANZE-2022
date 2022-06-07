@@ -15,12 +15,13 @@ import torch.nn.functional as F
 CAN_MSG_SENDING_SPEED = .04 # 100Hz
 SUDO_PASSWORD = 'wijgaanwinnen22'
 
-camera = False
+camera = True
 preview = True
-CAN = "" # can0
-acc_speed = 40
-straight_cutoff = 0.05 # for swerving
-corner_cutoff = 0.1 # for steering too much/little
+CAN = "can0" # can0
+acc_speed = 60
+straight_cutoff = 0.1
+ # for swerving
+corner_cutoff = 0.28 # for steering too much/little
 cornering_multiplier = 1
 
 model_name = "assets/models/seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49.pt"
