@@ -37,7 +37,7 @@ def main(model):
     while (True):
         _, frame = capture.read()
 
-        frame = np.resize(frame, (480, 848, 3)).astype(np.float32)
+        frame = np.resize(frame, (848, 480, 3)).astype(np.float32)
         
         # transforms
         t = []
@@ -68,7 +68,7 @@ def main(model):
 if __name__ == '__main__':
     device = torch.device("cpu")
     model = SelfDriveModel()
-    model.load_state_dict(torch.load("/src/MachineLearning/CANRacing/models/SLSelfDriveModel.pt", 
+    model.load_state_dict(torch.load("./assets/models/final_seed1234_SteerSLSelfDriveModel_2022-06-05_13-13-52.pt", 
                             map_location=device))
     
     model.to("cpu")

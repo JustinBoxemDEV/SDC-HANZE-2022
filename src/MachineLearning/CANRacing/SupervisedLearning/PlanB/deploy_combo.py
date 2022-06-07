@@ -10,26 +10,27 @@ from SelfDriveModel import SelfDriveModel
 from DirectionClassificationModel import DirectionClassificationModel
 from transforms import ToTensor
 import torchvision.transforms as transforms
+import torch.nn.functional as F
 
 CAN_MSG_SENDING_SPEED = .04 # 100Hz
 SUDO_PASSWORD = 'wijgaanwinnen22'
 
 camera = False
 preview = True
-CAN = "" # vcan
+CAN = "can0" # can0
 acc_speed = 40
 straight_cutoff = 0.05 # for swerving
 corner_cutoff = 0.1 # for steering too much/little
 cornering_multiplier = 1
 
-model_name = "assets/models/final_seed400_SteerSLSelfDriveModel_2022-06-05_19-51-22.pt"
+model_name = "assets/models/seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49.pt"
 
 classification_model = DirectionClassificationModel(gpu=False)
 classification_model.load_state_dict(torch.load(f"assets/models/classification/best.pt", map_location=torch.device('cpu')))
 
 frame_sizes = {
 	"camera": (1280, 720),
-	"model": (848, 480),
+	"model": (368, 207), # 848, 480
 	"classification": (128, 128)
 	}
 
@@ -68,13 +69,12 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
 		while (capture.isOpened()):
 			ok, frame_orig = capture.read()
 			if not ok: break
-
 			# prep image for torch model and get steering angle prediction
 			resized_img = cv2.resize(frame_orig, (frame_sizes["model"][0], frame_sizes["model"][1]))
 			normalized_img = (resized_img / 127 - 1).astype(np.float32)
-			cropped_img = normalized_img[160:325,0:848]
+			# normalized_img = normalized_img[160:325,0:848]
 			transform = transforms.Compose([ToTensor()])
-			transformed_img = transform(cropped_img)
+			transformed_img = transform(normalized_img)
 			outputs = model(transformed_img.to(dev)).detach().cpu().numpy()
 			steer = max(min(outputs[0][0], 0.9), -0.9)
 
@@ -83,10 +83,21 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
 			frame = (frame / 255).astype(np.float32)
 			transform = transforms.Compose([ToTensor()])
 			frame = transform(frame)
-			predictions = classification_model(frame)[0]
-			if max(predictions) == predictions[0]: steer = (min(steer, corner_cutoff * -1)) * cornering_multiplier 		# left
-			elif max(predictions) == predictions[1]: steer = (max(steer, corner_cutoff)) * cornering_multiplier 		# right
-			else: steer = min(max(steer, straight_cutoff * -1), straight_cutoff) 										# straight
+			predictions = classification_model(frame)
+
+			p = F.softmax(predictions, dim=1)  # probabilities
+			i = p.argmax()  # max index
+
+			if i == 0: steer = (min(steer, corner_cutoff * -1)) * cornering_multiplier 		# left
+			elif i == 1: steer = (max(steer, corner_cutoff)) * cornering_multiplier 		# right
+			else: steer = min(max(steer, straight_cutoff * -1), straight_cutoff) 	
+
+			classification_pred = "straight"
+			if i == 0: 
+				classification_pred = "  left"
+			elif i == 1: classification_pred = "  right"
+
+			print(f'Prediction: {i} ({classification_pred}) ({p[0, i]:.2f})')
 
 			# send new steering value to CAN-bus if enabled
 			if CAN:
@@ -97,6 +108,7 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
 			if preview:
 				w, h = frame_sizes["camera"][0], frame_sizes["camera"][1]
 				cv2.line(frame_orig, (int(w//2), int(h)), (int(w*(1+steer)//2), int(h//2)), (255, 0, 0), 2)
+				cv2.putText(frame_orig, f'{classification_pred}', (300, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 100, 255), thickness=4)
 				cv2.imshow('Kartview', frame_orig)
 				cv2.waitKey(1)
 
