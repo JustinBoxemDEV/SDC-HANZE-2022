@@ -17,7 +17,7 @@ SUDO_PASSWORD = 'wijgaanwinnen22'
 
 camera = False
 preview = True
-CAN = "can0" # can0
+CAN = "" # can0
 acc_speed = 40
 straight_cutoff = 0.05 # for swerving
 corner_cutoff = 0.1 # for steering too much/little
@@ -77,6 +77,7 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
 			transformed_img = transform(normalized_img)
 			outputs = model(transformed_img.to(dev)).detach().cpu().numpy()
 			steer = max(min(outputs[0][0], 0.9), -0.9)
+			original_steer = steer
 
 			# prep image for torch model and get steering direction prediction
 			frame = cv2.resize(frame_orig, (frame_sizes["classification"][0], frame_sizes["classification"][1])).astype(np.float32)
@@ -97,7 +98,7 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
 				classification_pred = "  left"
 			elif i == 1: classification_pred = "  right"
 
-			print(f'Prediction: {i} ({classification_pred}) ({p[0, i]:.2f})')
+			print(f'Classification: {i} ({classification_pred}) ({p[0, i]:.2f} and steering: {original_steer} capped to {steer})')
 
 			# send new steering value to CAN-bus if enabled
 			if CAN:
