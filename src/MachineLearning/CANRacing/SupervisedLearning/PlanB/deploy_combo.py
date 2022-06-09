@@ -22,7 +22,7 @@ acc_speed = 60
 straight_cutoff = 0.1
  # for swerving
 corner_cutoff = 0.28 # for steering too much/little
-cornering_multiplier = 1
+cornering_multiplier = 1.05
 
 model_name = "assets/models/seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49.pt"
 
@@ -91,7 +91,7 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
 			i = p.argmax()  # max index
 
 			if i == 0: steer = (min(steer, corner_cutoff * -1)) * cornering_multiplier 		# left
-			elif i == 1: steer = (max(steer, corner_cutoff)) * cornering_multiplier 		# right
+			elif i == 1: steer = (max(steer, corner_cutoff)) 		# right
 			else: steer = min(max(steer, straight_cutoff * -1), straight_cutoff) 	
 
 			classification_pred = "straight"
@@ -99,7 +99,7 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
 				classification_pred = "  left"
 			elif i == 1: classification_pred = "  right"
 
-			print(f'Classification: {i} ({classification_pred}) ({p[0, i]:.2f} and steering: {original_steer} capped to {steer})')
+			# print(f'Classification: {i} ({classification_pred}) ({p[0, i]:.2f} and steering: {original_steer} capped to {steer})')
 
 			# send new steering value to CAN-bus if enabled
 			if CAN:
