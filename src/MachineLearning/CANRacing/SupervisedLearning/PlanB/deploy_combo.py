@@ -26,7 +26,7 @@ cornering_multiplier = 1.05
 model_name = "assets/models/seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49.pt"
 
 classification_model = DirectionClassificationModel(gpu=False)
-classification_model.load_state_dict(torch.load(f"assets/models/classification/best.pt", map_location=torch.device('cpu')))
+classification_model.load_state_dict(torch.load(f"assets/models/classification/newest_classification_model.pt", map_location=torch.device('cpu')))
 
 frame_sizes = {
     "camera": (1280, 720),
