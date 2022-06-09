@@ -27,9 +27,9 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import os
 import cv2
-torch.manual_seed(3)
+torch.manual_seed(4)
 
-def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name: str ="SLSelfDriveModel",
+def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str, valid_actions_csv: str, model_name: str ="SLSelfDriveModel", continue_model=None,
                 num_epochs: int = 5, batch_size: int = 1, amp_on: bool = False, dev: str = "cuda:0"):
                 
     """
@@ -41,6 +41,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     :param valid_img_dir: The directory containing the images
     :param valid_actions_csv The path to the validation csv containing the actions and corresponding image name
     :param model_name The name of the model to be trained. This is the name the model will be saved under. Default SLSelfDriveModel 2022-05-20_00-46-45 (Has to include the timestamp!)
+    :param continue_model Path to the existing model that needs to be loaded for continuing training
     :param num_epochs The amount of epochs to train for
     :param batch_size The amount of images to process at a time
     :param amp_on Boolean if amp should be enabled (should improve training speed, however it is experimental and your mileage may vary) Source: https://pytorch.org/docs/stable/amp.html
@@ -51,14 +52,17 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=False)
     run = True
 
-    model = SelfDriveModel()
+    model = SelfDriveModel(gpu=True)
+
+    if continue_model:
+        model.load_state_dict(torch.load(f"./assets/models/{continue_model}.pt", map_location=dev))
+
     model.to(dev)
     model.train()
 
     if amp_on:
         scaler = torch.cuda.amp.GradScaler()
 
-    # optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.000001)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.1)
 
@@ -92,8 +96,6 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
                 scaler.update()
             else:
                 outputs = model(input_images)
-                # print("model outputs:", outputs)
-                # print("ground truth actions:", actions)
                 loss = loss_fn(outputs, actions)
                 loss.backward()
 
@@ -259,8 +261,8 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
                     # all use the same validation set
                     valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation", 
                     # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/final_40p_data images 30-03-2022 15-17-40.csv",
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/smoothed_val.csv",
-                    model_name="368-207_SteerSLSelfDriveModel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/smoothed_val.csv",  # smoothed version of the csv
+                    model_name="testcontinue_368-207_SteerSLSelfDriveModel", continue_model="None", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     if debug_training:
         # ----------------------- DEBUG SETS ----------------------
