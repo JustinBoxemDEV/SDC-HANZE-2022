@@ -16,7 +16,7 @@ corner_cutoff = 0.28 # for steering too much/little
 cornering_multiplier = 1.05
 
 model_name = "seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49"
-csv_file_path = "C:/Users/Sabin/Documents/SDC/SL_data/bocht5/classification data/2/visualize_all.csv"
+csv_file_path = "D:/KWALI/sorted_data images 07-06-2022 16-37-30.csv"
 
 classification_model = DirectionClassificationModel(gpu=False)
 classification_model.load_state_dict(torch.load(f"assets/models/classification/best.pt", map_location=torch.device('cpu')))
@@ -38,7 +38,7 @@ for i in range(row_count-1):
     truth_throttle = actions_frames.iloc[i, 1]
     i_name = actions_frames.iloc[i, 3]
 
-    frame_orig = cv2.imread(f"C:/Users/Sabin/Documents/SDC/SL_data/bocht5/classification data/2/all/{i_name}")
+    frame_orig = cv2.imread(f"D:/KWALI/{i_name}")
 
     # Steering prediction model
     resized_img = cv2.resize(frame_orig, (368, 207))
@@ -76,8 +76,7 @@ for i in range(row_count-1):
         classification_pred = "  left"
     elif i == 1: classification_pred = "  right"
 
-    print(f'Classification: {i} ({classification_pred.strip()}), {p[0, i]:.2f}')
-    print(f'Predicted steering:{original_steer} Limited to: {steer})')
+    # print(f'Classification: {i} ({classification_pred}, {p[0, i]:.2f})\nPredicted steering:{original_steer} actual steering: {steer})')
 
     # visualize (with original image)
     cv2.putText(frame_orig, f'{steer:.2f}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
