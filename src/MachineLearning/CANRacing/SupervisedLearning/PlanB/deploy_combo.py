@@ -110,7 +110,7 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
                 w, h = frame_sizes["camera"][0], frame_sizes["camera"][1]
                 cv2.line(frame_orig, (int(w//2), int(h)), (int(w*(1+steer)//2), int(h//2)), (255, 0, 0), 2) # (blue) steering model with cap
                 cv2.line(frame_orig, (int(w//2), int(480)), (int(w*(1+original_steer)//2), int(h//2)), (0, 0, 255), 2) # (red) steering model without cap
-                cv2.putText(frame_orig, f'{classification_pred}', (300, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 100, 255), thickness=4)
+                cv2.putText(frame_orig, f'{classification_pred}', (300, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), thickness=4)
                 cv2.imshow('Kartview', frame_orig)
                 cv2.waitKey(1)
 
