@@ -59,7 +59,6 @@ for image in listdir(image_folder_path):
     # visualize (with original image)
     cv2.putText(original_im, f'{steer}', (300, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 100, 255), thickness=4)
     cv2.imshow('Kartview', original_im)
-    # cv2.waitKey(max(0, int((time.time()-start)*1000)))
     cv2.waitKey(1000//60)
 
 print("Done!")
