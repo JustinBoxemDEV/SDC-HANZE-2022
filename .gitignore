@@ -45,6 +45,7 @@ __pycache__
 
 # Models are too big to push
 assets/models
+assets/videos
 src/MachineLearning/CANRacing/SupervisedLearning/classification/runs
 
 # Videos are too big to push
