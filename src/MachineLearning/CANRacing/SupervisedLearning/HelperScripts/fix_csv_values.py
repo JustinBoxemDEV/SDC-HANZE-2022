@@ -2,8 +2,8 @@
 import csv
 import struct
 
-readf = open("C:/Users/Sabin/Documents/SDC/SL_data/mirror/data images 12-04-2022 12-20-39.csv", "r") 
-writef = open("C:/Users/Sabin/Documents/SDC/SL_data/mirror/new_data images 12-04-2022 12-20-39.csv", 'w')
+readf = open("D:/data images 07-06-2022 16-37-30.csv", "r") 
+writef = open("D:/new_data images 07-06-2022 16-37-30.csv", 'w')
 
 twentytwo = False
 twentyone = True
@@ -41,9 +41,10 @@ if(twentyone):
         if(len(throttle) == 0):
             throttle = 0
         else:
-            throttle = int(throttle) 
-            throttle = throttle * 1.75438596491
-            throttle = int(round(throttle))
+            pass
+            # throttle = int(throttle) 
+            # throttle = throttle * 1.75438596491
+            # throttle = int(round(throttle))
         
         brake = data[2].replace("\"", "").split(",")[0]
         if(len(brake) == 0):
