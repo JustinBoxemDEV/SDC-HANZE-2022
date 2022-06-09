@@ -55,3 +55,6 @@ assets/videos/outpyTestdag5.mp4
 
 src/MachineLearning/CANRacing/SupervisedLearning/classification/yolov5/yolov5s.pt
 src/MachineLearning/CANRacing/SupervisedLearning/CANRacing/SupervisedLearning/classification/runs
+src/MachineLearning/CANRacing/SupervisedLearning/HelperScripts/show_resized.py
+assets/images/models/Douwe_final_model_-1_1_rotate_2022-06-09_11-15-46.pt
+assets/images/models/classification/Kopie van Kopie van seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49.pt
