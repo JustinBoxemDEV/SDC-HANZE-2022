@@ -49,8 +49,8 @@ def train():
         ])  
     testform = T.Compose(trainform.transforms[-2:])
 
-    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/assen/"
-    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022_3_classes/validation/"
+    train_img_dir="D:/KWALI/classification_kwali/"
+    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022_3_classes/validation/"
 
     # Dataloader (random split)
     full_dataset = torchvision.datasets.ImageFolder(root=train_img_dir, transform=trainform)
@@ -76,6 +76,7 @@ def train():
 
     # Model
     model = DirectionClassificationModel(gpu=True)
+    # model.load_state_dict(torch.load(f"./assets/models/classification/classification_model.pt", map_location=device))
 
     # Optimizer
     lr0 = 0.00001 * bs  # intial lr
@@ -181,34 +182,6 @@ def test(model, dataloader, names, criterion=None, verbose=False, pbar=None):
             print(f"{c:10s}{t.shape[0]:10s}{t.mean().item():10.5g}")
 
     return accuracy
-
-
-def classify(model, size=128, file='../datasets/mnist/test/3/30.png', plot=False):
-    # YOLOv5 classification model inference
-    import cv2
-    import numpy as np
-    import torch.nn.functional as F
-
-    resize = torch.nn.Upsample(size=(size, size), mode='bilinear', align_corners=False)  # image resize
-
-    # Image
-    im = cv2.imread(str(file))[..., ::-1]  # HWC, BGR to RGB
-    im = np.ascontiguousarray(np.asarray(im).transpose((2, 0, 1)))  # HWC to CHW
-    im = torch.tensor(im).float().unsqueeze(0) / 255.0  # to Tensor, to BCWH, rescale
-    im = resize(normalize(im))
-
-    # Inference
-    results = model(im)
-    p = F.softmax(results, dim=1)  # probabilities
-    i = p.argmax()  # max index
-    print(f'{file} prediction: {i} ({p[0, i]:.2f})')
-
-    # Plot
-    if plot:
-        denormalize = lambda x, mean=0.5, std=0.25: x * std + mean
-        imshow(denormalize(im), f=Path(file).name, verbose=True)
-
-    return p
 
 
 def imshow(img, labels=None, pred=None, names=None, nmax=64, verbose=False, f=Path('images.jpg')):
