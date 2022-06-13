@@ -47,6 +47,7 @@ __pycache__
 assets/models
 src/MachineLearning/SupervisedLearning/classification/runs
 src/MachineLearning/SupervisedLearning/classification/yolov5/yolov5s.pt
+src/MachineLearning/ReinforcementLearning/RLExamples/CarRacingExamples/carracing_training
 
 # Videos are too big to push
 assets/videos/
