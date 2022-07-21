@@ -26,17 +26,26 @@ ACStrategy::ACStrategy() {
     puts("Connected");
 
     gearShiftUp();
-    actuators.throttlePercentage = 100;
+    actuators.throttlePercentage = 10;
 };
 
 void ACStrategy::steer() {
+    //std::cout << actuators.steeringAngle << std::endl;
+    float test = 1;
     const char* data = ACStrategy::merge(__builtin_bswap16(0x12c), actuators.steeringAngle);
+    //std::cout << "Data: " << data << std::endl;
     ACStrategy::sendCanMessage(data);
 };
 
 void ACStrategy::brake() {
+    if(actuators.brakePercentage == -1) {
+        return;
+    }
     const char* data = ACStrategy::merge(__builtin_bswap16(0x126), actuators.brakePercentage);
     ACStrategy::sendCanMessage(data);
+    if(actuators.brakePercentage == 0) {
+        actuators.brakePercentage = -1;
+    };
 };
 
 void ACStrategy::forward() {

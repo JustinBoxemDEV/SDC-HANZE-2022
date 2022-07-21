@@ -26,12 +26,18 @@ class ComputerVision{
         cv::Mat warped;
         cv::Mat homography;
         cv::Mat invertedPerspectiveMatrix;
+
+        cv::Mat warpedOverlay;
+
+        std::vector<double> lastKnownAveragedFitR;
+        std::vector<double> lastKnownAveragedFitL;
     private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
+        std::vector<double> ExponentalMovingAverage(std::vector<double> &lastAveragedFit, std::vector<double> fit, double beta);
     public:
         ComputerVision(){
-            structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(9, 9));
+            structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6, 6));
         }
         double getNormalisedLaneOffset(){ return normalisedLaneOffset; }
         double getLaneOffset(){ return laneOffset; }
@@ -50,7 +56,7 @@ class ComputerVision{
         std::vector<int> Histogram(cv::Mat src);
         cv::Mat CreateBinaryImage(cv::Mat src);
         std::vector<cv::Vec4i> GenerateLines(cv::Mat src);
-        void PredictTurn(cv::Mat src, std::vector<cv::Vec4i> edgeLines);
+        void PredictTurn(cv::Mat src);
 };
 
 #endif
