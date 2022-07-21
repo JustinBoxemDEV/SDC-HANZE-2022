@@ -1,6 +1,6 @@
 import cv2
 
-cap = cv2.VideoCapture('../assets/videos/testdag3CenterLaneCloudyForwards.mp4')
+cap = cv2.VideoCapture('../assets/videos/testdag6baanmeting.mp4')
 out = cv2.VideoWriter('outpy.mp4',cv2.VideoWriter_fourcc(*'mp4v'), 60, (848, 480))
 
 if (cap.isOpened()== False):

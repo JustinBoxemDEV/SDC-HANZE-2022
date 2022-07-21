@@ -2,6 +2,8 @@
 
 VideoSource::VideoSource(int cameraID){
     capture = new cv::VideoCapture(cameraID);
+    capture->set(cv::CAP_PROP_FRAME_WIDTH, 848.0);
+    capture->set(cv::CAP_PROP_FRAME_HEIGHT, 480.0);
 }
 
 VideoSource::VideoSource(std::string path){

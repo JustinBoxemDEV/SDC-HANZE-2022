@@ -51,6 +51,7 @@ src/MachineLearning/ReinforcementLearning/RLExamples/CarRacingExamples/carracing
 
 # Videos are too big to push
 assets/videos/
+assets/images/
 
 # Don't push tensorboards
 src/MachineLearning/SupervisedLearning/tensorboards
