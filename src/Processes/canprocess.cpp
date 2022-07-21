@@ -46,6 +46,26 @@ CanProcess::CanProcess(MediaInput *input){
 
             break;
         }
+        case MediaSource::realtime_ml:{
+            #ifdef linux
+            strategy = new CANStrategy();
+            readProcess->setStrategy(strategy);
+            #elif __WIN32__
+            std::cerr << "you can't run machine learning on a windows device";
+            #endif
+
+            break;
+        }
+        case MediaSource::images_ml:{
+            #ifdef linux
+            strategy = new CANStrategy();
+            readProcess->setStrategy(strategy);
+            #elif __WIN32__
+            std::cerr << "you can't run machine learning on a windows device";
+            #endif
+
+            break;
+        }
         case MediaSource::assetto: case MediaSource::video:{
             #if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
                 strategy = new ACStrategy();

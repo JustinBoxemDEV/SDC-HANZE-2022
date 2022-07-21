@@ -39,6 +39,8 @@ class CANStrategy : public CommunicationStrategy {
             __u_int     trailer;
         };
     private:
+        std::string sendFilename;
+        std::string receiveFilename;
         void throttle(int amount, int direction);
         template<typename T>
         void sendCanMessage(T & canMessage) {

@@ -7,9 +7,11 @@ bool zeroThrottle = false;
 
 CANStrategy::CANStrategy() {
     timestamp = Time::currentDateTime();
+    sendFilename = "send " + timestamp + ".log";
+    receiveFilename = "receive " + timestamp + ".log";
 
-    Logger::createFile("send " + timestamp);
-    Logger::createFile("receive " + timestamp);
+    Logger::createFile(sendFilename);
+    Logger::createFile(receiveFilename);
 
     CANStrategy::init("can0"); // use vcan0 for testing, can0 for real kart.
 };
@@ -72,7 +74,7 @@ void CANStrategy::init(const char* canType) {
 
     actuators.steeringAngle = 0.0;
     CANStrategy::steer();
-    std::cout << "Test steering" << std::endl;
+    // std::cout << "Test steering" << std::endl;
 };
 
 void CANStrategy::throttle(int amount, int direction) {
@@ -97,7 +99,7 @@ void CANStrategy::throttle(int amount, int direction) {
     canMessage.trailer =  0x00000000;
 
     std::unique_lock<std::mutex> locker(loggerMutex);
-    Logger::info("Throttle : speed = " + std::to_string(amount) + " : direction = " + std::to_string(direction), "send " + timestamp);
+    Logger::info("Throttle : speed = " + std::to_string(amount) + " : direction = " + std::to_string(direction), sendFilename);
 
     CANStrategy::sendCanMessage<throttleFrame>(canMessage);
     locker.unlock();
@@ -114,7 +116,7 @@ void CANStrategy::steer() {
     canMessage.trailer = 0x00000000;
 
     std::unique_lock<std::mutex> locker(loggerMutex);
-    Logger::info("Steering : angle = " + std::to_string(actuators.steeringAngle), "send " + timestamp);
+    Logger::info("Steering : angle = " + std::to_string(actuators.steeringAngle), sendFilename);
 
     CANStrategy::sendCanMessage<steerFrame>(canMessage);
     locker.unlock();
@@ -137,7 +139,7 @@ void CANStrategy::brake() {
     canMessage.trailer =  0x00000000;
 
     std::unique_lock<std::mutex> locker(loggerMutex);
-    Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage), "send " + timestamp);
+    Logger::info("Brake : amount = " + std::to_string(actuators.brakePercentage), sendFilename);
 
     CANStrategy::sendCanMessage<brakeFrame>(canMessage);
     if(actuators.brakePercentage == 0) {
@@ -164,7 +166,7 @@ void CANStrategy::homing() {
     canMessage.trailer =  0x00000000;
 
     std::unique_lock<std::mutex> locker(loggerMutex);
-    Logger::info("Homing", "send " + timestamp);
+    Logger::info("Homing", sendFilename);
 
     CANStrategy::sendCanMessage<homingFrame>(canMessage);
     locker.unlock();
@@ -203,7 +205,7 @@ void CANStrategy::readCANMessages() {
     };
 
     std::unique_lock<std::mutex> locker(loggerMutex);
-    Logger::info(canMessage.str(), "receive " + this->timestamp);
+    Logger::info(canMessage.str(), receiveFilename);
     locker.unlock();
 };
 #endif

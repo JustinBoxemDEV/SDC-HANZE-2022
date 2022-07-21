@@ -31,6 +31,9 @@ class ComputerVision{
 
         std::vector<double> lastKnownAveragedFitR;
         std::vector<double> lastKnownAveragedFitL;
+
+        int lastKnownHistogramMaxR = 0;
+        int lastKnownHistogramMaxL = 0;
     private:
         cv::Vec2f averageVec2Vector(std::vector<cv::Vec2f> vectors);
         cv::Vec4i GeneratePoints(cv::Mat src, cv::Vec2f average);
@@ -53,7 +56,7 @@ class ComputerVision{
         std::vector<cv::Vec4i> AverageLines(cv::Mat src, std::vector<cv::Vec4i> lines);
         cv::Mat PlotLaneLines(cv::Mat src, std::vector<cv::Vec4i> lines);
         std::vector<cv::Point2f> SlidingWindow(cv::Mat image, cv::Rect window);
-        std::vector<int> Histogram(cv::Mat src);
+        std::vector<int> Histogram(cv::Mat src, int threshold = 0);
         cv::Mat CreateBinaryImage(cv::Mat src);
         std::vector<cv::Vec4i> GenerateLines(cv::Mat src);
         void PredictTurn(cv::Mat src);

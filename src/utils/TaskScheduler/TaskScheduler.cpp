@@ -57,13 +57,13 @@ unsigned char TaskScheduler::SCH_Add_Task(void (*pFunction)(), const float DELAY
    }
 
    // IF there is space in the task array
-   std::cout << "There is space" << std::endl;
+   // std::cout << "There is space" << std::endl;
    SCH_tasks_G[Index].pTask = pFunction;
    SCH_tasks_G[Index].Delay = DELAY;
    SCH_tasks_G[Index].Period = PERIOD;
    // return position of task (to allow later deletion)
 
-   std::cout << "Added task " << pFunction << std::endl;
+   // std::cout << "Added task " << pFunction << std::endl;
    return Index;
 }
 
