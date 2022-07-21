@@ -52,7 +52,7 @@ def run_training(train_img_dir: str, train_actions_csv: str, valid_img_dir: str,
     """
                 
     train_loader = get_dataloader(img_folder=train_img_dir, act_csv=train_actions_csv, batch_size=batch_size, normalize=True, normalize_std=False,
-                                    motion_blur=False, random_gamma=False, normalize=True, flip=True, rotate=False) # set transforms to true here for data augmentation (only in training!)
+                                    motion_blur=False, random_gamma=False, flip=True, rotate=False) # set transforms to true here for data augmentation (only in training!)
     valid_loader = get_dataloader(img_folder=valid_img_dir, act_csv=valid_actions_csv, batch_size=batch_size, normalize=True, normalize_std=False)
     run = True
 
@@ -191,7 +191,7 @@ def run_validation(valid_loader: torch.utils.data.DataLoader, model: torch.nn.Mo
 
 
 @torch.no_grad()
-def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSelfDriveModel", tb_name = "tensorboard_testing", wait: bool =True, dev: str ="cpu"):
+def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSelfDriveModel", tb_name: str = "tensorboard_testing", wait: bool =True, dev: str ="cpu"):
    
     """
     Test the model. The loss and all of the images in the test set along with predictions and ground truth will be shown in tensorboard.
@@ -203,7 +203,7 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
     :param wait Boolean if the program should be kept running to continue showing the tensorboard after testing is finished
     :param dev The device to run the pipeline on, default CPU
     """
-    test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=False)
+    test_loader = get_dataloader(img_folder=test_img_dir, act_csv=test_actions_csv, batch_size=1, normalize=True, normalize_std=False)
 
     if dev == "cpu":
         model = SelfDriveModel(gpu=False)
@@ -233,7 +233,13 @@ def run_testing(test_img_dir: str, test_actions_csv: str, model_name: str ="SLSe
 
         input_images, actions = batch['image'].to(dev), batch['actions'].to(dev)
 
+        # print("action", actions)
+        # print("action", actions.dtype)
+
         outputs = model(input_images)
+
+        # print("output", outputs)
+        # print("output",outputs.dtype)
 
         # draw image name, prediction and target on image
         img_with_data = draw_pred_and_target_npy(np_image, filename=img_name[0][-49:], predicted_actions=outputs[0], target_actions=actions[0], dataformats="HWC")
@@ -261,14 +267,13 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
     if training:
         trained_model_name = run_training(
                     # 2022
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/", 
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images.csv",
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/dataset_2022/training/2022_all_images_smoothed.csv", # smoothed version of the csv
+                    train_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/dataset_2022/training/", 
+                    train_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/dataset_2022/training/2022_all_images_smoothed.csv", # smoothed version of the csv
 
                     # all use the same validation set
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/validation/40p_data images 30-03-2022 15-17-40_smoothed.csv",
-                    model_name="rotate_368-207_SteerSLSelfDriveModel", continue_model="", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
+                    valid_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/validation/", 
+                    valid_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/validation/40p_data images 30-03-2022 15-17-40_smoothed.csv", # smoothed version of the csv
+                    model_name="SLSelfDriveModel", continue_model="", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
         print("Done training!")
         torch.cuda.empty_cache() # try to free up GPU memory
 
@@ -276,69 +281,72 @@ def run(training=False, test_all=True, debug_training=False, debug_testing=False
         # ----------------------- DEBUG SETS ----------------------
         trained_model_name = run_training(
                     # small dataset ~200imgs
-                    train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/", 
-                    train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
-                    valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
-                    valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
+                    train_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/bigger_test_dataset/training/", 
+                    train_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/bigger_test_dataset/training/training_all.csv",
+                    valid_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/bigger_test_dataset/validation/", 
+                    valid_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/bigger_test_dataset/validation/new_validation.csv",
 
                     # 8 image dataset
-                    # train_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # train_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
-                    # valid_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset",
-                    # valid_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    # train_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/test_dataset",
+                    # train_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/test_dataset/test_csv.csv",
+                    # valid_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/test_dataset",
+                    # valid_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/test_dataset/test_csv.csv",
                     model_name="test_steermodel", num_epochs=100, amp_on=False, batch_size=16 , dev="cuda:0")
 
     if test_all:
         # if you run testing right after training you can use trained_model_name for the model_name parameter, otherwise insert a string with the model name from assets/models
-        # trained_model_name = ""
+        trained_model_name = ""
 
         # test set (30-03-2022 15-17-40)
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/final_60p_data images 30-03-2022 15-17-40.csv",
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/testing_60p_100_new_data_images_30-03-2022_15-17-40_smoothed.csv" # smoothed version of the csv
-                    model_name=trained_model_name, tb_name="tensorboard_testing_test", wait=False, dev="cuda:0")
+        run_testing(test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/testing/", 
+                    test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/testing/testing_60p_data_images_30-03-2022_15-17-40_smoothed.csv", # smoothed version of the csv
+                    model_name=trained_model_name, tb_name="tensorboard_testing_test", wait=False, dev="cpu")
+        
         # mirrored set (12-04-2022 12-20-39)
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/mirror/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
-                    model_name=trained_model_name, tb_name="tensorboard_testing_mirror", wait=False, dev="cuda:0")
+        # run_testing(test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/mirror/", 
+        #             test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/mirror/final_data images 12-04-2022 12-20-39.csv",
+        #             model_name=trained_model_name, tb_name="tensorboard_testing_mirror", wait=False, dev="cuda:0")
+        
         # test + mirrored set 
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/testing/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
-                    model_name=trained_model_name, tb_name="tensorboard_testing_testandmirror", wait=False, dev="cuda:0")
+        # run_testing(test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/testing/", 
+        #             test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/testing/mirrorlap_final_60p_data images 30-03-2022 15-17-40.csv",
+        #             model_name=trained_model_name, tb_name="tensorboard_testing_testandmirror", wait=False, dev="cuda:0")
 
         # catagorized tests (30-03-2022 15-17-40)
         # straight set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Testing_recht/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Testing_recht/Testing_recht.csv",
-                    model_name=trained_model_name, tb_name="tensorboard_testing_test_straight", wait=False, dev="cuda:0")
+        # run_testing(test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/Testing_recht/", 
+        #             test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/Testing_recht/Testing_recht.csv",
+        #             model_name=trained_model_name, tb_name="tensorboard_testing_test_straight", wait=False, dev="cuda:0")
+        
         # left set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_links/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_links/Testing_bochten_links.csv",
-                    model_name=trained_model_name, tb_name="tensorboard_testing_test_left", wait=False, dev="cuda:0")
+        # run_testing(test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/Testing_bochten_links/", 
+        #             test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/Testing_bochten_links/Testing_bochten_links.csv",
+        #             model_name=trained_model_name, tb_name="tensorboard_testing_test_left", wait=False, dev="cuda:0")
+        
         # right set
-        run_testing(test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_rechts/", 
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/Testing_bochten_rechts/Testing_bochten_rechts.csv",
-                    model_name=trained_model_name, tb_name="tensorboard_testing_test_right", wait=False, dev="cuda:0")
-        print("Done testing!")
+        # run_testing(test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/Testing_bochten_rechts/", 
+        #             test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/Testing_bochten_rechts/Testing_bochten_rechts.csv",
+        #             model_name=trained_model_name, tb_name="tensorboard_testing_test_right", wait=False, dev="cuda:0")
+        # print("Done testing!")
     
     if debug_testing:
         # ----------------------- DEBUG SETS ----------------------
         run_testing(
                     # small dataset ~200imgs
-                    test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/",
-                    test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
+                    test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/bigger_test_dataset/testing/",
+                    test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/bigger_test_dataset/testing/new_testing.csv",
 
                     # 8 image dataset
-                    # test_img_dir="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset", 
-                    # test_actions_csv="C:/Users/Sabin/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
-                    model_name="DEBUG", tb_name="tensorboard_testing_debug", wait=True, dev="cuda:0")
+                    # test_img_dir="C:/Users/Sabine/Documents/SDC/SL_data/test_dataset", 
+                    # test_actions_csv="C:/Users/Sabine/Documents/SDC/SL_data/test_dataset/test_csv.csv", 
+                    model_name="DEBUG", tb_name="tensorboard_testing_debug", wait=True, dev="cpu")
     
     if trace:
         pass
-        # TODO: Integrate tracing and saving traced model once training is done
+        # TODO: Integrate tracing and saving traced model once training is fully done (Only needed for running model in C++)
 
     print("Done!")
 
 
 if __name__ == "__main__":
-    run(training=True, test_all=False, debug_training=False, debug_testing=False, trace=False)
+    run(training=False, test_all=True)

@@ -16,7 +16,7 @@ corner_cutoff = 0.28 # for steering too much/little
 cornering_multiplier = 1.05
 
 model_name = "kwalironde_368-207_SteerSLSelfDriveModel_2022-06-10_01-17-49"
-csv_file_path = "C:/Users/Sabin/Documents/SDC/SL_data/sorted_new_data images 07-06-2022 16-37-30.csv"
+csv_file_path = "C:/Users/Sabine/Documents/SDC/SL_data/testing/testing_60p_data_images_30-03-2022_15-17-40_smoothed.csv"
 
 classification_model = DirectionClassificationModel(gpu=False)
 classification_model.load_state_dict(torch.load(f"assets/models/classification/best.pt", map_location=torch.device('cpu')))
@@ -38,7 +38,7 @@ for i in range(row_count-1):
     truth_throttle = actions_frames.iloc[i, 1]
     i_name = actions_frames.iloc[i, 3]
 
-    frame_orig = cv2.imread(f"C:/Users/Sabin/Documents/SDC/SL_data/{i_name}")
+    frame_orig = cv2.imread(f"C:/Users/Sabine/Documents/SDC/SL_data/testing/{i_name}")
 
     # Steering prediction model
     resized_img = cv2.resize(frame_orig, (368, 207))
@@ -79,8 +79,13 @@ for i in range(row_count-1):
     # print(f'Classification: {i} ({classification_pred}, {p[0, i]:.2f})\nPredicted steering:{original_steer} actual steering: {steer})')
 
     # visualize (with original image)
-    cv2.putText(frame_orig, f'{steer:.2f}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
-    cv2.putText(frame_orig, f'{truth_steer:.2f}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+    if steer == original_steer:
+        cv2.putText(frame_orig, f'{steer:.2f}', (50, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
+    else:
+        cv2.putText(frame_orig, f'{steer:.2f}', (50, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
+        cv2.putText(frame_orig, f'{original_steer:.2f}', (50, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255)) # (red) steering model without cap
+
+    cv2.putText(frame_orig, f'{truth_steer:.2f}', (50, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
     cv2.line(frame_orig, (int(848//2), int(480)), (int(848*(1+original_steer)//2), int(480//2)), (0, 0, 255), 2) # (red) steering model without cap
     cv2.line(frame_orig, (int(848//2), int(480)), (int(848*(1+steer)//2), int(480//2)), (255, 0, 0), 2) # (blue) steering model with cap
     cv2.line(frame_orig, (int(848//2), int(480)), (int(848*(1+truth_steer)//2), int(480//2)), (0, 255, 0), 2)  # (green) ground truth steer

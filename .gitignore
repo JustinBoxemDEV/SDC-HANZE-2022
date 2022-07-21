@@ -54,3 +54,4 @@ assets/videos/
 
 # Don't push tensorboards
 src/MachineLearning/SupervisedLearning/tensorboards
+src/MachineLearning/CANRacing/tensorboards/seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49/tensorboard_testing_test/events.out.tfevents.1656115581.SabineP.5492.0

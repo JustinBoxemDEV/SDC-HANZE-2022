@@ -16,9 +16,9 @@ import torch.nn.functional as F
 CAN_MSG_SENDING_SPEED = .04 # 100Hz
 SUDO_PASSWORD = '' # ENTER PASSWORD HERE!
 
-camera = True
+camera = False
 preview = True
-CAN = "can0" # if testing on video, change to ""
+CAN = "" # if testing on video change to "", if testing on can use "can0"
 acc_speed = 60
 straight_cutoff = 0.1 # for swerving
 corner_cutoff = 0.28 # for steering too much/little
@@ -27,7 +27,7 @@ cornering_multiplier = 1.05
 model_name = "assets/models/seed4_368-207_SteerSLSelfDriveModel_2022-06-07_00-03-49.pt"
 
 classification_model = DirectionClassificationModel(gpu=False)
-classification_model.load_state_dict(torch.load(f"assets/models/classification/newest_classification_model.pt", map_location=torch.device('cpu')))
+classification_model.load_state_dict(torch.load(f"assets/models/classification/best.pt", map_location=torch.device('cpu')))
 
 frame_sizes = {
     "camera": (1280, 720),
@@ -99,7 +99,7 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
                 classification_pred = "  left"
             elif i == 1: classification_pred = "  right"
 
-            print(f'Classification: {i} ({classification_pred}, {p[0, i]:.2f})\nPredicted steering:{original_steer} actual steering: {steer})')
+            # print(f'Classification: {i} ({classification_pred}, {p[0, i]:.2f})\nPredicted steering:{original_steer} actual steering: {steer})')
 
             # send new steering value to CAN-bus if enabled
             if CAN:
@@ -109,8 +109,15 @@ def main(model, classification_model, frame_sizes, acc_speed, camera=False, prev
             # show live camera preview with prediction if enabled
             if preview:
                 w, h = frame_sizes["camera"][0], frame_sizes["camera"][1]
-                cv2.line(frame_orig, (int(w//2), int(h)), (int(w*(1+steer)//2), int(h//2)), (255, 0, 0), 2) # (blue) steering model with cap
+            
+                if steer == original_steer:
+                    cv2.putText(frame_orig, str(steer), (300, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), thickness=2) # (blue) steering model with cap
+                else:
+                    cv2.putText(frame_orig, str(steer), (300, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), thickness=2) # (blue) steering model with cap
+                    cv2.putText(frame_orig, str(original_steer), (300, 120), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), thickness=2) # (red) steering model without cap
+
                 cv2.line(frame_orig, (int(w//2), int(h)), (int(w*(1+original_steer)//2), int(h//2)), (0, 0, 255), 2) # (red) steering model without cap
+                cv2.line(frame_orig, (int(w//2), int(h)), (int(w*(1+steer)//2), int(h//2)), (255, 0, 0), 2) # (blue) steering model with cap
                 cv2.putText(frame_orig, f'{classification_pred}', (300, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), thickness=4)
                 cv2.imshow('Kartview', frame_orig)
                 cv2.waitKey(1)

@@ -13,7 +13,7 @@ height = 207
 width = 368
 
 model_name = "kwalironde_368-207_SteerSLSelfDriveModel_2022-06-10_01-17-49"
-csv_file_path = "D:/All SDC data in existence/testing//testing_60p_data_images_30-03-2022_15-17-40_smoothed.csv"
+csv_file_path = "C:/Users/Sabine/Documents/SDC/SL_data/testing/testing_60p_data_images_30-03-2022_15-17-40_smoothed.csv"
 
 dev = "cpu"
 model = SelfDriveModel(gpu=False)
@@ -32,7 +32,7 @@ for i in range(row_count-1):
     truth_throttle = actions_frames.iloc[i, 1]
     i_name = actions_frames.iloc[i, 3]
     
-    img = cv2.imread(f"D:/All SDC data in existence/testing/{i_name}")
+    img = cv2.imread(f"C:/Users/Sabine/Documents/SDC/SL_data/testing/{i_name}")
 
     # resize, normalize and crop
     resized_img = cv2.resize(img, (width, height)) 
